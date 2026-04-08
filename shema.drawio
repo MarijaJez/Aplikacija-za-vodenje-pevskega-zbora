@@ -1,0 +1,265 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.1 Chrome/142.0.7444.265 Electron/39.8.0 Safari/537.36" version="29.6.1">
+  <diagram name="Page-1" id="Z9wX80SC0LNVhSGh9q-P">
+    <mxGraphModel dx="1351" dy="946" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="HE70pi_wDt14SI2IL-A2-71" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-63" style="endArrow=none;html=1;rounded=0;dashed=1;dashPattern=1 2;" target="HE70pi_wDt14SI2IL-A2-68" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="354" as="sourcePoint" />
+            <mxPoint x="480" y="321" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-72" connectable="0" parent="HE70pi_wDt14SI2IL-A2-71" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="N" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-1" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=0;" value="Oseba" vertex="1">
+          <mxGeometry height="240" width="140" x="240" y="184" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-6" parent="HE70pi_wDt14SI2IL-A2-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="&lt;u&gt;Id osebe&lt;/u&gt;" vertex="1">
+          <mxGeometry height="30" width="140" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-2" parent="HE70pi_wDt14SI2IL-A2-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Ime" vertex="1">
+          <mxGeometry height="30" width="140" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-3" parent="HE70pi_wDt14SI2IL-A2-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Priimek" vertex="1">
+          <mxGeometry height="30" width="140" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-4" parent="HE70pi_wDt14SI2IL-A2-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Datum rojstva" vertex="1">
+          <mxGeometry height="30" width="140" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-7" parent="HE70pi_wDt14SI2IL-A2-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="E-pošta" vertex="1">
+          <mxGeometry height="30" width="140" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-8" parent="HE70pi_wDt14SI2IL-A2-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Telefonska številka" vertex="1">
+          <mxGeometry height="30" width="140" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-9" parent="HE70pi_wDt14SI2IL-A2-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Glas" vertex="1">
+          <mxGeometry height="30" width="140" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-22" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;rounded=0;" value="Prisotnost" vertex="1">
+          <mxGeometry height="120" width="140" x="520" y="24" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-23" parent="HE70pi_wDt14SI2IL-A2-22" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontStyle=4;rounded=0;" value="&lt;span&gt;Id dogodka&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="140" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-25" parent="HE70pi_wDt14SI2IL-A2-22" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontStyle=4;rounded=0;" value="Id osebe" vertex="1">
+          <mxGeometry height="30" width="140" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-26" parent="HE70pi_wDt14SI2IL-A2-22" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Prisotnost" vertex="1">
+          <mxGeometry height="30" width="140" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-27" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=0;" value="Dogodek" vertex="1">
+          <mxGeometry height="150" width="140" x="740" y="204" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-28" parent="HE70pi_wDt14SI2IL-A2-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontStyle=4;rounded=0;" value="Id dogodka" vertex="1">
+          <mxGeometry height="30" width="140" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-30" parent="HE70pi_wDt14SI2IL-A2-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Datum" vertex="1">
+          <mxGeometry height="30" width="140" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-96" parent="HE70pi_wDt14SI2IL-A2-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Vrsta dogodka" vertex="1">
+          <mxGeometry height="30" width="140" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-29" parent="HE70pi_wDt14SI2IL-A2-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Naziv dogodka" vertex="1">
+          <mxGeometry height="30" width="140" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-31" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=0;" value="Pesem" vertex="1">
+          <mxGeometry height="150" width="140" x="540" y="524" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-32" parent="HE70pi_wDt14SI2IL-A2-31" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="&lt;u&gt;Id pesmi&lt;/u&gt;" vertex="1">
+          <mxGeometry height="30" width="140" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-33" parent="HE70pi_wDt14SI2IL-A2-31" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Naslov" vertex="1">
+          <mxGeometry height="30" width="140" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-34" parent="HE70pi_wDt14SI2IL-A2-31" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Avtor" vertex="1">
+          <mxGeometry height="30" width="140" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-35" parent="HE70pi_wDt14SI2IL-A2-31" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Note" vertex="1">
+          <mxGeometry height="30" width="140" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-39" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=0;" value="Kategorije" vertex="1">
+          <mxGeometry height="120" width="140" x="540" y="694" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-40" parent="HE70pi_wDt14SI2IL-A2-39" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="&lt;u&gt;Id kategorije&lt;/u&gt;" vertex="1">
+          <mxGeometry height="30" width="140" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-47" parent="HE70pi_wDt14SI2IL-A2-39" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Naziv" vertex="1">
+          <mxGeometry height="30" width="140" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-62" parent="HE70pi_wDt14SI2IL-A2-39" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Opis" vertex="1">
+          <mxGeometry height="30" width="140" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-54" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;rounded=0;" value="Ocene pesmi" vertex="1">
+          <mxGeometry height="150" width="140" x="221" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-56" parent="HE70pi_wDt14SI2IL-A2-54" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="&lt;u&gt;Id osebe&lt;/u&gt;" vertex="1">
+          <mxGeometry height="30" width="140" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-55" parent="HE70pi_wDt14SI2IL-A2-54" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="&lt;u&gt;Id pesmi&lt;/u&gt;" vertex="1">
+          <mxGeometry height="30" width="140" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-57" parent="HE70pi_wDt14SI2IL-A2-54" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Ocena" vertex="1">
+          <mxGeometry height="30" width="140" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-111" parent="HE70pi_wDt14SI2IL-A2-54" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Komentar" vertex="1">
+          <mxGeometry height="30" width="140" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-63" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=0;" value="Vloge" vertex="1">
+          <mxGeometry height="120" width="140" x="240" y="14" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-64" parent="HE70pi_wDt14SI2IL-A2-63" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="&lt;u&gt;Id vloge&lt;/u&gt;" vertex="1">
+          <mxGeometry height="30" width="140" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-65" parent="HE70pi_wDt14SI2IL-A2-63" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Naziv" vertex="1">
+          <mxGeometry height="30" width="140" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-66" parent="HE70pi_wDt14SI2IL-A2-63" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Opis" vertex="1">
+          <mxGeometry height="30" width="140" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-68" parent="1" style="shape=rhombus;perimeter=rhombusPerimeter;whiteSpace=wrap;html=1;align=center;fillColor=#fff2cc;strokeColor=#d6b656;rounded=0;" value="Ima" vertex="1">
+          <mxGeometry height="60" width="120" x="110" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-69" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-1" style="endArrow=none;html=1;rounded=0;dashed=1;dashPattern=1 2;" target="HE70pi_wDt14SI2IL-A2-68" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="520" y="329" as="sourcePoint" />
+            <mxPoint x="449" y="394" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-70" connectable="0" parent="HE70pi_wDt14SI2IL-A2-69" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="N" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-73" parent="1" style="shape=rhombus;perimeter=rhombusPerimeter;whiteSpace=wrap;html=1;align=center;fillColor=#fff2cc;strokeColor=#d6b656;rounded=0;" value="Ima" vertex="1">
+          <mxGeometry height="60" width="120" x="725" y="654" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-74" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-31" style="endArrow=none;html=1;rounded=0;dashed=1;dashPattern=1 2;" target="HE70pi_wDt14SI2IL-A2-73" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="664" as="sourcePoint" />
+            <mxPoint x="725" y="574" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-75" connectable="0" parent="HE70pi_wDt14SI2IL-A2-74" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="N" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-76" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-39" style="endArrow=none;html=1;rounded=0;dashed=1;dashPattern=1 2;" target="HE70pi_wDt14SI2IL-A2-73" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="380" y="624" as="sourcePoint" />
+            <mxPoint x="793" y="584" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-77" connectable="0" parent="HE70pi_wDt14SI2IL-A2-76" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="N" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-80" parent="1" style="shape=rhombus;perimeter=rhombusPerimeter;whiteSpace=wrap;html=1;align=center;fillColor=#f8cecc;strokeColor=#b85450;rounded=0;" value="Oceni" vertex="1">
+          <mxGeometry height="60" width="120" x="380" y="474" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-82" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-1" style="endArrow=none;html=1;rounded=0;dashed=1;dashPattern=1 2;" target="HE70pi_wDt14SI2IL-A2-80" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="510" y="354" as="sourcePoint" />
+            <mxPoint x="460" y="354" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-83" connectable="0" parent="HE70pi_wDt14SI2IL-A2-82" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="N" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-84" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-31" style="endArrow=none;html=1;rounded=0;dashed=1;dashPattern=1 2;" target="HE70pi_wDt14SI2IL-A2-80" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="603" y="384" as="sourcePoint" />
+            <mxPoint x="600" y="444" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-85" connectable="0" parent="HE70pi_wDt14SI2IL-A2-84" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="N" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-86" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-54" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="HE70pi_wDt14SI2IL-A2-80" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="374" as="sourcePoint" />
+            <mxPoint x="600" y="428" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-87" connectable="0" parent="HE70pi_wDt14SI2IL-A2-86" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="1" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-88" parent="1" style="shape=rhombus;perimeter=rhombusPerimeter;whiteSpace=wrap;html=1;align=center;fillColor=#f8cecc;strokeColor=#b85450;rounded=0;" value="Je prisotna na" vertex="1">
+          <mxGeometry height="60" width="120" x="530" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-89" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-22" style="endArrow=none;html=1;rounded=0;" target="HE70pi_wDt14SI2IL-A2-88" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="540" y="424" as="sourcePoint" />
+            <mxPoint x="560" y="424" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-90" connectable="0" parent="HE70pi_wDt14SI2IL-A2-89" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="1" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-91" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-6" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="HE70pi_wDt14SI2IL-A2-88" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="384" as="sourcePoint" />
+            <mxPoint x="620" y="438" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-92" connectable="0" parent="HE70pi_wDt14SI2IL-A2-91" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="N" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-93" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-27" style="endArrow=none;html=1;rounded=0;" target="HE70pi_wDt14SI2IL-A2-88" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="154" as="sourcePoint" />
+            <mxPoint x="735" y="157" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-94" connectable="0" parent="HE70pi_wDt14SI2IL-A2-93" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="N" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-95" parent="1" style="shape=rhombus;perimeter=rhombusPerimeter;whiteSpace=wrap;html=1;align=center;fillColor=#f8cecc;strokeColor=#b85450;rounded=0;" value="Na dogodku pojemo" vertex="1">
+          <mxGeometry height="60" width="120" x="750" y="464" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-97" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-27" style="endArrow=none;html=1;rounded=0;dashed=1;" target="HE70pi_wDt14SI2IL-A2-95" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="983" y="314" as="sourcePoint" />
+            <mxPoint x="910" y="316" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-98" connectable="0" parent="HE70pi_wDt14SI2IL-A2-97" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="N" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-99" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-31" style="endArrow=none;html=1;rounded=0;dashed=1;" target="HE70pi_wDt14SI2IL-A2-95" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="955" y="384" as="sourcePoint" />
+            <mxPoint x="870" y="535" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-100" connectable="0" parent="HE70pi_wDt14SI2IL-A2-99" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="N" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-101" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;rounded=0;" value="Program" vertex="1">
+          <mxGeometry height="150" width="140" x="900" y="419" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-102" parent="HE70pi_wDt14SI2IL-A2-101" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontStyle=4;rounded=0;" value="&lt;span&gt;Id dogodka&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="140" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-103" parent="HE70pi_wDt14SI2IL-A2-101" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontStyle=4;rounded=0;" value="Id pesmi" vertex="1">
+          <mxGeometry height="30" width="140" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-104" parent="HE70pi_wDt14SI2IL-A2-101" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Ocena" vertex="1">
+          <mxGeometry height="30" width="140" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-105" parent="HE70pi_wDt14SI2IL-A2-101" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Komentar" vertex="1">
+          <mxGeometry height="30" width="140" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-106" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-101" style="endArrow=none;html=1;rounded=0;" target="HE70pi_wDt14SI2IL-A2-95" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="790" y="234" as="sourcePoint" />
+            <mxPoint x="900" y="484" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-107" connectable="0" parent="HE70pi_wDt14SI2IL-A2-106" style="resizable=0;html=1;whiteSpace=wrap;align=right;verticalAlign=bottom;rounded=0;" value="1" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-110" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Dodatne ideje:&lt;/h1&gt;&lt;p&gt;- arhiv slik&lt;/p&gt;&lt;p&gt;- wishlist pesmi&lt;/p&gt;&lt;p&gt;- chat&lt;/p&gt;" vertex="1">
+          <mxGeometry height="120" width="180" x="940" y="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
