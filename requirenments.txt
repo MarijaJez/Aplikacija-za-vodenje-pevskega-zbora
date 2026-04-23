@@ -1,0 +1,4 @@
+# Tu so naštete vse knjižnice, uporabljene v projektu
+bottle
+psycopg2
+dataclasses_json
