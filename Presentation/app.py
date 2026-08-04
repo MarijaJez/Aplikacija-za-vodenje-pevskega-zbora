@@ -371,11 +371,13 @@ def attendance():
 
 
 @app.post("/api/prisotnost")
-@require_permission("attendance")
+@require_login
 def save_attendance():
     payload=request.json or {}
     try:
-        service.save_attendance(int(payload["event_id"]),int(payload["person_id"]),str(payload.get("status") or ""),current_user()["id"])
+        service.save_attendance(current_user(),int(payload["event_id"]),int(payload["person_id"]),str(payload.get("status") or ""))
+    except PermissionError as error:
+        abort(403,str(error))
     except (KeyError,TypeError,ValueError) as error:
         abort(400,str(error))
     response.content_type="application/json"

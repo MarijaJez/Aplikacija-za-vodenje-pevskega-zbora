@@ -156,7 +156,7 @@ document.querySelectorAll('[data-attendance-filter]').forEach(select=>select.add
 
 const userPermissions = new Set((document.documentElement.dataset.permissions || '').split(',').filter(Boolean));
 document.querySelectorAll('[data-permission]').forEach(control => {
-  const allowed = userPermissions.has(control.dataset.permission);
+  const allowed = userPermissions.has(control.dataset.permission) || control.dataset.selfEditable === 'true';
   if (control.matches('.attendance-dot')) { control.disabled = !allowed; control.classList.toggle('readonly', !allowed); }
   else control.hidden = !allowed;
 });

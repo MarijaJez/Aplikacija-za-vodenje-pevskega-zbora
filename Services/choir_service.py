@@ -384,18 +384,26 @@ class ChoirService:
 
     def save_attendance(
         self,
+        actor: User,
         event_id: int,
         person_id: int,
         status: str,
-        user_id: int,
     ) -> None:
         if status not in STATUS_KEYS:
             raise ValueError("Neveljaven status.")
+        if "attendance" not in self.auth.permissions(actor):
+            if actor.person_id != person_id:
+                raise PermissionError("Urejaš lahko samo svojo prisotnost.")
+            event = self.repository.get_event(event_id)
+            if not event:
+                raise ValueError("Dogodek ne obstaja.")
+            if event.event_date <= datetime.now().astimezone():
+                raise PermissionError("Svojo prisotnost lahko urejaš samo za prihodnje dogodke.")
         self.repository.upsert_attendance(
             event_id,
             person_id,
             cast(AttendanceStatus, status),
-            user_id,
+            actor.id,
         )
 
     def treasury(self) -> TreasurySummary:
