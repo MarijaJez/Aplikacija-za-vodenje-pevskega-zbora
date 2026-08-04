@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.1 Chrome/142.0.7444.265 Electron/39.8.0 Safari/537.36" version="29.6.1">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
   <diagram name="Page-1" id="Z9wX80SC0LNVhSGh9q-P">
-    <mxGraphModel dx="1351" dy="946" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1481" dy="828" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -50,7 +50,7 @@
           <mxGeometry height="30" width="140" y="90" as="geometry" />
         </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-27" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=0;" value="Dogodek" vertex="1">
-          <mxGeometry height="150" width="140" x="740" y="204" as="geometry" />
+          <mxGeometry height="180" width="140" x="740" y="204" as="geometry" />
         </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-28" parent="HE70pi_wDt14SI2IL-A2-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontStyle=4;rounded=0;" value="Id dogodka" vertex="1">
           <mxGeometry height="30" width="140" y="30" as="geometry" />
@@ -61,11 +61,14 @@
         <mxCell id="HE70pi_wDt14SI2IL-A2-96" parent="HE70pi_wDt14SI2IL-A2-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Vrsta dogodka" vertex="1">
           <mxGeometry height="30" width="140" y="90" as="geometry" />
         </mxCell>
-        <mxCell id="HE70pi_wDt14SI2IL-A2-29" parent="HE70pi_wDt14SI2IL-A2-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Naziv dogodka" vertex="1">
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-11" parent="HE70pi_wDt14SI2IL-A2-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Naziv dogodka" vertex="1">
           <mxGeometry height="30" width="140" y="120" as="geometry" />
         </mxCell>
+        <mxCell id="HE70pi_wDt14SI2IL-A2-29" parent="HE70pi_wDt14SI2IL-A2-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Kraj" vertex="1">
+          <mxGeometry height="30" width="140" y="150" as="geometry" />
+        </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-31" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=0;" value="Pesem" vertex="1">
-          <mxGeometry height="150" width="140" x="540" y="524" as="geometry" />
+          <mxGeometry height="180" width="140" x="543" y="490" as="geometry" />
         </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-32" parent="HE70pi_wDt14SI2IL-A2-31" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="&lt;u&gt;Id pesmi&lt;/u&gt;" vertex="1">
           <mxGeometry height="30" width="140" y="30" as="geometry" />
@@ -78,6 +81,9 @@
         </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-35" parent="HE70pi_wDt14SI2IL-A2-31" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Note" vertex="1">
           <mxGeometry height="30" width="140" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-10" parent="HE70pi_wDt14SI2IL-A2-31" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Posnetek" vertex="1">
+          <mxGeometry height="30" width="140" y="150" as="geometry" />
         </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-39" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=0;" value="Kategorije" vertex="1">
           <mxGeometry height="120" width="140" x="540" y="694" as="geometry" />
@@ -212,7 +218,7 @@
           <mxGeometry relative="1" x="1" as="geometry" />
         </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-95" parent="1" style="shape=rhombus;perimeter=rhombusPerimeter;whiteSpace=wrap;html=1;align=center;fillColor=#f8cecc;strokeColor=#b85450;rounded=0;" value="Na dogodku pojemo" vertex="1">
-          <mxGeometry height="60" width="120" x="750" y="464" as="geometry" />
+          <mxGeometry height="60" width="120" x="725" y="435" as="geometry" />
         </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-97" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-27" style="endArrow=none;html=1;rounded=0;dashed=1;" target="HE70pi_wDt14SI2IL-A2-95" value="">
           <mxGeometry relative="1" as="geometry">
@@ -233,7 +239,7 @@
           <mxGeometry relative="1" x="1" as="geometry" />
         </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-101" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;rounded=0;" value="Program" vertex="1">
-          <mxGeometry height="150" width="140" x="900" y="419" as="geometry" />
+          <mxGeometry height="180" width="140" x="840" y="480" as="geometry" />
         </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-102" parent="HE70pi_wDt14SI2IL-A2-101" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontStyle=4;rounded=0;" value="&lt;span&gt;Id dogodka&lt;/span&gt;" vertex="1">
           <mxGeometry height="30" width="140" y="30" as="geometry" />
@@ -247,6 +253,9 @@
         <mxCell id="HE70pi_wDt14SI2IL-A2-105" parent="HE70pi_wDt14SI2IL-A2-101" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Komentar" vertex="1">
           <mxGeometry height="30" width="140" y="120" as="geometry" />
         </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-12" parent="HE70pi_wDt14SI2IL-A2-101" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Zaporedna št." vertex="1">
+          <mxGeometry height="30" width="140" y="150" as="geometry" />
+        </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-106" edge="1" parent="1" source="HE70pi_wDt14SI2IL-A2-101" style="endArrow=none;html=1;rounded=0;" target="HE70pi_wDt14SI2IL-A2-95" value="">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="790" y="234" as="sourcePoint" />
@@ -258,6 +267,48 @@
         </mxCell>
         <mxCell id="HE70pi_wDt14SI2IL-A2-110" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Dodatne ideje:&lt;/h1&gt;&lt;p&gt;- arhiv slik&lt;/p&gt;&lt;p&gt;- wishlist pesmi&lt;/p&gt;&lt;p&gt;- chat&lt;/p&gt;" vertex="1">
           <mxGeometry height="120" width="180" x="940" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-1" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=0;" value="Uporabnik" vertex="1">
+          <mxGeometry height="180" width="140" x="36" y="204" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-2" parent="EwQIQvBoN6qbb8LhstqW-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="&lt;u&gt;Id uporabnika&lt;/u&gt;" vertex="1">
+          <mxGeometry height="30" width="140" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-9" parent="EwQIQvBoN6qbb8LhstqW-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Id osebe" vertex="1">
+          <mxGeometry height="30" width="140" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-3" parent="EwQIQvBoN6qbb8LhstqW-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Uporabniško ime" vertex="1">
+          <mxGeometry height="30" width="140" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-4" parent="EwQIQvBoN6qbb8LhstqW-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Geslo" vertex="1">
+          <mxGeometry height="30" width="140" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-5" parent="EwQIQvBoN6qbb8LhstqW-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Zamenjati geslo" vertex="1">
+          <mxGeometry height="30" width="140" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-13" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=0;" value="Transakcije" vertex="1">
+          <mxGeometry height="240" width="140" x="986" y="184" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-14" parent="EwQIQvBoN6qbb8LhstqW-13" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontStyle=4;rounded=0;" value="Id transakcije" vertex="1">
+          <mxGeometry height="30" width="140" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-15" parent="EwQIQvBoN6qbb8LhstqW-13" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Datum" vertex="1">
+          <mxGeometry height="30" width="140" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-16" parent="EwQIQvBoN6qbb8LhstqW-13" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Opis" vertex="1">
+          <mxGeometry height="30" width="140" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-17" parent="EwQIQvBoN6qbb8LhstqW-13" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Deležnik" vertex="1">
+          <mxGeometry height="30" width="140" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-18" parent="EwQIQvBoN6qbb8LhstqW-13" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Prihodek / Odhodek" vertex="1">
+          <mxGeometry height="30" width="140" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-19" parent="EwQIQvBoN6qbb8LhstqW-13" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Znesek" vertex="1">
+          <mxGeometry height="30" width="140" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="EwQIQvBoN6qbb8LhstqW-20" parent="EwQIQvBoN6qbb8LhstqW-13" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;rounded=0;" value="Poravnano" vertex="1">
+          <mxGeometry height="30" width="140" y="210" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

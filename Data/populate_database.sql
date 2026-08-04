@@ -1,90 +1,100 @@
--- Vstavljanje testnih podatkov za aplikacijo pevskega zbora
+INSERT INTO roles (name, description) VALUES
+('Predsednik', 'Vodi organizacijske in upravne naloge zbora.'),
+('Zborovodja', 'Umetniško vodi zbor in pripravlja program.'),
+('Blagajnik', 'Skrbi za finančno poslovanje zbora.'),
+('Notar', 'Ureja in razdeljuje notno gradivo.'),
+('Beleženje prisotnosti', 'Beleži in ureja prisotnost članov.'),
+('Član', 'Redno sodeluje na vajah in dogodkih.');
 
--- Vloge
-INSERT INTO public.vloge (naziv, opis) VALUES
-('admin', 'Skrbnik sistema'),
-('pevec', 'Član zbora'),
-('skrbnik prisotnosti', 'Upravlja prisotnost na dogodkih');
+INSERT INTO people (first_name, last_name, birth_date, email, phone, voice) VALUES
+('Ana', 'Kovač', '1998-03-14', 'ana.kovac@zbor.si', '+386 40 123 456', 'Sopran'),
+('Maja', 'Zupan', '1995-11-08', 'maja.zupan@zbor.si', '+386 41 222 981', 'Alt'),
+('Luka', 'Mlakar', '1992-07-22', 'luka.mlakar@zbor.si', '+386 31 654 123', 'Tenor'),
+('Rok', 'Kos', '1989-01-02', 'rok.kos@zbor.si', '+386 51 334 788', 'Bas'),
+('Eva', 'Horvat', '2000-05-19', 'eva.horvat@zbor.si', '+386 40 886 421', 'Sopran'),
+('Miha', 'Novak', '1997-09-30', 'miha.novak@zbor.si', '+386 31 907 122', 'Tenor');
 
--- Glasovi (šifrant)
-INSERT INTO public.glasovi (naziv_glasu) VALUES
-('sopran'),
-('alt'),
-('tenor'),
-('bas');
+INSERT INTO users (person_id, username, password_hash, must_change_password)
+SELECT id, lower(unaccent_name), crypt(password, gen_salt('bf')), must_change
+FROM (
+  SELECT p.id,
+    CASE p.first_name
+      WHEN 'Ana' THEN 'ana.kovac' WHEN 'Maja' THEN 'maja.zupan' WHEN 'Luka' THEN 'luka.mlakar'
+      WHEN 'Rok' THEN 'rok.kos' WHEN 'Eva' THEN 'eva.horvat' ELSE 'miha.novak' END AS unaccent_name,
+    CASE WHEN p.first_name IN ('Ana','Luka') THEN 'zbor2026' ELSE
+      CASE p.first_name WHEN 'Maja' THEN 'maja.zupan' WHEN 'Luka' THEN 'luka.mlakar'
+      WHEN 'Rok' THEN 'rok.kos' WHEN 'Eva' THEN 'eva.horvat' ELSE 'miha.novak' END END AS password,
+    p.first_name NOT IN ('Ana','Luka') AS must_change
+  FROM people p
+) seeded_users;
 
--- Kategorije pesmi
-INSERT INTO public.kategorije (naziv, opis) VALUES
-('slovenske ljudske', 'Tradicionalne slovenske ljudske pesmi'),
-('filmska glasba', 'Pesmi iz filmov in muziklov'),
-('sakralna glasba', 'Cerkevna in duhovna glasba'),
-('popularna glasba', 'Popularne pesmi za koncertni program');
+INSERT INTO person_roles (person_id, role_id)
+SELECT p.id, r.id FROM people p CROSS JOIN roles r WHERE
+(p.first_name = 'Ana' AND r.name IN ('Član','Blagajnik')) OR
+(p.first_name = 'Maja' AND r.name IN ('Član','Beleženje prisotnosti')) OR
+(p.first_name = 'Luka' AND r.name IN ('Član','Predsednik')) OR
+(p.first_name = 'Rok' AND r.name = 'Član') OR
+(p.first_name = 'Eva' AND r.name IN ('Član','Notar')) OR
+(p.first_name = 'Miha' AND r.name IN ('Član','Zborovodja'));
 
--- Pesmi
-INSERT INTO public.pesem (naslov, avtor, note) VALUES
-('Zdravljica', 'France Prešeren', 'documents/zdravljica.pdf'),
-('My Heart Will Go On', 'James Horner', 'documents/my_heart_will_go_on.pdf'),
-('Ave Maria', 'Franz Schubert', 'documents/ave_maria.pdf'),
-('Galopper', 'Carl Nielsen', 'documents/galopper.pdf'),
-('Slovenija, od kod lepote tvoje', 'Slavko Avsenik', 'documents/slovenija_od_kod_lepote_tvoje.pdf');
+INSERT INTO categories (name, description) VALUES
+('Slovenska','Slovenska zborovska dela'),('Ljudska','Ljudske pesmi'),('Sakralna','Sakralni program'),
+('Klasična','Klasična dela'),('Popularna','Popularne priredbe'),('A cappella','Dela brez instrumentalne spremljave'),('Umetna','Umetne pesmi');
 
--- Dogodki
-INSERT INTO public.dogodek (datum, vrsta_dogodka, naziv_dogodka) VALUES
-('2026-05-03', 'pevska vaja', 'Prva pevska vaja v maju'),
-('2026-06-15', 'letni koncert', 'Letni koncert v mestni dvorani'),
-('2026-07-10', 'zborov izlet', 'Zborov izlet v Bohinj');
+INSERT INTO songs (title, author, created_at) VALUES
+('Lipa zelenela je','Miroslav Vilhar','2026-07-28'),
+('Ave verum corpus','W. A. Mozart','2026-07-20'),
+('Africa','David Paich & Jeff Porcaro','2026-07-15'),
+('Nocoj pa, oh nocoj','Alojz Srebotnjak','2026-02-02'),
+('Shenandoah','James Erb','2026-01-14');
 
--- Osebe
-INSERT INTO public.oseba (ime, priimek, datum_rojstva, eposta, telefonska_stevilka, id_glasu, delitev_na_3, delitev_na_4, id_vloge) VALUES
-('Ana', 'Novak', '1990-04-12', 'ana.novak@example.com', '+38640123456', 1, 1, 1, 1),
-('Maja', 'Kovač', '1997-11-08', 'maja.kovac@example.com', '+38640123457', 2, 3, 3, 2),
-('Luka', 'Zupan', '1988-02-20', 'luka.zupan@example.com', '+38640123458', 3, 1, 2, 2),
-('Matej', 'Horvat', '1994-08-30', 'matej.horvat@example.com', '+38640123459', 4, 3, 3, 2),
-('Sara', 'Petrič', '1992-01-17', 'sara.petric@example.com', '+38640123460', 1, 2, 2, 3),
-('Tomaž', 'Kranjc', '1985-12-05', 'tomaz.kranjc@example.com', '+38640123461', 4, 4, 4, 2);
+INSERT INTO song_categories (song_id, category_id)
+SELECT s.id, c.id FROM songs s JOIN categories c ON
+(s.title='Lipa zelenela je' AND c.name IN ('Slovenska','Ljudska')) OR
+(s.title='Ave verum corpus' AND c.name IN ('Sakralna','Klasična')) OR
+(s.title='Africa' AND c.name IN ('Popularna','A cappella')) OR
+(s.title='Nocoj pa, oh nocoj' AND c.name IN ('Slovenska','Umetna')) OR
+(s.title='Shenandoah' AND c.name IN ('Ljudska','A cappella'));
 
--- Prisotnost na dogodkih
-INSERT INTO public.prisotnost (id_dogodka, id_osebe, prisotnost) VALUES
-(1, 1, TRUE),
-(1, 2, TRUE),
-(1, 3, TRUE),
-(1, 4, TRUE),
-(1, 5, TRUE),
-(1, 6, TRUE),
-(2, 1, TRUE),
-(2, 2, TRUE),
-(2, 3, TRUE),
-(2, 4, TRUE),
-(2, 5, TRUE),
-(2, 6, TRUE),
-(3, 1, TRUE),
-(3, 2, TRUE),
-(3, 3, TRUE),
-(3, 4, FALSE),
-(3, 5, TRUE),
-(3, 6, TRUE);
+INSERT INTO song_reviews (person_id, song_id, rating, comment, updated_at)
+SELECT p.id, s.id, v.rating, v.comment, NOW() - (v.days || ' days')::interval
+FROM (VALUES
+('Maja','Lipa zelenela je',5,'Čudovita skladba, posebej mi je všeč dinamika v zadnjem delu.',1),
+('Luka','Lipa zelenela je',4,'Tenorski del je zahteven, ampak zelo hvaležen za petje.',6),
+('Rok','Lipa zelenela je',5,'Ena mojih najljubših v našem programu.',10),
+('Ana','Ave verum corpus',5,'Odlično zveni v našem prostoru.',8),
+('Eva','Africa',4,'Zabavna in ritmično zanimiva priredba.',12)
+) AS v(first_name,title,rating,comment,days)
+JOIN people p ON p.first_name=v.first_name JOIN songs s ON s.title=v.title;
 
--- Program za dogodke (pesmi na posameznem dogodku)
-INSERT INTO public.program (id_dogodka, id_pesmi, ocena, komentar) VALUES
-(1, 1, NULL, 'Začetna vaja: slovenska himna'),
-(1, 2, NULL, 'Ogrevalna pesem iz filmske glasbe'),
-(2, 1, NULL, 'Otvoritvena pesem letnega koncerta'),
-(2, 3, NULL, 'Sakralna točka v drugem delu koncerta'),
-(2, 4, NULL, 'Instrumentalna pesem v zaključku koncerta'),
-(3, 2, NULL, 'Pesem za pot na izlet'),
-(3, 5, NULL, 'Zaključna slovenska pesem na izletu');
+INSERT INTO events (event_date, event_type, name, place) VALUES
+('2026-08-08 19:00+02','Vaja','Sekcijska vaja','Glasbena učilnica'),
+('2026-08-14 18:30+02','Vaja','Skupna vaja','Kulturni dom'),
+('2026-08-22 20:00+02','Koncert','Poletni večer pesmi','Grajsko dvorišče'),
+('2026-07-29 18:30+02','Vaja','Generalna vaja','Kulturni dom'),
+('2026-06-12 19:30+02','Nastop','Zaključni koncert','Mestna dvorana');
 
--- Povezava pesmi in kategorij
-INSERT INTO public.pesem_kategorija (id_pesmi, id_kategorije) VALUES
-(1, 1),
-(2, 2),
-(3, 3),
-(4, 4),
-(5, 1);
+INSERT INTO event_program (event_id, song_id, performance_rating, comment, position)
+SELECT e.id, s.id, CASE WHEN e.name='Zaključni koncert' THEN 5 ELSE NULL END, '', row_number() OVER (PARTITION BY e.id ORDER BY s.id)
+FROM events e CROSS JOIN songs s WHERE
+(e.name='Sekcijska vaja' AND s.id <= 4) OR (e.name='Skupna vaja') OR (e.name='Poletni večer pesmi') OR
+(e.name='Generalna vaja') OR (e.name='Zaključni koncert');
 
--- Ocene pesmi
-INSERT INTO public.ocene_pesmi (id_osebe, id_pesmi, ocena, komentar) VALUES
-(2, 1, 5, 'Odlično začetek in močan zborovski učinek'),
-(3, 3, 4, 'Lepo zvenenje, a potrebujemo več vaje v dinamiki'),
-(4, 2, 3, 'Dobro, vendar melodija ni povsem v cela'),
-(5, 4, 5, 'Galopper je imel odličen ritem in energijo');
+WITH statuses(person_name, event_name, status) AS (VALUES
+('Ana','Sekcijska vaja','present'),('Ana','Skupna vaja','present'),('Ana','Poletni večer pesmi','late_under'),('Ana','Generalna vaja','present'),('Ana','Zaključni koncert','present'),
+('Maja','Sekcijska vaja','present'),('Maja','Skupna vaja','excused'),('Maja','Poletni večer pesmi','present'),('Maja','Generalna vaja','present'),('Maja','Zaključni koncert','late_under'),
+('Luka','Sekcijska vaja','late_over'),('Luka','Skupna vaja','present'),('Luka','Poletni večer pesmi','present'),('Luka','Generalna vaja','absent'),('Luka','Zaključni koncert','present'),
+('Rok','Sekcijska vaja','present'),('Rok','Skupna vaja','late_under'),('Rok','Poletni večer pesmi','excused'),('Rok','Generalna vaja','present'),('Rok','Zaključni koncert','present'),
+('Eva','Sekcijska vaja','excused'),('Eva','Skupna vaja','present'),('Eva','Poletni večer pesmi','present'),('Eva','Generalna vaja','late_over'),('Eva','Zaključni koncert','absent'),
+('Miha','Sekcijska vaja','absent'),('Miha','Skupna vaja','late_over'),('Miha','Poletni večer pesmi','present'),('Miha','Generalna vaja','present'),('Miha','Zaključni koncert','excused'))
+INSERT INTO attendance(event_id, person_id, status, updated_by)
+SELECT e.id,p.id,s.status,(SELECT id FROM users WHERE username='luka.mlakar')
+FROM statuses s JOIN people p ON p.first_name=s.person_name JOIN events e ON e.name=s.event_name;
+
+INSERT INTO transactions (transaction_date, description, person_name, kind, amount, settled, created_by) VALUES
+('2026-08-01','Članarine za avgust','Ana Kovač','Prihodek',570.00,TRUE,(SELECT id FROM users WHERE username='ana.kovac')),
+('2026-07-28','Najem grajskega dvorišča','Luka Mlakar','Odhodek',320.00,TRUE,(SELECT id FROM users WHERE username='ana.kovac')),
+('2026-07-24','Tisk koncertnih programov','Eva Horvat','Odhodek',86.40,FALSE,(SELECT id FROM users WHERE username='ana.kovac')),
+('2026-07-18','Donacija Občine','Občina','Prihodek',750.00,TRUE,(SELECT id FROM users WHERE username='ana.kovac')),
+('2026-07-12','Pogostitev po koncertu','Maja Zupan','Odhodek',142.80,FALSE,(SELECT id FROM users WHERE username='ana.kovac')),
+('2026-07-05','Prodaja vstopnic','Ana Kovač','Prihodek',460.00,TRUE,(SELECT id FROM users WHERE username='ana.kovac'));
