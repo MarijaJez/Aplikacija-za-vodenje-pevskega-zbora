@@ -341,7 +341,7 @@ def event_detail(event_id):
         raise HTTPError(404, "Dogodek ne obstaja")
     start=event["event_date"].astimezone(timezone.utc); end=start+timedelta(hours=2)
     google_url="https://calendar.google.com/calendar/render?"+urlencode({"action":"TEMPLATE","text":event["name"],"dates":f"{start.strftime('%Y%m%dT%H%M%SZ')}/{end.strftime('%Y%m%dT%H%M%SZ')}","location":event["place"],"details":event["event_type"]})
-    return render("event_detail", event["title"], event=event, songs=service.songs(), members=service.members(), categories=service.categories(), event_types=service.event_types(), conductor=auth_service.is_conductor(current_user()), google_url=google_url)
+    return render("event_detail", event["title"], event=event, attendance_summary=service.event_attendance(event_id), songs=service.songs(), categories=service.categories(), event_types=service.event_types(), conductor=auth_service.is_conductor(current_user()), google_url=google_url)
 
 
 @app.post("/dogodki/<event_id:int>/uredi")

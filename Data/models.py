@@ -193,6 +193,14 @@ class StatusTotals(TemplateMapping):
 
 
 @dataclass(frozen=True)
+class EventAttendanceSummary(TemplateMapping):
+    recorded: int
+    total_members: int
+    totals: StatusTotals
+    attendance_rate: int
+
+
+@dataclass(frozen=True)
 class SchoolYear(TemplateMapping):
     start: int
     label: str

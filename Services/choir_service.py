@@ -14,6 +14,7 @@ from Data.models import (
     Category,
     DashboardSummary,
     Event,
+    EventAttendanceSummary,
     EventInput,
     Member,
     MemberInput,
@@ -249,6 +250,23 @@ class ChoirService:
     def event(self, event_id: int) -> Event | None:
         event = self.repository.get_event(event_id)
         return self._event_view(event, datetime.now().astimezone()) if event else None
+
+    def event_attendance(self, event_id: int) -> EventAttendanceSummary | None:
+        statuses = [
+            record.status
+            for record in self.repository.list_attendance()
+            if record.event_id == event_id
+        ]
+        if not statuses:
+            return None
+        totals = self._status_totals(statuses)
+        attended = sum(totals[state] for state in ATTENDED_STATUSES)
+        return EventAttendanceSummary(
+            recorded=len(statuses),
+            total_members=len(self.members()),
+            totals=totals,
+            attendance_rate=round(100 * attended / len(statuses)),
+        )
 
     @staticmethod
     def _event_view(event: Event, now: datetime) -> Event:
