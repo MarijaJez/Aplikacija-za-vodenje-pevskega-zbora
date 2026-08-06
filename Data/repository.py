@@ -88,10 +88,10 @@ class ChoirRepository:
             cur.execute("""
                 SELECT p.id,p.first_name,p.last_name,p.birth_date,p.email,p.phone,p.voice,u.username,
                   COALESCE(array_agg(DISTINCT r.name ORDER BY r.name) FILTER (WHERE r.id IS NOT NULL),'{}') roles,
-                  COALESCE(ROUND(100.0 * COUNT(DISTINCT (a.event_id,a.person_id)) FILTER (WHERE a.status IN ('present','late_under','late_over')) / NULLIF(COUNT(DISTINCT (a.event_id,a.person_id)),0)),0)::int attendance
+                  COALESCE(ROUND(100.0 * COUNT(DISTINCT (a.event_id,a.person_id)) FILTER (WHERE a.status IN ('present','late_under','late_over') AND ae.event_date<NOW() AND ae.event_date>=date_trunc('year',NOW()-interval '8 months')+interval '8 months') / NULLIF(COUNT(DISTINCT (a.event_id,a.person_id)) FILTER (WHERE ae.event_date<NOW() AND ae.event_date>=date_trunc('year',NOW()-interval '8 months')+interval '8 months'),0)),0)::int attendance
                 FROM people p JOIN users u ON u.person_id=p.id
                 LEFT JOIN person_roles pr ON pr.person_id=p.id LEFT JOIN roles r ON r.id=pr.role_id
-                LEFT JOIN attendance a ON a.person_id=p.id
+                LEFT JOIN attendance a ON a.person_id=p.id LEFT JOIN events ae ON ae.id=a.event_id
                 WHERE p.active=TRUE GROUP BY p.id,u.username ORDER BY p.last_name,p.first_name
             """)
             return self._all(cur, Member)
@@ -101,10 +101,10 @@ class ChoirRepository:
             cur.execute("""
                 SELECT p.id,p.first_name,p.last_name,p.birth_date,p.email,p.phone,p.voice,u.username,u.must_change_password,
                   COALESCE(array_agg(DISTINCT r.name ORDER BY r.name) FILTER (WHERE r.id IS NOT NULL),'{}') roles,
-                  COALESCE(ROUND(100.0 * COUNT(DISTINCT (a.event_id,a.person_id)) FILTER (WHERE a.status IN ('present','late_under','late_over')) / NULLIF(COUNT(DISTINCT (a.event_id,a.person_id)),0)),0)::int attendance
+                  COALESCE(ROUND(100.0 * COUNT(DISTINCT (a.event_id,a.person_id)) FILTER (WHERE a.status IN ('present','late_under','late_over') AND ae.event_date<NOW() AND ae.event_date>=date_trunc('year',NOW()-interval '8 months')+interval '8 months') / NULLIF(COUNT(DISTINCT (a.event_id,a.person_id)) FILTER (WHERE ae.event_date<NOW() AND ae.event_date>=date_trunc('year',NOW()-interval '8 months')+interval '8 months'),0)),0)::int attendance
                 FROM people p JOIN users u ON u.person_id=p.id
                 LEFT JOIN person_roles pr ON pr.person_id=p.id LEFT JOIN roles r ON r.id=pr.role_id
-                LEFT JOIN attendance a ON a.person_id=p.id WHERE p.id=%s GROUP BY p.id,u.id
+                LEFT JOIN attendance a ON a.person_id=p.id LEFT JOIN events ae ON ae.id=a.event_id WHERE p.id=%s GROUP BY p.id,u.id
             """, (person_id,))
             return self._one(cur, Member)
 
@@ -277,7 +277,9 @@ class ChoirRepository:
 
     def member_attendance(self, person_id: int) -> list[MemberAttendance]:
         with self.db.cursor() as cur:
-            cur.execute("""SELECT e.id,e.name,e.event_type,e.event_date,a.status FROM attendance a JOIN events e ON e.id=a.event_id WHERE a.person_id=%s ORDER BY e.event_date DESC""",(person_id,))
+            cur.execute("""SELECT e.id,e.name,e.event_type,e.event_date,a.status FROM attendance a JOIN events e ON e.id=a.event_id
+              WHERE a.person_id=%s AND e.event_date>=date_trunc('year',NOW()-interval '8 months')+interval '8 months'
+              ORDER BY e.event_date DESC""",(person_id,))
             return self._all(cur, MemberAttendance)
 
     def upsert_attendance(

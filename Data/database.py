@@ -2,24 +2,28 @@ import os
 from collections.abc import Iterator
 from contextlib import contextmanager
 
-from psycopg2.extensions import connection as Connection
+from psycopg2.extensions import connection as Connection, make_dsn
 from psycopg2.extras import RealDictCursor
 from psycopg2.pool import ThreadedConnectionPool
-
-DATABASE = "opb2026_marijaj"
-HOST = "baza.fmf.uni-lj.si"
-USER = "marijaj"
-PASSWORD = "ldbp4hlh"
-PORT = 5432
 
 class Database:
     """PostgreSQL connection management for the data layer."""
 
     def __init__(self, dsn: str | None = None) -> None:
-        self.dsn = dsn or os.getenv(
-            "DATABASE_URL",
-            f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}",
-        )
+        self.dsn = dsn or os.getenv("DATABASE_URL")
+        if not self.dsn:
+            password = os.getenv("DB_PASSWORD")
+            if not password:
+                raise RuntimeError(
+                    "Nastavi DATABASE_URL ali okoljsko spremenljivko DB_PASSWORD."
+                )
+            self.dsn = make_dsn(
+                dbname=os.getenv("DB_NAME", "opb2026_marijaj"),
+                host=os.getenv("DB_HOST", "baza.fmf.uni-lj.si"),
+                user=os.getenv("DB_USER", "marijaj"),
+                password=password,
+                port=os.getenv("DB_PORT", "5432"),
+            )
         self._pool = ThreadedConnectionPool(1, 10, self.dsn)
 
     @contextmanager

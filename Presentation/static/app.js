@@ -40,7 +40,7 @@ function updateGeneratedAccount() {
   document.querySelector('#generated-password')?.replaceChildren(username);
   return username;
 }
-document.querySelector('[data-member-dialog]')?.addEventListener('click', () => { updateGeneratedAccount(); memberDialog?.showModal(); });
+document.querySelectorAll('[data-member-dialog]').forEach(button => button.addEventListener('click', () => { updateGeneratedAccount(); memberDialog?.showModal(); }));
 document.querySelector('.member-dialog-close')?.addEventListener('click', () => memberDialog.close());
 document.querySelector('.member-dialog-cancel')?.addEventListener('click', () => memberDialog.close());
 document.querySelectorAll('#new-first-name,#new-last-name').forEach(input => input.addEventListener('input', updateGeneratedAccount));
@@ -65,23 +65,23 @@ document.querySelector('[data-review-dialog]')?.addEventListener('click', () => 
 document.querySelector('.review-dialog-close')?.addEventListener('click', () => reviewDialog.close());
 document.querySelector('.review-dialog-cancel')?.addEventListener('click', () => reviewDialog.close());
 const transactionDialog = document.querySelector('#transaction-dialog');
-document.querySelector('[data-transaction-dialog]')?.addEventListener('click', () => transactionDialog?.showModal());
+document.querySelectorAll('[data-transaction-dialog]').forEach(button => button.addEventListener('click', () => transactionDialog?.showModal()));
 document.querySelector('.transaction-dialog-close')?.addEventListener('click', () => transactionDialog.close());
 document.querySelector('.transaction-dialog-cancel')?.addEventListener('click', () => transactionDialog.close());
 const roleDialog = document.querySelector('#role-dialog');
-document.querySelector('[data-role-dialog]')?.addEventListener('click', () => roleDialog?.showModal());
+document.querySelectorAll('[data-role-dialog]').forEach(button => button.addEventListener('click', () => roleDialog?.showModal()));
 document.querySelector('.role-dialog-close')?.addEventListener('click', () => roleDialog.close());
 document.querySelector('.role-dialog-cancel')?.addEventListener('click', () => roleDialog.close());
 document.querySelectorAll('[data-role-edit]').forEach(button => button.addEventListener('click', () => document.querySelector(`#role-edit-${button.dataset.roleEdit}`)?.showModal()));
 document.querySelectorAll('.role-edit-close,.role-edit-cancel').forEach(button => button.addEventListener('click', () => button.closest('dialog')?.close()));
 const categoryDialog = document.querySelector('#category-dialog');
-document.querySelector('[data-category-dialog]')?.addEventListener('click', () => categoryDialog?.showModal());
+document.querySelectorAll('[data-category-dialog]').forEach(button => button.addEventListener('click', () => categoryDialog?.showModal()));
 document.querySelector('.category-dialog-close')?.addEventListener('click', () => categoryDialog.close());
 document.querySelector('.category-dialog-cancel')?.addEventListener('click', () => categoryDialog.close());
 document.querySelectorAll('[data-category-edit]').forEach(button => button.addEventListener('click', () => document.querySelector(`#category-edit-${button.dataset.categoryEdit}`)?.showModal()));
 document.querySelectorAll('.category-edit-close,.category-edit-cancel').forEach(button => button.addEventListener('click', () => button.closest('dialog')?.close()));
 const songDialog = document.querySelector('#song-dialog');
-document.querySelector('[data-song-dialog]')?.addEventListener('click', () => songDialog?.showModal());
+document.querySelectorAll('[data-song-dialog]').forEach(button => button.addEventListener('click', () => songDialog?.showModal()));
 document.querySelector('.song-dialog-close')?.addEventListener('click', () => songDialog.close());
 document.querySelector('.song-dialog-cancel')?.addEventListener('click', () => songDialog.close());
 const songEditDialog = document.querySelector('#song-edit-dialog');
@@ -89,11 +89,11 @@ document.querySelector('[data-song-edit]')?.addEventListener('click', () => song
 document.querySelector('.song-edit-close')?.addEventListener('click', () => songEditDialog.close());
 document.querySelector('.song-edit-cancel')?.addEventListener('click', () => songEditDialog.close());
 const eventDialog = document.querySelector('#event-dialog');
-document.querySelector('[data-event-dialog]')?.addEventListener('click', () => eventDialog?.showModal());
+document.querySelectorAll('[data-event-dialog]').forEach(button => button.addEventListener('click', () => eventDialog?.showModal()));
 document.querySelector('.event-dialog-close')?.addEventListener('click', () => eventDialog.close());
 document.querySelector('.event-dialog-cancel')?.addEventListener('click', () => eventDialog.close());
 const eventEditDialog = document.querySelector('#event-edit-dialog');
-document.querySelector('[data-event-edit]')?.addEventListener('click', () => eventEditDialog?.showModal());
+document.querySelectorAll('[data-event-edit]').forEach(button => button.addEventListener('click', () => eventEditDialog?.showModal()));
 document.querySelector('.event-edit-close')?.addEventListener('click', () => eventEditDialog.close());
 document.querySelector('.event-edit-cancel')?.addEventListener('click', () => eventEditDialog.close());
 
@@ -160,6 +160,10 @@ document.querySelectorAll('[data-permission]').forEach(control => {
   if (control.matches('.attendance-dot')) { control.disabled = !allowed; control.classList.toggle('readonly', !allowed); }
   else control.hidden = !allowed;
 });
+if (new URLSearchParams(window.location.search).get('nov') === '1') {
+  const createButton = document.querySelector('[data-create-dialog]');
+  if (createButton && !createButton.hidden && !createButton.disabled) createButton.click();
+}
 
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
@@ -174,12 +178,14 @@ applyTheme(localStorage.getItem('zborissimo-theme') || 'light');
 document.querySelectorAll('[data-theme-toggle]').forEach(button => button.addEventListener('click', () => applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark')));
 
 const attendanceStates = [
+  {name:'unrecorded', icon:'–', label:'Še ni evidentirano'},
   {name:'present', icon:'✓', label:'Prisoten'},
   {name:'late_under', icon:'<10', label:'Zamudil manj kot 10 minut'},
   {name:'late_over', icon:'>10', label:'Zamudil več kot 10 minut'},
   {name:'excused', icon:'O', label:'Opravičeno odsoten'},
   {name:'absent', icon:'×', label:'Odsoten'}
 ];
+const editableAttendanceStates = attendanceStates.filter(state => state.name !== 'unrecorded');
 const attendanceButtons = [...document.querySelectorAll('[data-cycle]')];
 function setAttendanceButton(button, stateName) {
   const state = attendanceStates.find(item => item.name === stateName) || attendanceStates[0];
@@ -212,8 +218,8 @@ function updateAttendanceTotals() {
 }
 updateAttendanceTotals();
 attendanceButtons.forEach(button => button.addEventListener('click', async () => {
-  const current = attendanceStates.findIndex(item => item.name === button.dataset.status);
-  const next = attendanceStates[(current + 1) % attendanceStates.length];
+  const current = editableAttendanceStates.findIndex(item => item.name === button.dataset.status);
+  const next = editableAttendanceStates[(current + 1) % editableAttendanceStates.length];
   button.disabled = true;
   const result = await fetch('/api/prisotnost', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({event_id:Number(button.dataset.eventId), person_id:Number(button.dataset.personId), status:next.name})});
   button.disabled = false;
@@ -241,7 +247,7 @@ function drawAttendanceCharts() {
   const matrix = currentAttendanceMatrix();
   const voiceNames = ['Sopran','Alt','Tenor','Bas'];
   const voiceColors = ['#287080','#355C7D','#D09A45','#6E858C'];
-  const statusColors = ['#4F8174','#4E86A0','#7478A0','#D09A45','#B45F5A'];
+  const statusColors = ['#9AA7AA','#4F8174','#4E86A0','#7478A0','#D09A45','#B45F5A'];
   const dark = document.documentElement.dataset.theme === 'dark';
   document.querySelectorAll('[data-attendance-chart]').forEach(canvas => {
     const status = canvas.dataset.attendanceChart;

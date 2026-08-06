@@ -49,6 +49,9 @@ dialog{width:min(520px,calc(100% - 30px));max-width:520px;color:var(--ink)}dialo
 /* Component variants: dark theme */
 [data-theme="dark"] .choice-section{background:#142328}[data-theme="dark"] .multi-filter-panel,[data-theme="dark"] .lookup-song{background:var(--surface)}
 
+/* Empty states and pending attendance */
+.empty-state{width:100%;padding:30px 20px;text-align:center;color:var(--muted)}.empty-state.card{grid-column:1/-1}.empty-state.compact{padding:14px 8px}.empty-state>span{display:block;margin-bottom:8px;color:var(--plum);font-size:28px}.empty-state h3,.empty-state h4{margin:0 0 7px;color:var(--ink);font-family:Manrope}.empty-state p{margin:0 auto 15px;max-width:440px;font-size:11px}.empty-state .button{margin-top:2px}.songs-grid>.empty-state,.role-grid>.empty-state{grid-column:1/-1}.attendance-dot.unrecorded{background:#edf1f1;color:#7b898c}.legend i.gray,.status-chart-legend .unrecorded{background:#9aa7aa}[data-theme="dark"] .attendance-dot.unrecorded{background:#2b3b40;color:#a9b5b8}
+
 /* Component responsive rules */
 @media(max-width:1050px){.compact-song-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:760px){.home-shortcut{display:grid}.choice-grid,.lookup-tools{grid-template-columns:1fr}.compact-song-grid{grid-template-columns:repeat(2,1fr)}.performance-list>div{grid-template-columns:1fr}.performance-list .rating{justify-self:start}.performance-history-row{grid-template-columns:1fr}.performance-comment{grid-column:auto}}

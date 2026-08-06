@@ -11,6 +11,7 @@ from typing import Any, Literal, NotRequired, TypedDict
 
 Voice = Literal["Sopran", "Alt", "Tenor", "Bas"]
 AttendanceStatus = Literal["present", "late_under", "late_over", "excused", "absent"]
+AttendanceState = Literal["unrecorded", "present", "late_under", "late_over", "excused", "absent"]
 TransactionKind = Literal["Prihodek", "Odhodek"]
 Permission = Literal["admin", "program", "attendance", "treasury", "self"]
 
@@ -185,6 +186,7 @@ class Transaction(TemplateMapping):
 
 @dataclass(frozen=True)
 class StatusTotals(TemplateMapping):
+    unrecorded: int = 0
     present: int = 0
     late_under: int = 0
     late_over: int = 0
@@ -210,16 +212,16 @@ class SchoolYear(TemplateMapping):
 class AttendanceChart(TemplateMapping):
     labels: list[str]
     voices: list[Voice]
-    matrix: list[list[AttendanceStatus]]
-    statuses: list[AttendanceStatus]
+    matrix: list[list[AttendanceState]]
+    statuses: list[AttendanceState]
 
 
 @dataclass(frozen=True)
 class AttendanceSummary(TemplateMapping):
     members: list[Member]
     events: list[Event]
-    status_keys: list[AttendanceStatus]
-    matrix: list[list[AttendanceStatus]]
+    status_keys: list[AttendanceState]
+    matrix: list[list[AttendanceState]]
     member_totals: list[StatusTotals]
     event_totals: list[StatusTotals]
     average: int

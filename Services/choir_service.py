@@ -9,6 +9,7 @@ from typing import cast
 
 from Data.models import (
     AttendanceChart,
+    AttendanceState,
     AttendanceStatus,
     AttendanceSummary,
     Category,
@@ -36,7 +37,8 @@ from Services.auth_service import AuthService
 
 MONTHS = {1:"jan.",2:"feb.",3:"mar.",4:"apr.",5:"maj",6:"jun.",7:"jul.",8:"avg.",9:"sep.",10:"okt.",11:"nov.",12:"dec."}
 STATUS_KEYS: list[AttendanceStatus] = ["present", "late_under", "late_over", "excused", "absent"]
-ATTENDED_STATUSES: tuple[AttendanceStatus, ...] = ("present", "late_under", "late_over")
+DISPLAY_STATUS_KEYS: list[AttendanceState] = ["unrecorded", *STATUS_KEYS]
+ATTENDED_STATUSES: tuple[AttendanceState, ...] = ("present", "late_under", "late_over")
 
 
 def date_label(value: date | datetime | None, include_year: bool = True) -> str:
@@ -65,9 +67,10 @@ class ChoirService:
         )
 
     @staticmethod
-    def _status_totals(statuses: Sequence[AttendanceStatus]) -> StatusTotals:
+    def _status_totals(statuses: Sequence[AttendanceState]) -> StatusTotals:
         counts = Counter(statuses)
         return StatusTotals(
+            unrecorded=counts["unrecorded"],
             present=counts["present"],
             late_under=counts["late_under"],
             late_over=counts["late_over"],
@@ -94,7 +97,11 @@ class ChoirService:
         return replace(
             self._member_view(member),
             attendance_rows=attendance_rows,
-            attendance_totals=self._status_totals([item.status for item in attendance_rows]),
+            attendance_totals=self._status_totals([
+                item.status
+                for item in attendance_rows
+                if item.event_date < datetime.now().astimezone()
+            ]),
         )
 
     def create_member(self, values: MemberInput, role_names: Sequence[str]) -> tuple[int, str]:
@@ -333,8 +340,8 @@ class ChoirService:
             )
         ]
         lookup = {(item.person_id, item.event_id): item.status for item in records}
-        matrix: list[list[AttendanceStatus]] = [
-            [lookup.get((member.id, event.id), "absent") for event in events]
+        matrix: list[list[AttendanceState]] = [
+            [lookup.get((member.id, event.id), "unrecorded") for event in events]
             for member in members
         ]
         member_totals = [self._status_totals(row) for row in matrix]
@@ -342,43 +349,67 @@ class ChoirService:
             self._status_totals([row[column] for row in matrix])
             for column in range(len(events))
         ]
-        total_records = max(len(members) * len(events), 1)
-        attended = sum(
-            sum(total[state] for state in ATTENDED_STATUSES)
-            for total in member_totals
-        )
+        past_columns = [
+            index for index, event in enumerate(events) if event.status == "past"
+        ]
+        statistical_rows = [
+            [row[index] for index in past_columns]
+            for row in matrix
+        ]
+        recorded_states = [
+            state
+            for row in statistical_rows
+            for state in row
+            if state != "unrecorded"
+        ]
+        attended = sum(state in ATTENDED_STATUSES for state in recorded_states)
         voices = {member.voice for member in members}
         voice_rates = {
             voice: round(
                 100
                 * sum(
-                    sum(state in ATTENDED_STATUSES for state in matrix[index])
+                    sum(state in ATTENDED_STATUSES for state in statistical_rows[index])
                     for index, member in enumerate(members)
                     if member.voice == voice
                 )
-                / max(sum(member.voice == voice for member in members) * len(events), 1)
+                / max(
+                    sum(
+                        state != "unrecorded"
+                        for index, member in enumerate(members)
+                        if member.voice == voice
+                        for state in statistical_rows[index]
+                    ),
+                    1,
+                )
             )
             for voice in voices
         }
         return AttendanceSummary(
             members=members,
             events=events,
-            status_keys=STATUS_KEYS,
+            status_keys=DISPLAY_STATUS_KEYS,
             matrix=matrix,
             member_totals=member_totals,
             event_totals=event_totals,
-            average=round(100 * attended / total_records),
-            event_count=len(events),
-            best_voice=max(voice_rates, key=voice_rates.get) if voice_rates else "—",
-            best_voice_rate=max(voice_rates.values()) if voice_rates else 0,
+            average=round(100 * attended / len(recorded_states)) if recorded_states else 0,
+            event_count=sum(
+                any(matrix[row][column] != "unrecorded" for row in range(len(members)))
+                for column in past_columns
+            ),
+            best_voice=(
+                max(voice_rates, key=voice_rates.get)
+                if recorded_states and voice_rates
+                else "—"
+            ),
+            best_voice_rate=max(voice_rates.values()) if recorded_states and voice_rates else 0,
             school_years=[SchoolYear(year, f"{year}/{str(year + 1)[-2:]}") for year in years],
             selected_year=year_start,
             selected_type=selected_type or "Vse",
             chart_data=AttendanceChart(
-                labels=[event.date.replace(" 2026", "") for event in events],
+                labels=[events[index].date.rsplit(" ", 1)[0] for index in past_columns],
                 voices=[member.voice for member in members],
-                matrix=matrix,
-                statuses=STATUS_KEYS,
+                matrix=statistical_rows,
+                statuses=DISPLAY_STATUS_KEYS,
             ),
         )
 
@@ -450,20 +481,36 @@ class ChoirService:
         members = self.members()
         songs = self.songs()
         events = self.events()
+        event_lookup = {event.id: event for event in events}
+        current_school_year = self.school_year_start(datetime.now().astimezone())
+        recorded_states = [
+            record.status
+            for record in self.repository.list_attendance()
+            if record.event_id in event_lookup
+            and event_lookup[record.event_id].status == "past"
+            and self.school_year_start(event_lookup[record.event_id].event_date)
+            == current_school_year
+        ]
         voice_counts = Counter(member.voice for member in members)
         ranked = sorted(members, key=lambda member: member.attendance, reverse=True)
         return DashboardSummary(
             member_count=len(members),
             voices=[VoiceCount(voice, count) for voice, count in voice_counts.items()],
-            top_members=ranked[:3],
-            low_members=list(reversed(ranked[-3:])),
+            top_members=ranked[:3] if recorded_states else [],
+            low_members=list(reversed(ranked[-3:])) if recorded_states else [],
             song_count=len(songs),
             latest_songs=songs[:3],
             forgotten_songs=sorted(songs, key=lambda song: song.last or "")[:3],
             events=events,
             attendance=ranked,
             upcoming_count=sum(event.status == "upcoming" for event in events),
-            average_attendance=round(
-                sum(member.attendance for member in members) / max(len(members), 1)
+            average_attendance=(
+                round(
+                    100
+                    * sum(state in ATTENDED_STATUSES for state in recorded_states)
+                    / len(recorded_states)
+                )
+                if recorded_states
+                else 0
             ),
         )

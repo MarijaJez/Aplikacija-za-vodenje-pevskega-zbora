@@ -15,7 +15,9 @@ ROOT = Path(__file__).resolve().parents[1]
 VIEWS = ROOT / "Presentation" / "views"
 STATIC = ROOT / "Presentation" / "static"
 UPLOADS = ROOT / "uploads"
-COOKIE_SECRET = os.getenv("COOKIE_SECRET", "zborissimo-local-development-secret-change-me")
+COOKIE_SECRET = os.getenv("COOKIE_SECRET")
+if not COOKIE_SECRET:
+    raise RuntimeError("Nastavi okoljsko spremenljivko COOKIE_SECRET.")
 
 app = Bottle()
 service = ChoirService()
@@ -423,4 +425,5 @@ def assets(filepath):
 
 
 if __name__ == "__main__":
-    app.run(host=os.getenv("APP_HOST","127.0.0.1"),port=int(os.getenv("APP_PORT","8091")),debug=os.getenv("APP_DEBUG","true").lower()=="true",reloader=True)
+    debug = os.getenv("APP_DEBUG", "false").lower() == "true"
+    app.run(host=os.getenv("APP_HOST", "127.0.0.1"), port=int(os.getenv("APP_PORT", "8080")), debug=debug, reloader=debug)

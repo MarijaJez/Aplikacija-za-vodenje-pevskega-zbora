@@ -15,6 +15,9 @@
 </select></label><label>Komentar<textarea name="comment" rows="4">{{song['comment'] or ''}}</textarea></label><div class="dialog-actions"><button type="button" class="button secondary performance-cancel">Prekliči</button><button type="submit" class="button primary">Shrani oceno izvedbe</button></div></form></dialog>
 % end
 % end
+% if not event['program']:
+<div class="empty-state compact"><p>Program dogodka še nima izbranih pesmi.</p><button class="button secondary" data-event-edit data-permission="admin">Uredi program</button></div>
+% end
 </div></article><article class="card"><div class="card-head"><div><p class="eyebrow">Prisotnost</p><h3>Člani</h3></div><a href="/prisotnost">Odpri evidenco →</a></div>
 % if attendance_summary:
 <div class="event-attendance-overview"><strong>{{attendance_summary['attendance_rate']}}%</strong><span>udeležba</span><small>Evidentiranih {{attendance_summary['recorded']}} od {{attendance_summary['total_members']}} članov</small></div><div class="event-attendance-counts"><span><b>{{attendance_summary['totals']['present']}}</b>Prisotni</span><span><b>{{attendance_summary['totals']['late_under'] + attendance_summary['totals']['late_over']}}</b>Zamude</span><span><b>{{attendance_summary['totals']['excused']}}</b>Opravičeno</span><span><b>{{attendance_summary['totals']['absent']}}</b>Odsotni</span></div>
