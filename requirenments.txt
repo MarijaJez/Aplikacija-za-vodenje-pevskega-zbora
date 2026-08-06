@@ -1,4 +1,0 @@
-# Tu so naštete vse knjižnice, uporabljene v projektu
-bottle==0.13.4
-psycopg2-binary==2.9.10
-bcrypt==4.3.0

@@ -1,220 +1,127 @@
-# APLIKACIJA ZA VODENJE PEVSKEGA ZBORA
-Aplikacija za vodenje pevskega zbora omogoča zbiranje in urejanje administrativnih podatkov, potrebnih za vodenje pevskega zbora, na enem mestu.
+# Aplikacija za vodenje pevskega zbora
 
-## ZAHTEVE:
-Aplikacija omogoča naslednje funkcionalnosti:
-- Vsak član zbora ima svoje uporabniško ime in geslo, s katerima lahko dostopa do aplikacije
-- Pregled in urejanje baze članov zbora
-- Pregled in urejanje baze programa zbora
-- Pregled in urejanje baze vaj in dogodkov, na katerih je zbor sodeloval
-- Pregled in beleženje prisotnosti članov zbora na dogodkih
-- Vsak član zbora lahko oceni in komentira vsako pesem v bazi programa zbora
+Spletna aplikacija na enem mestu združuje podatke o članih, programu, dogodkih, prisotnosti in blagajni pevskega zbora. Napisana je v Pythonu z ogrodjem Bottle, uporablja PostgreSQL in ima prijavo z vlogami ter različnimi uporabniškimi pravicami.
 
+## Funkcionalnosti
 
-## STRUKTURA APLIKACIJE:
+### Uporabniški računi in pravice
 
-### Vstopna stran: Nadzorna plošča
-Stran vsebuje več okvirčkov, ki vsebujejo naslednje podatke:
-- Pregled osnovnih podatkov o članih zbora
-    - Število članov zbora
-    - Število članov posameznih glasov
-    - Top 3 člani zbora glede na prisotnost v zadnjem mesecu in worst 3
-- Pregled osnovnih podatkov o programu zbora
-    - Število pesmi v programu
-    - Zadnje 3 dodane pesmi v program
-    - 3 pesmi, ki jih že najdlje nismo peli na dogodkih
-- Časovnica:
-    - Pregled zadnjih dogodkov (datum in naziv dogodka) - vizualno drugače od prihajajočih dogodkov
-    - Pregled prihajajočih vaj in dogodkov (datum in naziv dogodka)
-- Hiter pregled prisotnosti članov
-    - Seznam vseh članov zbora s skupnim seštevkom prisotnosti v tekočem šolskem letu (od septembra naprej), urejeni padajoče
+- Prijava in odjava z uporabniškim imenom in geslom.
+- Ob prvi prijavi mora novi član zamenjati začasno geslo, ki je sprva enako uporabniškemu imenu.
+- Vsak uporabnik lahko pozneje zamenja svoje geslo; predsednik ali zborovodja ga lahko članu ponastavi.
+- Pravice izhajajo iz vlog člana:
+  - **Predsednik** in **Zborovodja** imata skrbniške pravice nad celotno aplikacijo.
+  - **Notar** ureja pesmi in njihove kategorije.
+  - **Beleženje prisotnosti** ureja prisotnost vseh članov.
+  - **Blagajnik** dodaja in ureja transakcije.
+  - **Zborovodja** ocenjuje izvedbe pesmi na dogodkih.
+- Član brez posebne vloge lahko ureja svoje osebne podatke, ocenjuje pesmi in za prihodnje dogodke označi svojo prisotnost. Ostale vsebine so mu na voljo le za ogled.
 
-### Stran: Člani zbora
+### Nadzorna plošča - vstopna stran aplikacije
 
-Modul omogoča pregled in urejanje baze članov.
+- Število aktivnih članov, razporeditev po glasovih in število pesmi.
+- Povprečna prisotnost v tekočem šolskem letu ter lestvici članov z najvišjo in najnižjo prisotnostjo.
+- Število prihajajočih dogodkov in časovnica preteklih ter prihodnjih dogodkov.
+- Pregled nazadnje dodanih pesmi.
 
-Funkcionalnosti:
+### Člani in vloge
 
-Seznam vseh članov
-Dodajanje novega člana
-Urejanje podatkov člana (vključno z določanjem ene ali več vlog člana v zboru)
-Brisanje člana
-Pregled podrobnosti posameznega člana
-Pregled prisotnosti člana na dogodkih
+- Seznam in iskanje članov ter filtriranje po vlogi.
+- Podrobnosti člana: ime, priimek, datum rojstva, e-pošta, telefon, glas, vloge, uporabniško ime in prisotnost.
+- Skrbnik lahko doda člana; aplikacija samodejno ustvari enolično uporabniško ime in uporabniški račun.
+- Član lahko ureja svoje podatke, skrbnik pa podatke in vloge vseh članov.
+- Skrbnik lahko izbriše drugega člana ali mu ponastavi geslo.
+- Pregled, dodajanje, urejanje in varno brisanje vlog. Osnovne vloge `Član` ni mogoče izbrisati ali preimenovati, uporabljene vloge pa ni mogoče izbrisati.
 
-Podatki:
+### Program zbora
 
-Ime
-Priimek
-Datum rojstva
-E-pošta
-Telefonska številka
-Glas
-Vloga oziroma vloge v zboru
+- Seznam pesmi z iskanjem po naslovu ali avtorju in filtriranjem po eni ali več kategorijah.
+- Podrobnosti pesmi, povprečna ocena, komentarji članov in zgodovina izvedb.
+- Pooblaščeni uporabnik lahko pesem doda, uredi ali izbriše ter ji določi kategorije.
+- Nalaganje not v oblikah PDF, JPG, JPEG in PNG ter zvočnih posnetkov MP3, WAV, M4A in OGG.
+- Predvajanje naloženega zvočnega posnetka.
+- Upravljanje kategorij; uporabljene kategorije ni mogoče izbrisati.
+- Vsak član lahko pesem oceni od 1 do 5 in doda komentar. Za posamezno pesem ima eno oceno, ki jo lahko pozneje spremeni.
 
-#### Funkcionalnost: Vloge v zboru
+### Vaje in dogodki
 
-Modul za upravljanje vlog članov.
+- Časovnica vseh preteklih in prihodnjih vaj, koncertov, nastopov in drugih dogodkov.
+- Podrobnosti dogodka: datum in ura, vrsta, naziv, kraj, program ter povzetek prisotnosti.
+- Skrbnik lahko dogodek doda, uredi ali izbriše ter določi pesmi v programu.
+- Iskanje pesmi in filtriranje po kategorijah pri sestavljanju programa dogodka.
+- Predvajanje vseh razpoložljivih zvočnih posnetkov programa kot seznama predvajanja.
+- Zborovodja lahko izvedbo posamezne pesmi oceni od 1 do 5 in ji doda komentar.
+- Dodajanje posameznega dogodka v Google Koledar ter izvoz vseh dogodkov v datoteko iCalendar (`.ics`).
 
-Funkcionalnosti:
+### Prisotnost
 
-Pregled vlog
-Dodajanje nove vloge
-Urejanje vloge
-Brisanje vloge
-Pregled članov z določeno vlogo
+- Evidenčna tabela s člani v vrsticah in dogodki v stolpcih.
+- Statusi: ni evidentirano, prisoten, zamudil manj kot 10 minut, zamudil več kot 10 minut, opravičeno odsoten in odsoten.
+- Pooblaščena oseba ureja prisotnost vseh članov; drugi člani lahko označijo le svojo prisotnost na prihodnjih dogodkih.
+- Samodejno shranjevanje sprememb brez ponovnega nalaganja strani.
+- Filtriranje po šolskem letu in skupini dogodkov.
+- Seštevki po članih in dogodkih, povprečna prisotnost, najbolj reden glas ter grafi prisotnosti po glasovih.
 
-### Stran: Program zbora
+### Blagajna
 
-Modul omogoča pregled in urejanje baze pesmi.
+- Pregled vseh prihodkov in odhodkov.
+- Povzetek skupnih prihodkov, odhodkov, trenutnega stanja in odprtih obveznosti.
+- Blagajnik oziroma skrbnik lahko transakcijo doda ali uredi in jo označi kot odprto oziroma poravnano.
 
-Funkcionalnosti:
+## Lokalni zagon
 
-Seznam vseh pesmi
-Dodajanje nove pesmi
-Urejanje pesmi (vključno z dodajanjem pdf/jpg/jpeg/png not, določanjem ene ali več kategorij pesmi, všečkanjem in komentiranjem pesmi)
-Brisanje pesmi
-Pregled podrobnosti pesmi
-Pregled ocen in komentarjev članov
-Filtriranje seznama glede na posamezno kategorijo pesmi
+Potrebujete Python 3.10 ali novejši in dostop do PostgreSQL baze.
 
-Podatki:
+### 1. Virtualno okolje in knjižnice
 
-Naslov
-Avtor
-Note
-Kategorija oziroma kategorije
-Povprečna ocena
-Komentarji članov
-
-#### FUnkcionalnost: Ocene in komentarji pesmi
-
-Modul omogoča članom zbora ocenjevanje in komentiranje pesmi.
-
-Funkcionalnosti:
-
-Pregled vseh pesmi
-Ocena posamezne pesmi
-Dodajanje komentarja
-Urejanje lastne ocene in komentarja
-Pregled povprečne ocene pesmi
-Pregled komentarjev članov
-
-Pravila:
-
-Vsak član lahko posamezno pesem oceni največ enkrat.
-Član lahko svojo oceno in komentar kasneje spremeni.
-Ocena mora biti v vnaprej določenem območju, 1–5.
-Pri vsaki pesmi se prikaže povprečna ocena vseh članov.
-
-### Stran: Vaje in dogodki
-
-Modul omogoča upravljanje vaj in dogodkov, na katerih sodeluje oziroma je sodeloval zbor.
-
-Funkcionalnosti:
-
-Pregled vseh vaj in dogodkov (časovnica)
-Dodajanje novega dogodka
-Urejanje dogodka (vključno z določanjem vrste dogodka in določanjem pesmi, ki so bile izvedene na dogodku)
-Brisanje dogodka
-Pregled podrobnosti dogodka
-Pregled prisotnosti članov na dogodku
-
-Podatki:
-
-Datum
-Vrsta dogodka
-Naziv dogodka
-Program dogodka
-
-#### Program dogodka
-
-Podmodul za določanje programa posameznega dogodka.
-
-Funkcionalnosti:
-
-Dodajanje pesmi na dogodek
-Odstranjevanje pesmi z dogodka
-Pregled pesmi, izvedenih na dogodku
-Beleženje ocene izvedbe pesmi
-Dodajanje komentarja k izvedbi pesmi
-
-### Stran: Prisotnost
-
-Modul za beleženje prisotnosti članov na vajah in dogodkih.
-
-Funkcionalnosti:
-
-Pregled prisotnosti : tabela z vrsticami člani in stolpci dogodki
-Označevanje prisotnosti posameznega člana
-Urejanje že zabeležene prisotnosti
-Pregled statistike prisotnosti: po vrsti dogodka, glasu, osebi
-
-Možne vrednosti:
-
-Prisoten
-Odsoten
-Opravičeno odsoten
-Zamudil manj kot 10 min
-Zamudil več kot 10 min
-
-### Stran: Blagajna zbora
-
-Modul za beleženje transakcij v in iz zborovske blagajne.
-
-Funkcionalnosti:
-
-Pregled seznama transakcij.
-Dodajanje novih in urejanje starih transakcij.
-Hitro označevanje, ali je transakcija odprta ali poravnana.
-Pregled povzetka stanja blagajne.
-
-## ZAGON APLIKACIJE
-
-### 1. Priprava virtualnega okolja
-
-V PowerShellu v korenski mapi projekta izvedi:
+V PowerShellu v korenski mapi projekta izvedite:
 
 ```powershell
 python -m venv venv
 .\venv\Scripts\Activate.ps1
-pip install -r requirenments.txt
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-### 2. Nastavitev povezave z bazo in sejnega ključa
+V Linuxu ali macOS uporabite `source venv/bin/activate` namesto ukaza za aktivacijo v PowerShellu.
 
-Geslo baze ni zapisano v kodi, ampak se aplikaciji poda z okoljsko spremenljivko. Za razvojno bazo z že nastavljenimi privzetimi podatki za ime baze, gostitelja in uporabnika zadošča:
+### 2. Povezava z bazo in sejni ključ
+
+Aplikacija privzeto uporablja bazo `opb2026_marijaj` na strežniku `baza.fmf.uni-lj.si` prek zahtevanega uporabnika `javnost`. V okolje vnesite geslo tega uporabnika in naključni sejni ključ; gesel ne zapisujte v repozitorij.
 
 ```powershell
-$env:DB_PASSWORD = "ldbp4hlh"
+$env:DB_PASSWORD = "GESLO_UPORABNIKA_JAVNOST"
 $env:COOKIE_SECRET = "DOLG_NAKLJUCEN_NIZ"
 ```
 
-Naključni sejni ključ lahko ustvariš z ukazom:
+Vrednost za `COOKIE_SECRET` lahko ustvarite z:
 
 ```powershell
 python -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-Namesto `DB_PASSWORD` je mogoče nastaviti celoten povezovalni niz:
+Po potrebi lahko posamezne privzete vrednosti spremenite:
 
 ```powershell
-$env:DATABASE_URL = "postgresql://UPORABNIK:GESLO@GOSTITELJ:5432/BAZA"
+$env:DB_HOST = "baza.fmf.uni-lj.si"
+$env:DB_PORT = "5432"
+$env:DB_NAME = "opb2026_marijaj"
+$env:DB_USER = "javnost"
 ```
 
-### 3. Priprava prazne baze
+Namesto spremenljivk `DB_*` lahko nastavite celoten povezovalni niz:
 
-V novi prazni bazi najprej izvedi `Data/create_database.sql`, nato pa enkrat še `Data/populate_database.sql`, ki doda razvojne podatke.
+```powershell
+$env:DATABASE_URL = "postgresql://javnost:GESLO@baza.fmf.uni-lj.si:5432/opb2026_marijaj"
+```
 
-### 4. Zagon
+### 3. Zagon aplikacije
 
 ```powershell
 python app.py
 ```
 
-Aplikacija je nato dosegljiva na `http://127.0.0.1:8080`.
-
-Za razvojni način s samodejnim ponovnim zagonom lahko pred zagonom nastaviš:
+Aplikacija je dosegljiva na [http://127.0.0.1:8080](http://127.0.0.1:8080). Gostitelja in vrata lahko spremenite s `APP_HOST` in `APP_PORT`. Razvojni način s samodejnim ponovnim zagonom vključite z:
 
 ```powershell
 $env:APP_DEBUG = "true"
@@ -222,5 +129,17 @@ $env:APP_DEBUG = "true"
 
 ### Razvojna prijava
 
-- Uporabniško ime: `luka.mlakar`
-- Geslo: `zbor2026`
+V aplikaciji so testni podatki, vključno z uporabniškimi računi. Za prijavo lahko uporabite uporabnika z vsemi pravicami:
+
+- uporabniško ime: `luka.mlakar`
+- geslo: `zbor2026`
+
+
+## Struktura projekta
+
+- `app.py` – vstopna točka aplikacije;
+- `Presentation/` – spletne poti, predloge, JavaScript in slogi;
+- `Services/` – poslovna pravila, prijava in dovoljenja;
+- `Data/` – povezava z bazo, podatkovni modeli, poizvedbe ter SQL za shemo in razvojne podatke;
+- `uploads/` – lokalno shranjene note in zvočni posnetki (vsebina ni vključena v Git);
+- `shema.pdf` in `shema.drawio` – podatkovni model baze.

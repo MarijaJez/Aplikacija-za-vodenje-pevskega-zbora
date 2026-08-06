@@ -20,7 +20,7 @@ class Database:
             self.dsn = make_dsn(
                 dbname=os.getenv("DB_NAME", "opb2026_marijaj"),
                 host=os.getenv("DB_HOST", "baza.fmf.uni-lj.si"),
-                user=os.getenv("DB_USER", "marijaj"),
+                user=os.getenv("DB_USER", "javnost"),
                 password=password,
                 port=os.getenv("DB_PORT", "5432"),
             )
