@@ -1,33 +1,22 @@
+"""PostgreSQL connection management for the data layer."""
+
 import os
-from collections.abc import Iterator
 from contextlib import contextmanager
 
-from psycopg2.extensions import connection as Connection, make_dsn
 from psycopg2.extras import RealDictCursor
 from psycopg2.pool import ThreadedConnectionPool
 
-class Database:
-    """PostgreSQL connection management for the data layer."""
 
-    def __init__(self, dsn: str | None = None) -> None:
+class Database:
+    def __init__(self, dsn: str | None = None):
         self.dsn = dsn or os.getenv("DATABASE_URL")
         if not self.dsn:
-            password = os.getenv("DB_PASSWORD")
-            if not password:
-                raise RuntimeError(
-                    "Nastavi DATABASE_URL ali okoljsko spremenljivko DB_PASSWORD."
-                )
-            self.dsn = make_dsn(
-                dbname=os.getenv("DB_NAME", "opb2026_marijaj"),
-                host=os.getenv("DB_HOST", "baza.fmf.uni-lj.si"),
-                user=os.getenv("DB_USER", "javnost"),
-                password=password,
-                port=os.getenv("DB_PORT", "5432"),
-            )
-        self._pool = ThreadedConnectionPool(1, 10, self.dsn)
+            raise RuntimeError("Nastavi DATABASE_URL za povezavo s PostgreSQL.")
+        self.timezone = os.getenv("APP_TIMEZONE", "Europe/Ljubljana")
+        self._pool = ThreadedConnectionPool(1, 10, self.dsn, options=f"-c timezone={self.timezone}")
 
     @contextmanager
-    def connection(self) -> Iterator[Connection, None, None]:
+    def connection(self):
         connection = self._pool.getconn()
         try:
             yield connection
@@ -39,7 +28,7 @@ class Database:
             self._pool.putconn(connection)
 
     @contextmanager
-    def cursor(self) -> Iterator[RealDictCursor, None, None]:
+    def cursor(self):
         with self.connection() as connection:
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
                 yield cursor

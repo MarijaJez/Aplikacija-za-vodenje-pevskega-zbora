@@ -1,47 +1,20 @@
 """Application services and business rules for choir administration."""
 
 from collections import Counter
-from collections.abc import Sequence
-from dataclasses import replace
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
-from typing import cast
 
-from Data.models import (
-    AttendanceChart,
-    AttendanceState,
-    AttendanceStatus,
-    AttendanceSummary,
-    Category,
-    DashboardSummary,
-    Event,
-    EventAttendanceSummary,
-    EventInput,
-    Member,
-    MemberInput,
-    Role,
-    SchoolYear,
-    Song,
-    SongInput,
-    StatusTotals,
-    Transaction,
-    TransactionInput,
-    TreasurySummary,
-    Voice,
-    VoiceCount,
-    User,
-)
+from email_validator import EmailNotValidError, validate_email
+
 from Data.repository import ChoirRepository
 from Services.auth_service import AuthService
 
 
 MONTHS = {1:"jan.",2:"feb.",3:"mar.",4:"apr.",5:"maj",6:"jun.",7:"jul.",8:"avg.",9:"sep.",10:"okt.",11:"nov.",12:"dec."}
-STATUS_KEYS: list[AttendanceStatus] = ["present", "late_under", "late_over", "excused", "absent"]
-DISPLAY_STATUS_KEYS: list[AttendanceState] = ["unrecorded", *STATUS_KEYS]
-ATTENDED_STATUSES: tuple[AttendanceState, ...] = ("present", "late_under", "late_over")
+STATUS_KEYS = ["present", "late_under", "late_over", "excused", "absent"]
 
 
-def date_label(value: date | datetime | None, include_year: bool = True) -> str:
+def date_label(value, include_year=True):
     if not value:
         return "Še ni izvedena"
     suffix = f" {value.year}" if include_year else ""
@@ -49,468 +22,113 @@ def date_label(value: date | datetime | None, include_year: bool = True) -> str:
 
 
 class ChoirService:
-    def __init__(self, repository: ChoirRepository | None = None) -> None:
+    def __init__(self, repository: ChoirRepository | None = None):
         self.repository = repository or ChoirRepository()
         self.auth = AuthService(self.repository)
 
     @staticmethod
-    def initials(first_name: str, last_name: str) -> str:
+    def initials(first_name, last_name):
         return f"{first_name[:1]}{last_name[:1]}".upper()
 
-    @staticmethod
-    def _member_view(member: Member) -> Member:
-        return replace(
-            member,
-            name=f"{member.first_name} {member.last_name}",
-            initials=ChoirService.initials(member.first_name, member.last_name),
-            birth=date_label(member.birth_date) if member.birth_date else "—",
-        )
+    def members(self):
+        result=[]
+        for row in self.repository.list_members():
+            result.append({**row,"name":f'{row["first_name"]} {row["last_name"]}',"initials":self.initials(row["first_name"],row["last_name"]),"birth":date_label(row["birth_date"]) if row["birth_date"] else "—"})
+        return result
+
+    def member(self, member_id):
+        row=self.repository.get_member(member_id)
+        if not row:return None
+        attendance=[{**item,"title":item["name"],"kind":item["event_type"],"date":date_label(item["event_date"])} for item in self.repository.member_attendance(member_id)]
+        return {**row,"name":f'{row["first_name"]} {row["last_name"]}',"initials":self.initials(row["first_name"],row["last_name"]),"birth":date_label(row["birth_date"]) if row["birth_date"] else "—","attendance_rows":attendance,"attendance_totals":{state:sum(item["status"]==state for item in attendance) for state in STATUS_KEYS}}
+
+    def create_member(self, values, role_names):
+        values=self.validate_member(values)
+        username=self.auth.next_username(values["first_name"],values["last_name"])
+        password_hash=self.auth.hash_password(self.auth.generated_password())
+        person_id=self.repository.create_member(values,username,password_hash,role_names,must_change_password=False)
+        return person_id,username
 
     @staticmethod
-    def _status_totals(statuses: Sequence[AttendanceState]) -> StatusTotals:
-        counts = Counter(statuses)
-        return StatusTotals(
-            unrecorded=counts["unrecorded"],
-            present=counts["present"],
-            late_under=counts["late_under"],
-            late_over=counts["late_over"],
-            excused=counts["excused"],
-            absent=counts["absent"],
-        )
+    def validate_member(values):
+        cleaned={key:(value.strip() if isinstance(value,str) else value) for key,value in values.items()}
+        if not cleaned.get("first_name") or not cleaned.get("last_name"):
+            raise ValueError("Ime in priimek sta obvezna.")
+        if cleaned.get("voice") not in {"Sopran","Alt","Tenor","Bas"}:
+            raise ValueError("Izberi veljaven glas.")
+        try:
+            cleaned["email"]=validate_email(cleaned.get("email", ""),check_deliverability=False).normalized.lower()
+        except EmailNotValidError as error:
+            raise ValueError("Vnesi veljaven e-poštni naslov.") from error
+        return cleaned
 
-    def members(self) -> list[Member]:
-        return [self._member_view(member) for member in self.repository.list_members()]
+    def update_member(self, member_id, values):
+        self.repository.update_member(member_id,self.validate_member(values))
 
-    def member(self, member_id: int) -> Member | None:
-        member = self.repository.get_member(member_id)
-        if not member:
-            return None
-        attendance_rows = [
-            replace(
-                item,
-                title=item.name,
-                kind=item.event_type,
-                date=date_label(item.event_date),
-            )
-            for item in self.repository.member_attendance(member_id)
-        ]
-        return replace(
-            self._member_view(member),
-            attendance_rows=attendance_rows,
-            attendance_totals=self._status_totals([
-                item.status
-                for item in attendance_rows
-                if item.event_date < datetime.now().astimezone()
-            ]),
-        )
+    def songs(self):
+        result=[]
+        for row in self.repository.list_songs():
+            result.append({**row,"added":date_label(row["created_at"]),"last":date_label(row["last_performed"]),"rating":float(row["rating"] or 0)})
+        return result
 
-    def create_member(self, values: MemberInput, role_names: Sequence[str]) -> tuple[int, str]:
-        username = self.auth.next_username(values["first_name"], values["last_name"])
-        person_id = self.repository.create_member(
-            values,
-            username,
-            self.auth.hash_password(username),
-            role_names,
-        )
-        return person_id, username
+    def song(self, song_id):
+        row=self.repository.get_song(song_id)
+        if not row:return None
+        row["added"]=date_label(row["created_at"]);row["last"]=date_label(row["last_performed"]);row["rating"]=float(row["rating"] or 0)
+        row["performances"]=[{**performance,"title":performance["name"],"kind":performance["event_type"],"date":date_label(performance["event_date"])} for performance in row["performances"]]
+        return row
 
-    def update_member(
-        self,
-        actor: User,
-        member_id: int,
-        values: MemberInput,
-        role_names: Sequence[str],
-    ) -> None:
-        is_admin = "admin" in self.auth.permissions(actor)
-        if not is_admin and actor.person_id != member_id:
-            raise PermissionError("Urejaš lahko samo svoje podatke.")
-        if not self.repository.get_member(member_id):
-            raise LookupError("Član ne obstaja.")
-        self.repository.update_member(member_id, values)
-        if is_admin:
-            self.repository.set_member_roles(member_id, role_names)
+    def events(self):
+        now=datetime.now().astimezone()
+        result=[]
+        for row in self.repository.list_events():
+            value=row["event_date"]
+            result.append({**row,"date":date_label(value),"time":value.strftime("%H:%M"),"kind":row["event_type"],"title":row["name"],"status":"upcoming" if value>=now else "past"})
+        return sorted(result,key=lambda item:(item["status"]=="past",item["event_date"] if item["status"]=="upcoming" else -item["event_date"].timestamp()))
 
-    def delete_member(self, actor: User, member_id: int) -> None:
-        if actor.person_id == member_id:
-            raise ValueError("Svojega računa ne moreš izbrisati.")
-        self.repository.delete_member(member_id)
+    def event(self, event_id):
+        row=self.repository.get_event(event_id)
+        if not row:return None
+        value=row["event_date"]
+        return {**row,"date":date_label(value),"time":value.strftime("%H:%M"),"kind":row["event_type"],"title":row["name"],"status":"upcoming" if value>=datetime.now().astimezone() else "past"}
 
-    def songs(self) -> list[Song]:
-        return [
-            replace(
-                song,
-                added=date_label(song.created_at),
-                last=date_label(song.last_performed),
-                rating=float(song.rating or 0),
-            )
-            for song in self.repository.list_songs()
-        ]
-
-    def categories(self) -> list[Category]:
-        return self.repository.list_categories()
-
-    def create_category(self, name: str, description: str) -> int:
-        return self.repository.create_category(name, description)
-
-    def update_category(self, category_id: int, name: str, description: str) -> None:
-        self.repository.update_category(category_id, name, description)
-
-    def delete_category(self, category_id: int) -> bool:
-        return bool(self.repository.delete_category(category_id))
-
-    def create_song(self, values: SongInput, categories: Sequence[str]) -> int:
-        return self.repository.create_song(values, categories)
-
-    def update_song(
-        self,
-        song_id: int,
-        values: SongInput,
-        categories: Sequence[str],
-    ) -> None:
-        self.repository.update_song(song_id, values, categories)
-
-    def delete_song(self, song_id: int) -> None:
-        self.repository.delete_song(song_id)
-
-    def save_review(
-        self,
-        person_id: int,
-        song_id: int,
-        rating: int,
-        comment: str,
-    ) -> None:
-        if rating not in range(1, 6):
-            raise ValueError("Ocena mora biti med 1 in 5.")
-        self.repository.upsert_review(person_id, song_id, rating, comment)
-
-    def song(self, song_id: int, person_id: int | None = None) -> Song | None:
-        song = self.repository.get_song(song_id)
-        if not song:
-            return None
-        performances = [
-            replace(
-                performance,
-                title=performance.name,
-                kind=performance.event_type,
-                date=date_label(performance.event_date),
-            )
-            for performance in song.performances
-        ]
-        my_review = next(
-            (review for review in song.reviews if review.person_id == person_id),
-            None,
-        )
-        return replace(
-            song,
-            added=date_label(song.created_at),
-            last=date_label(song.last_performed),
-            rating=float(song.rating or 0),
-            performances=performances,
-            my_review=my_review,
-        )
-
-    def events(self) -> list[Event]:
-        now = datetime.now().astimezone()
-        events = [self._event_view(event, now) for event in self.repository.list_events()]
-        return sorted(
-            events,
-            key=lambda event: (
-                event.status == "past",
-                event.event_date if event.status == "upcoming" else -event.event_date.timestamp(),
-            ),
-        )
-
-    def event_types(self) -> list[str]:
-        return self.repository.list_event_types()
-
-    def calendar_events(self) -> list[Event]:
-        return self.repository.list_events()
-
-    def create_event(self, values: EventInput, song_ids: Sequence[int]) -> int:
-        return self.repository.create_event(values, song_ids)
-
-    def update_event(
-        self,
-        event_id: int,
-        values: EventInput,
-        song_ids: Sequence[int],
-    ) -> None:
-        self.repository.update_event(event_id, values, song_ids)
-
-    def delete_event(self, event_id: int) -> None:
-        self.repository.delete_event(event_id)
-
-    def update_performance(
-        self,
-        actor: User,
-        event_id: int,
-        song_id: int,
-        rating: int,
-        comment: str,
-    ) -> None:
-        if not self.auth.is_conductor(actor):
-            raise PermissionError("Ocene izvedb lahko ureja samo zborovodja.")
-        if rating not in range(1, 6):
-            raise ValueError("Ocena mora biti med 1 in 5.")
-        self.repository.update_performance(event_id, song_id, rating, comment)
-
-    def event(self, event_id: int) -> Event | None:
-        event = self.repository.get_event(event_id)
-        return self._event_view(event, datetime.now().astimezone()) if event else None
-
-    def event_attendance(self, event_id: int) -> EventAttendanceSummary | None:
-        statuses = [
-            record.status
-            for record in self.repository.list_attendance()
-            if record.event_id == event_id
-        ]
-        if not statuses:
-            return None
-        totals = self._status_totals(statuses)
-        attended = sum(totals[state] for state in ATTENDED_STATUSES)
-        return EventAttendanceSummary(
-            recorded=len(statuses),
-            total_members=len(self.members()),
-            totals=totals,
-            attendance_rate=round(100 * attended / len(statuses)),
-        )
-
-    @staticmethod
-    def _event_view(event: Event, now: datetime) -> Event:
-        return replace(
-            event,
-            date=date_label(event.event_date),
-            time=event.event_date.strftime("%H:%M"),
-            kind=event.event_type,
-            title=event.name,
-            status="upcoming" if event.event_date >= now else "past",
-        )
-
-    def roles(self) -> list[Role]:
+    def roles(self):
         return self.repository.list_roles()
 
-    def create_role(self, name: str, description: str) -> int:
-        return self.repository.create_role(name, description)
-
-    def update_role(self, role_id: int, name: str, description: str) -> None:
-        self.repository.update_role(role_id, name, description)
-
-    def delete_role(self, role_id: int) -> bool:
-        return bool(self.repository.delete_role(role_id))
-
     @staticmethod
-    def school_year_start(value: date | datetime) -> int:
+    def school_year_start(value):
         return value.year if value.month >= 9 else value.year - 1
 
     @staticmethod
-    def event_group(event_type: str) -> str:
-        lowered = event_type.lower()
-        if "vaja" in lowered:
-            return "Vaje"
-        if "koncert" in lowered:
-            return "Koncerti"
+    def event_group(event_type):
+        lowered=event_type.lower()
+        if "vaja" in lowered:return "Vaje"
+        if "koncert" in lowered:return "Koncerti"
         return "Ostalo"
 
-    def attendance(
-        self,
-        selected_year: str | None = None,
-        selected_type: str = "Vse",
-    ) -> AttendanceSummary:
-        members = self.members()
-        all_events = self.events()
-        records = self.repository.list_attendance()
-        years = sorted(
-            {self.school_year_start(event.event_date) for event in all_events},
-            reverse=True,
-        )
-        current_start = self.school_year_start(datetime.now().astimezone())
-        try:
-            year_start = int(selected_year) if selected_year is not None else current_start
-        except ValueError:
-            year_start = current_start
-        if years and year_start not in years:
-            year_start = years[0]
-        events = [
-            event
-            for event in all_events
-            if self.school_year_start(event.event_date) == year_start
-            and (
-                selected_type in (None, "", "Vse")
-                or self.event_group(event.event_type) == selected_type
-            )
-        ]
-        lookup = {(item.person_id, item.event_id): item.status for item in records}
-        matrix: list[list[AttendanceState]] = [
-            [lookup.get((member.id, event.id), "unrecorded") for event in events]
-            for member in members
-        ]
-        member_totals = [self._status_totals(row) for row in matrix]
-        event_totals = [
-            self._status_totals([row[column] for row in matrix])
-            for column in range(len(events))
-        ]
-        past_columns = [
-            index for index, event in enumerate(events) if event.status == "past"
-        ]
-        statistical_rows = [
-            [row[index] for index in past_columns]
-            for row in matrix
-        ]
-        recorded_states = [
-            state
-            for row in statistical_rows
-            for state in row
-            if state != "unrecorded"
-        ]
-        attended = sum(state in ATTENDED_STATUSES for state in recorded_states)
-        voices = {member.voice for member in members}
-        voice_rates = {
-            voice: round(
-                100
-                * sum(
-                    sum(state in ATTENDED_STATUSES for state in statistical_rows[index])
-                    for index, member in enumerate(members)
-                    if member.voice == voice
-                )
-                / max(
-                    sum(
-                        state != "unrecorded"
-                        for index, member in enumerate(members)
-                        if member.voice == voice
-                        for state in statistical_rows[index]
-                    ),
-                    1,
-                )
-            )
-            for voice in voices
-        }
-        return AttendanceSummary(
-            members=members,
-            events=events,
-            status_keys=DISPLAY_STATUS_KEYS,
-            matrix=matrix,
-            member_totals=member_totals,
-            event_totals=event_totals,
-            average=round(100 * attended / len(recorded_states)) if recorded_states else 0,
-            event_count=sum(
-                any(matrix[row][column] != "unrecorded" for row in range(len(members)))
-                for column in past_columns
-            ),
-            best_voice=(
-                max(voice_rates, key=voice_rates.get)
-                if recorded_states and voice_rates
-                else "—"
-            ),
-            best_voice_rate=max(voice_rates.values()) if recorded_states and voice_rates else 0,
-            school_years=[SchoolYear(year, f"{year}/{str(year + 1)[-2:]}") for year in years],
-            selected_year=year_start,
-            selected_type=selected_type or "Vse",
-            chart_data=AttendanceChart(
-                labels=[events[index].date.rsplit(" ", 1)[0] for index in past_columns],
-                voices=[member.voice for member in members],
-                matrix=statistical_rows,
-                statuses=DISPLAY_STATUS_KEYS,
-            ),
-        )
+    def attendance(self, selected_year=None, selected_type="Vse"):
+        members=self.members();all_events=self.events();records=self.repository.list_attendance()
+        years=sorted({self.school_year_start(event["event_date"]) for event in all_events},reverse=True)
+        current_start=self.school_year_start(datetime.now().astimezone())
+        try: year_start=int(selected_year) if selected_year is not None else current_start
+        except ValueError: year_start=current_start
+        if years and year_start not in years: year_start=years[0]
+        events=[event for event in all_events if self.school_year_start(event["event_date"])==year_start and (selected_type in (None,"","Vse") or self.event_group(event["event_type"])==selected_type)]
+        lookup={(item["person_id"],item["event_id"]):item["status"] for item in records}
+        matrix=[[lookup.get((member["id"],event["id"]),"absent") for event in events] for member in members]
+        member_totals=[{state:row.count(state) for state in STATUS_KEYS} for row in matrix]
+        event_totals=[{state:sum(row[col]==state for row in matrix) for state in STATUS_KEYS} for col in range(len(events))]
+        total_records=max(len(members)*len(events),1); attended=sum(total[state] for total in member_totals for state in ("present","late_under","late_over")); voice_rates={voice:round(100*sum(sum(matrix[index][col] in ("present","late_under","late_over") for col in range(len(events))) for index,member in enumerate(members) if member["voice"]==voice)/max(sum(member["voice"]==voice for member in members)*len(events),1)) for voice in {member["voice"] for member in members}}
+        return {"members":members,"events":events,"status_keys":STATUS_KEYS,"matrix":matrix,"member_totals":member_totals,"event_totals":event_totals,"average":round(100*attended/total_records),"event_count":len(events),"best_voice":max(voice_rates,key=voice_rates.get) if voice_rates else "—","best_voice_rate":max(voice_rates.values()) if voice_rates else 0,"school_years":[{"start":year,"label":f"{year}/{str(year+1)[-2:]}"} for year in years],"selected_year":year_start,"selected_type":selected_type or "Vse",
+          "chart_data":{"labels":[event["date"].replace(" 2026","") for event in events],"voices":[member["voice"] for member in members],"matrix":matrix,"statuses":STATUS_KEYS}}
 
-    def save_attendance(
-        self,
-        actor: User,
-        event_id: int,
-        person_id: int,
-        status: str,
-    ) -> None:
-        if status not in STATUS_KEYS:
-            raise ValueError("Neveljaven status.")
-        if "attendance" not in self.auth.permissions(actor):
-            if actor.person_id != person_id:
-                raise PermissionError("Urejaš lahko samo svojo prisotnost.")
-            event = self.repository.get_event(event_id)
-            if not event:
-                raise ValueError("Dogodek ne obstaja.")
-            if event.event_date <= datetime.now().astimezone():
-                raise PermissionError("Svojo prisotnost lahko urejaš samo za prihodnje dogodke.")
-        self.repository.upsert_attendance(
-            event_id,
-            person_id,
-            cast(AttendanceStatus, status),
-            actor.id,
-        )
+    def treasury(self):
+        rows=[]
+        for row in self.repository.list_transactions():
+            rows.append({"id":row["id"],"date":date_label(row["transaction_date"]),"raw_date":row["transaction_date"],"description":row["description"],"person":row["person_name"],"kind":row["kind"],"amount":float(row["amount"]),"settled":row["settled"]})
+        income=sum(item["amount"] for item in rows if item["kind"]=="Prihodek");expenses=sum(item["amount"] for item in rows if item["kind"]=="Odhodek")
+        return {"transactions":rows,"income":income,"expenses":expenses,"balance":income-expenses,"unsettled":sum(item["amount"] for item in rows if not item["settled"])}
 
-    def treasury(self) -> TreasurySummary:
-        transactions: list[Transaction] = [
-            replace(
-                transaction,
-                date=date_label(transaction.transaction_date),
-                raw_date=transaction.transaction_date,
-                person=transaction.person_name,
-            )
-            for transaction in self.repository.list_transactions()
-        ]
-        zero = Decimal("0")
-        income = sum(
-            (item.amount for item in transactions if item.kind == "Prihodek"),
-            zero,
-        )
-        expenses = sum(
-            (item.amount for item in transactions if item.kind == "Odhodek"),
-            zero,
-        )
-        unsettled = sum(
-            (item.amount for item in transactions if not item.settled),
-            zero,
-        )
-        return TreasurySummary(
-            transactions=transactions,
-            income=income,
-            expenses=expenses,
-            balance=income - expenses,
-            unsettled=unsettled,
-        )
-
-    def create_transaction(self, values: TransactionInput, user_id: int) -> int:
-        return self.repository.create_transaction(values, user_id)
-
-    def set_transaction_settled(self, transaction_id: int, settled: bool) -> None:
-        self.repository.set_transaction_settled(transaction_id, settled)
-
-    def update_transaction(self, transaction_id: int, values: TransactionInput) -> None:
-        self.repository.update_transaction(transaction_id, values)
-
-    def dashboard(self) -> DashboardSummary:
-        members = self.members()
-        songs = self.songs()
-        events = self.events()
-        event_lookup = {event.id: event for event in events}
-        current_school_year = self.school_year_start(datetime.now().astimezone())
-        recorded_states = [
-            record.status
-            for record in self.repository.list_attendance()
-            if record.event_id in event_lookup
-            and event_lookup[record.event_id].status == "past"
-            and self.school_year_start(event_lookup[record.event_id].event_date)
-            == current_school_year
-        ]
-        voice_counts = Counter(member.voice for member in members)
-        ranked = sorted(members, key=lambda member: member.attendance, reverse=True)
-        return DashboardSummary(
-            member_count=len(members),
-            voices=[VoiceCount(voice, count) for voice, count in voice_counts.items()],
-            top_members=ranked[:3] if recorded_states else [],
-            low_members=list(reversed(ranked[-3:])) if recorded_states else [],
-            song_count=len(songs),
-            latest_songs=songs[:3],
-            forgotten_songs=sorted(songs, key=lambda song: song.last or "")[:3],
-            events=events,
-            attendance=ranked,
-            upcoming_count=sum(event.status == "upcoming" for event in events),
-            average_attendance=(
-                round(
-                    100
-                    * sum(state in ATTENDED_STATUSES for state in recorded_states)
-                    / len(recorded_states)
-                )
-                if recorded_states
-                else 0
-            ),
-        )
+    def dashboard(self):
+        members=self.members();songs=self.songs();events=self.events();voices=Counter(member["voice"] for member in members);ranked=sorted(members,key=lambda item:item["attendance"],reverse=True)
+        return {"member_count":len(members),"voices":dict(voices),"top_members":ranked[:3],"low_members":list(reversed(ranked[-3:])),"song_count":len(songs),"latest_songs":songs[:3],"forgotten_songs":sorted(songs,key=lambda item:item["last"] or "")[:3],"events":events,"attendance":ranked,"upcoming_count":sum(event["status"]=="upcoming" for event in events),"average_attendance":round(sum(member["attendance"] for member in members)/max(len(members),1))}

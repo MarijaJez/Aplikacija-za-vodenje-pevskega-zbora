@@ -1,5 +1,5 @@
 % status_labels={'present':'Prisoten','late_under':'Zamuda < 10 min','late_over':'Zamuda > 10 min','excused':'Opravičeno','absent':'Odsoten'}
-<div class="back-row"><a href="/clani">← Nazaj na člane</a><div><button class="button secondary" data-password-reset="{{member['username']}}" data-reset-url="/clani/{{member['id']}}/geslo" data-permission="admin">Ponastavi geslo</button><button class="button secondary" data-member-edit data-permission="{{'self' if member['id'] == current_user['person_id'] else 'admin'}}">Uredi</button>
+<div class="back-row"><a href="/clani">← Nazaj na člane</a><div><button class="button secondary" data-member-edit data-permission="{{'self' if member['id'] == current_user['person_id'] else 'admin'}}">Uredi</button>
 % if member['id'] != current_user['person_id']:
 <form method="post" action="/clani/{{member['id']}}/izbrisi" class="inline-form" data-permission="admin"><button class="button danger" onclick="return confirm('Res želiš izbrisati člana?')">Izbriši</button></form>
 % end
@@ -15,9 +15,6 @@
 </div><div class="simple-list">
 % for event in member['attendance_rows']:
 <a href="/dogodki/{{event['id']}}"><span><strong>{{event['title']}}</strong><small>{{event['date']}} · {{event['kind']}}</small></span><span class="status {{event['status']}}">{{status_labels[event['status']]}}</span></a>
-% end
-% if not member['attendance_rows']:
-<div class="empty-state compact"><p>Za tega člana še ni podatkov o prisotnosti v tekočem šolskem letu.</p><a class="button secondary" href="/dogodki?nov=1" data-permission="admin">Dodaj dogodek</a></div>
 % end
 </div></article></div>
 <dialog id="member-edit-dialog"><button class="member-edit-close dialog-close" aria-label="Zapri">×</button><form method="post" action="/clani/{{member['id']}}/uredi"><p class="eyebrow">Član zbora</p><h2>Uredi podatke</h2><div class="form-grid"><label>Ime<input name="first_name" value="{{member['first_name']}}" required></label><label>Priimek<input name="last_name" value="{{member['last_name']}}" required></label><label>E-pošta<input type="email" name="email" value="{{member['email']}}" required></label><label>Telefon<input name="phone" value="{{member['phone']}}"></label><label>Datum rojstva<input type="date" name="birth_date" value="{{member['birth_date'].isoformat() if member['birth_date'] else ''}}"></label><label>Glas<select name="voice">

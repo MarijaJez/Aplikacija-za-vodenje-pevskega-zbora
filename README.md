@@ -1,145 +1,121 @@
-# Aplikacija za vodenje pevskega zbora
+# Aplikacija za upravljanje pevskega zbora
 
-Spletna aplikacija na enem mestu združuje podatke o članih, programu, dogodkih, prisotnosti in blagajni pevskega zbora. Napisana je v Pythonu z ogrodjem Bottle, uporablja PostgreSQL in ima prijavo z vlogami ter različnimi uporabniškimi pravicami.
-
-## Funkcionalnosti
-
-### Uporabniški računi in pravice
-
-- Prijava in odjava z uporabniškim imenom in geslom.
-- Ob prvi prijavi mora novi član zamenjati začasno geslo, ki je sprva enako uporabniškemu imenu.
-- Vsak uporabnik lahko pozneje zamenja svoje geslo; predsednik ali zborovodja ga lahko članu ponastavi.
-- Pravice izhajajo iz vlog člana:
-  - **Predsednik** in **Zborovodja** imata skrbniške pravice nad celotno aplikacijo.
-  - **Notar** ureja pesmi in njihove kategorije.
-  - **Beleženje prisotnosti** ureja prisotnost vseh članov.
-  - **Blagajnik** dodaja in ureja transakcije.
-  - **Zborovodja** ocenjuje izvedbe pesmi na dogodkih.
-- Član brez posebne vloge lahko ureja svoje osebne podatke, ocenjuje pesmi in za prihodnje dogodke označi svojo prisotnost. Ostale vsebine so mu na voljo le za ogled.
-
-### Nadzorna plošča - vstopna stran aplikacije
-
-- Število aktivnih članov, razporeditev po glasovih in število pesmi.
-- Povprečna prisotnost v tekočem šolskem letu ter lestvici članov z najvišjo in najnižjo prisotnostjo.
-- Število prihajajočih dogodkov in časovnica preteklih ter prihodnjih dogodkov.
-- Pregled nazadnje dodanih pesmi.
-
-### Člani in vloge
-
-- Seznam in iskanje članov ter filtriranje po vlogi.
-- Podrobnosti člana: ime, priimek, datum rojstva, e-pošta, telefon, glas, vloge, uporabniško ime in prisotnost.
-- Skrbnik lahko doda člana; aplikacija samodejno ustvari enolično uporabniško ime in uporabniški račun.
-- Član lahko ureja svoje podatke, skrbnik pa podatke in vloge vseh članov.
-- Skrbnik lahko izbriše drugega člana ali mu ponastavi geslo.
-- Pregled, dodajanje, urejanje in varno brisanje vlog. Osnovne vloge `Član` ni mogoče izbrisati ali preimenovati, uporabljene vloge pa ni mogoče izbrisati.
-
-### Program zbora
-
-- Seznam pesmi z iskanjem po naslovu ali avtorju in filtriranjem po eni ali več kategorijah.
-- Podrobnosti pesmi, povprečna ocena, komentarji članov in zgodovina izvedb.
-- Pooblaščeni uporabnik lahko pesem doda, uredi ali izbriše ter ji določi kategorije.
-- Nalaganje not v oblikah PDF, JPG, JPEG in PNG ter zvočnih posnetkov MP3, WAV, M4A in OGG.
-- Predvajanje naloženega zvočnega posnetka.
-- Upravljanje kategorij; uporabljene kategorije ni mogoče izbrisati.
-- Vsak član lahko pesem oceni od 1 do 5 in doda komentar. Za posamezno pesem ima eno oceno, ki jo lahko pozneje spremeni.
-
-### Vaje in dogodki
-
-- Časovnica vseh preteklih in prihodnjih vaj, koncertov, nastopov in drugih dogodkov.
-- Podrobnosti dogodka: datum in ura, vrsta, naziv, kraj, program ter povzetek prisotnosti.
-- Skrbnik lahko dogodek doda, uredi ali izbriše ter določi pesmi v programu.
-- Iskanje pesmi in filtriranje po kategorijah pri sestavljanju programa dogodka.
-- Predvajanje vseh razpoložljivih zvočnih posnetkov programa kot seznama predvajanja.
-- Zborovodja lahko izvedbo posamezne pesmi oceni od 1 do 5 in ji doda komentar.
-- Dodajanje posameznega dogodka v Google Koledar ter izvoz vseh dogodkov v datoteko iCalendar (`.ics`).
-
-### Prisotnost
-
-- Evidenčna tabela s člani v vrsticah in dogodki v stolpcih.
-- Statusi: ni evidentirano, prisoten, zamudil manj kot 10 minut, zamudil več kot 10 minut, opravičeno odsoten in odsoten.
-- Pooblaščena oseba ureja prisotnost vseh članov; drugi člani lahko označijo le svojo prisotnost na prihodnjih dogodkih.
-- Samodejno shranjevanje sprememb brez ponovnega nalaganja strani.
-- Filtriranje po šolskem letu in skupini dogodkov.
-- Seštevki po članih in dogodkih, povprečna prisotnost, najbolj reden glas ter grafi prisotnosti po glasovih.
-
-### Blagajna
-
-- Pregled vseh prihodkov in odhodkov.
-- Povzetek skupnih prihodkov, odhodkov, trenutnega stanja in odprtih obveznosti.
-- Blagajnik oziroma skrbnik lahko transakcijo doda ali uredi in jo označi kot odprto oziroma poravnano.
+Spletna aplikacija Python/Bottle in PostgreSQL za člane, program, dogodke, prisotnost ter blagajno. Podpira obstoječo prijavo z uporabniškim imenom in geslom, prijavo z Googlom, enosmerno sinhronizacijo enega skupnega Google Koledarja in namestitev na domači zaslon kot PWA.
 
 ## Lokalni zagon
 
-Potrebujete Python 3.10 ali novejši in dostop do PostgreSQL baze.
-
-### 1. Virtualno okolje in knjižnice
-
-V PowerShellu v korenski mapi projekta izvedite:
+Potrebujete Python 3.11+ in Docker Desktop.
 
 ```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-V Linuxu ali macOS uporabite `source venv/bin/activate` namesto ukaza za aktivacijo v PowerShellu.
-
-### 2. Povezava z bazo in sejni ključ
-
-Aplikacija privzeto uporablja bazo `opb2026_marijaj` na strežniku `baza.fmf.uni-lj.si` prek zahtevanega uporabnika `javnost`. V okolje vnesite geslo tega uporabnika in naključni sejni ključ; gesel ne zapisujte v repozitorij.
-
-```powershell
-$env:DB_PASSWORD = "GESLO_UPORABNIKA_JAVNOST"
-$env:COOKIE_SECRET = "DOLG_NAKLJUCEN_NIZ"
-```
-
-Vrednost za `COOKIE_SECRET` lahko ustvarite z:
-
-```powershell
-python -c "import secrets; print(secrets.token_hex(32))"
-```
-
-Po potrebi lahko posamezne privzete vrednosti spremenite:
-
-```powershell
-$env:DB_HOST = "baza.fmf.uni-lj.si"
-$env:DB_PORT = "5432"
-$env:DB_NAME = "opb2026_marijaj"
-$env:DB_USER = "javnost"
-```
-
-Namesto spremenljivk `DB_*` lahko nastavite celoten povezovalni niz:
-
-```powershell
-$env:DATABASE_URL = "postgresql://javnost:GESLO@baza.fmf.uni-lj.si:5432/opb2026_marijaj"
-```
-
-### 3. Zagon aplikacije
-
-```powershell
+python -m pip install -r requirements.txt
+docker compose -p zborissimo up -d --wait
 python app.py
 ```
 
-Aplikacija je dosegljiva na [http://127.0.0.1:8080](http://127.0.0.1:8080). Gostitelja in vrata lahko spremenite s `APP_HOST` in `APP_PORT`. Razvojni način s samodejnim ponovnim zagonom vključite z:
+Aplikacija je nato na `http://127.0.0.1:8091/prijava`.
+
+Za ponastavitev lokalne baze in ponovno nalaganje začetnih podatkov:
 
 ```powershell
-$env:APP_DEBUG = "true"
+docker compose -p zborissimo down --volumes
+docker compose -p zborissimo up -d --wait
 ```
 
-### Razvojna prijava
+Če baza že obstaja, pred zagonom nove različice uporabi migracijo (podatki članov, vloge in prisotnosti se ohranijo):
 
-V aplikaciji so testni podatki, vključno z uporabniškimi računi. Za prijavo lahko uporabite uporabnika z vsemi pravicami:
+```powershell
+python -m Data.migrate
+```
 
-- uporabniško ime: `luka.mlakar`
-- geslo: `zbor2026`
+Migracija pred spremembo preveri podvojene e-poštne naslove brez upoštevanja velikosti črk. Če jih najde, se varno ustavi; naslove je treba najprej popraviti. Nato obstoječe naslove normalizira in doda case-insensitive unikatno omejitev.
 
+## Google Cloud nastavitev
 
-## Struktura projekta
+Skrivnosti ne sodijo v repozitorij. Kopiraj `.env.example` v lokalno `.env` oziroma iste spremenljivke nastavi v okolju strežnika. Aplikacija `.env` ne nalaga sama; pri lokalnem zagonu jih lahko naloži upravljalnik procesa ali PowerShell.
 
-- `app.py` – vstopna točka aplikacije;
-- `Presentation/` – spletne poti, predloge, JavaScript in slogi;
-- `Services/` – poslovna pravila, prijava in dovoljenja;
-- `Data/` – povezava z bazo, podatkovni modeli, poizvedbe ter SQL za shemo in razvojne podatke;
-- `uploads/` – lokalno shranjene note in zvočni posnetki (vsebina ni vključena v Git);
-- `shema.pdf` in `shema.drawio` – podatkovni model baze.
+1. V [Google Cloud Console](https://console.cloud.google.com/) ustvari ali izberi projekt.
+2. V **APIs & Services → Library** omogoči **Google Calendar API**.
+3. Nastavi **OAuth consent screen**. Med preizkušanjem dodaj zborovski račun in članske račune med testne uporabnike; za produkcijo dokončaj objavo oziroma preverjanje, ki ga zahteva Google.
+4. Ustvari poverilnico **OAuth client ID → Web application**.
+5. Med **Authorized redirect URIs** dodaj obe natančni poti:
+   - lokalno: `http://127.0.0.1:8091/prijava/google/povratni-klic`
+   - lokalno: `http://127.0.0.1:8091/nastavitve/google-koledar/povratni-klic`
+   - za produkcijo dodaj isti poti na dejanski HTTPS domeni.
+6. Na strežniku nastavi:
+
+```text
+APP_BASE_URL=https://zbor.example.si
+APP_TIMEZONE=Europe/Ljubljana
+COOKIE_SECURE=true
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GOOGLE_LOGIN_REDIRECT_URI=https://zbor.example.si/prijava/google/povratni-klic
+GOOGLE_CALENDAR_REDIRECT_URI=https://zbor.example.si/nastavitve/google-koledar/povratni-klic
+GOOGLE_TOKEN_ENCRYPTION_KEY=...
+```
+
+Ključ za šifriranje Google žetonov ustvari enkrat in ga varno shrani skupaj z drugimi produkcijskimi skrivnostmi:
+
+```powershell
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+Če ključ izgubiš ali ga zamenjaš, obstoječe koledarske povezave ni mogoče dešifrirati in jo mora pooblaščeni uporabnik povezati znova.
+
+### Prijava članov z Googlom
+
+Zborovodja ali predsednik člana najprej doda v aplikacijo z veljavnim in enoličnim e-poštnim naslovom. Ob prvi Google prijavi strežnik preveri podpis, izdajatelja, občinstvo, potek, nonce in Googlov podatek `email_verified`. Lokalni račun poišče izključno po normaliziranem potrjenem e-poštnem naslovu; imena in priimka ne uporablja. Google subject se nato trajno poveže z istim uporabnikom.
+
+Če e-pošte ni med člani, se račun ne ustvari samodejno. Obstoječi uporabniki lahko še naprej uporabljajo svoja dosedanja uporabniška imena in gesla. Novi članski račun dobi naključno, uporabniku nerazkrito vrednost gesla in se prijavlja z Googlom; po Google prijavi si lahko član v uporabniškem meniju po želji nastavi tudi zasebno geslo za rezervno prijavo. Aplikacija ne ustvarja več gesel iz imena ali priimka.
+
+### Skupni Google Koledar
+
+Prijavi se kot predsednik ali zborovodja in odpri **Vaje in dogodki → Nastavitve koledarja**:
+
+1. poveži zborovski Google račun;
+2. odobri dostop do koledarja;
+3. izberi en koledar, ki ga ta račun lahko ureja;
+4. ob izboru se obstoječi dogodki sinhronizirajo, nadaljnje ustvarjanje, urejanje in brisanje pa se prenese samodejno.
+
+Člani ostanejo vabljeni oziroma naročeni na ta skupni koledar neposredno v Googlu. Aplikacija ne povezuje osebnih koledarjev članov. Sinhronizacija je samo v smeri aplikacija → Google; spremembe v Googlu se ne uvozijo nazaj. Vsak dogodek ima stabilen deterministični Google ID in shranjeno povezavo, zato ponovni poskus ne ustvari dvojnika. Trenutni podatkovni model nima ponavljajočih se dogodkov, zato se vsak zapis sinhronizira kot samostojen dvourni dogodek.
+
+Če Google API začasno odpove, sprememba v aplikaciji ostane shranjena in v nastavitvah je na voljo ponovna sinhronizacija. Brisanje že povezanega dogodka se ob napaki Googla ustavi, da dogodek ne ostane nenadzorovano v skupnem koledarju.
+
+## Namestitev na telefon (PWA)
+
+V brskalniku odpri produkcijsko HTTPS stran:
+
+- Android/Chrome: meni → **Namesti aplikacijo** ali **Dodaj na začetni zaslon**.
+- iPhone/Safari: **Deli** → **Add to Home Screen / Dodaj na domači zaslon**.
+
+PWA ima samostojni prikaz, barve in ikono. Service worker predpomni statične datoteke aplikacijske lupine. Članski podatki, dogodki in prisotnost brez povezave niso na voljo; namesto zastarelih podatkov se pokaže jasen zaslon brez povezave.
+
+## Testni računi za lokalne začetne podatke
+
+- Predsednik: `luka.mlakar` / `zbor2026`
+- Blagajnik: `ana.kovac` / `zbor2026`
+
+To so samo lokalni začetni podatki iz `Data/seed.sql`, ne produkcijske poverilnice.
+
+## Pregled baze s pgAdmin
+
+pgAdmin je na `http://127.0.0.1:5050`. Lokalna prijava je `admin@example.com` / `pgadmin_dev`. Pri registraciji strežnika uporabi gostitelja `db`, vrata `5432`, bazo in uporabnika `zborissimo` ter lokalno geslo `zborissimo_dev`.
+
+## Struktura
+
+- `Data/` — PostgreSQL povezava, shema, migracije, začetni podatki in repozitorij
+- `Services/` — poslovna pravila, preverjanje identitete in Google Calendar odjemalec
+- `Presentation/` — Bottle poti, dovoljenja, predloge, PWA, CSS in JavaScript
+- `tests/` — integracijski in enotski preizkusi
+
+Smer odvisnosti ostaja `Presentation → Services → Data`; SQL je omejen na podatkovni sloj.
+
+## Preizkusi
+
+Ko aplikacija in baza tečeta:
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+Google enotski testi uporabljajo nadomestne odgovore in ne potrebujejo pravih Google skrivnosti. Integracijski testi prehodijo notranje povezave, preverijo zapis podatkov in dovoljenja ter začasne zapise odstranijo.
