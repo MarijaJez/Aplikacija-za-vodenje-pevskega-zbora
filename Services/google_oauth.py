@@ -4,6 +4,7 @@ import base64
 import hashlib
 import os
 import secrets
+from functools import partial
 from urllib.parse import urlencode
 
 import requests
@@ -66,7 +67,7 @@ class GoogleOAuthClient:
                 "redirect_uri": redirect_uri,
                 "grant_type": "authorization_code",
                 "code_verifier": verifier,
-            }, timeout=15)
+            }, timeout=(3, 10))
             result.raise_for_status()
             payload = result.json()
         except (requests.RequestException, ValueError) as error:
@@ -77,7 +78,7 @@ class GoogleOAuthClient:
 
     def verify_identity(self, raw_id_token, expected_nonce):
         try:
-            claims = id_token.verify_oauth2_token(raw_id_token, GoogleRequest(), self.client_id)
+            claims = id_token.verify_oauth2_token(raw_id_token, partial(GoogleRequest(), timeout=5), self.client_id)
         except Exception as error:
             raise GoogleOAuthError("Google identitete ni bilo mogoče varno preveriti.") from error
         if claims.get("nonce") != expected_nonce:
