@@ -4,6 +4,8 @@ from collections import Counter
 from datetime import datetime
 from decimal import Decimal
 
+from email_validator import EmailNotValidError, validate_email
+
 from Data.repository import ChoirRepository
 from Services.auth_service import AuthService
 
@@ -41,9 +43,27 @@ class ChoirService:
         return {**row,"name":f'{row["first_name"]} {row["last_name"]}',"initials":self.initials(row["first_name"],row["last_name"]),"birth":date_label(row["birth_date"]) if row["birth_date"] else "—","attendance_rows":attendance,"attendance_totals":{state:sum(item["status"]==state for item in attendance) for state in STATUS_KEYS}}
 
     def create_member(self, values, role_names):
+        values=self.validate_member(values)
         username=self.auth.next_username(values["first_name"],values["last_name"])
-        person_id=self.repository.create_member(values,username,self.auth.hash_password(username),role_names)
+        password_hash=self.auth.hash_password(self.auth.generated_password())
+        person_id=self.repository.create_member(values,username,password_hash,role_names,must_change_password=False)
         return person_id,username
+
+    @staticmethod
+    def validate_member(values):
+        cleaned={key:(value.strip() if isinstance(value,str) else value) for key,value in values.items()}
+        if not cleaned.get("first_name") or not cleaned.get("last_name"):
+            raise ValueError("Ime in priimek sta obvezna.")
+        if cleaned.get("voice") not in {"Sopran","Alt","Tenor","Bas"}:
+            raise ValueError("Izberi veljaven glas.")
+        try:
+            cleaned["email"]=validate_email(cleaned.get("email", ""),check_deliverability=False).normalized.lower()
+        except EmailNotValidError as error:
+            raise ValueError("Vnesi veljaven e-poštni naslov.") from error
+        return cleaned
+
+    def update_member(self, member_id, values):
+        self.repository.update_member(member_id,self.validate_member(values))
 
     def songs(self):
         result=[]

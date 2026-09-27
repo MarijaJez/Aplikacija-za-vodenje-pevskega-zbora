@@ -1,6 +1,7 @@
 """Authentication business rules for account provisioning."""
 
 import re
+import secrets
 import unicodedata
 
 import bcrypt
@@ -28,8 +29,13 @@ class AuthService:
         return f"{base}{suffix}"
 
     @staticmethod
-    def initial_password(username: str) -> str:
-        return username
+    def generated_password() -> str:
+        """Return an unguessable placeholder for Google-first new accounts.
+
+        It is intentionally never returned by the member creation flow or shown
+        in the interface. Existing password hashes are left unchanged.
+        """
+        return secrets.token_urlsafe(32)
 
     @staticmethod
     def hash_password(password: str) -> str:
@@ -41,6 +47,16 @@ class AuthService:
             return None
         self.repository.record_login(user["id"])
         return user
+
+    def authenticate_google(self, claims):
+        email = (claims.get("email") or "").strip().lower()
+        if claims.get("email_verified") is not True or not email:
+            return None, "unverified_email"
+        issuer = claims.get("iss") or ""
+        subject = claims.get("sub") or ""
+        if not issuer or not subject:
+            return None, "invalid_identity"
+        return self.repository.find_or_link_google_user(issuer, subject, email)
 
     def next_username(self, first_name: str, last_name: str) -> str:
         base = f"{self._slug(first_name)}.{self._slug(last_name)}"
@@ -64,11 +80,3 @@ class AuthService:
         if not user or not bcrypt.checkpw(current_password.encode("utf-8"), user["password_hash"].encode("utf-8")):
             raise ValueError("Trenutno geslo ni pravilno.")
         self.change_password(user_id, new_password)
-
-    def reset_password(self, person_id: int):
-        member = self.repository.get_member(person_id)
-        if not member:
-            raise ValueError("Član ne obstaja.")
-        user = self.repository.get_user_by_username(member["username"])
-        self.repository.change_password(user["id"], self.hash_password(user["username"]), must_change=True)
-        return user["username"]

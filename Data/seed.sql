@@ -21,10 +21,8 @@ FROM (
     CASE p.first_name
       WHEN 'Ana' THEN 'ana.kovac' WHEN 'Maja' THEN 'maja.zupan' WHEN 'Luka' THEN 'luka.mlakar'
       WHEN 'Rok' THEN 'rok.kos' WHEN 'Eva' THEN 'eva.horvat' ELSE 'miha.novak' END AS unaccent_name,
-    CASE WHEN p.first_name IN ('Ana','Luka') THEN 'zbor2026' ELSE
-      CASE p.first_name WHEN 'Maja' THEN 'maja.zupan' WHEN 'Luka' THEN 'luka.mlakar'
-      WHEN 'Rok' THEN 'rok.kos' WHEN 'Eva' THEN 'eva.horvat' ELSE 'miha.novak' END END AS password,
-    p.first_name NOT IN ('Ana','Luka') AS must_change
+    'zbor2026' AS password,
+    FALSE AS must_change
   FROM people p
 ) seeded_users;
 

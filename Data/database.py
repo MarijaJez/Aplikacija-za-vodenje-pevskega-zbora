@@ -13,7 +13,8 @@ class Database:
             "DATABASE_URL",
             "postgresql://zborissimo:zborissimo_dev@127.0.0.1:5432/zborissimo",
         )
-        self._pool = ThreadedConnectionPool(1, 10, self.dsn)
+        self.timezone = os.getenv("APP_TIMEZONE", "Europe/Ljubljana")
+        self._pool = ThreadedConnectionPool(1, 10, self.dsn, options=f"-c timezone={self.timezone}")
 
     @contextmanager
     def connection(self):

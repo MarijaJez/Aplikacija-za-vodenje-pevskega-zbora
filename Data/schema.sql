@@ -11,7 +11,7 @@ CREATE TABLE people (
     first_name VARCHAR(80) NOT NULL,
     last_name VARCHAR(80) NOT NULL,
     birth_date DATE,
-    email VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL,
     phone VARCHAR(40) NOT NULL DEFAULT '',
     voice VARCHAR(20) NOT NULL CHECK (voice IN ('Sopran', 'Alt', 'Tenor', 'Bas')),
     active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -26,6 +26,18 @@ CREATE TABLE users (
     must_change_password BOOLEAN NOT NULL DEFAULT TRUE,
     last_login TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE UNIQUE INDEX people_email_lower_uidx ON people (lower(email));
+
+CREATE TABLE user_google_identities (
+    user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    issuer VARCHAR(255) NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    linked_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    last_login TIMESTAMPTZ,
+    UNIQUE (issuer, subject)
 );
 
 CREATE TABLE person_roles (
@@ -71,6 +83,30 @@ CREATE TABLE events (
     name VARCHAR(255) NOT NULL,
     place VARCHAR(255) NOT NULL DEFAULT '',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE google_calendar_connection (
+    singleton BOOLEAN PRIMARY KEY DEFAULT TRUE CHECK (singleton),
+    google_email VARCHAR(255) NOT NULL,
+    access_token_encrypted TEXT,
+    refresh_token_encrypted TEXT,
+    token_expires_at TIMESTAMPTZ,
+    scopes TEXT NOT NULL DEFAULT '',
+    calendar_id VARCHAR(1024),
+    calendar_name VARCHAR(255),
+    connected_by BIGINT REFERENCES users(id) ON DELETE SET NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE event_google_calendar_links (
+    event_id BIGINT PRIMARY KEY REFERENCES events(id) ON DELETE RESTRICT,
+    calendar_id VARCHAR(1024) NOT NULL,
+    google_event_id VARCHAR(255) NOT NULL,
+    last_synced_at TIMESTAMPTZ,
+    last_error TEXT,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (calendar_id, google_event_id)
 );
 
 CREATE TABLE event_program (

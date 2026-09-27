@@ -43,6 +43,60 @@ class ChoirRepository:
             """, (user_id,))
             return self._one(cur)
 
+    def get_user_by_email(self, email):
+        with self.db.cursor() as cur:
+            cur.execute("""
+                SELECT u.id, u.person_id, u.username, u.password_hash, u.must_change_password,
+                       p.first_name, p.last_name, p.email,
+                       COALESCE(array_agg(r.name ORDER BY r.name) FILTER (WHERE r.id IS NOT NULL), '{}') roles
+                FROM users u JOIN people p ON p.id=u.person_id
+                LEFT JOIN person_roles pr ON pr.person_id=p.id LEFT JOIN roles r ON r.id=pr.role_id
+                WHERE lower(p.email)=lower(%s)
+                GROUP BY u.id,p.id
+            """, (email,))
+            return self._one(cur)
+
+    def find_or_link_google_user(self, issuer, subject, verified_email):
+        """Resolve a Google identity only through its verified e-mail address.
+
+        The transaction prevents two concurrent callbacks from linking the same
+        Google subject to different local users.
+        """
+        with self.db.connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT gi.user_id,p.email
+                    FROM user_google_identities gi
+                    JOIN users u ON u.id=gi.user_id
+                    JOIN people p ON p.id=u.person_id
+                    WHERE gi.issuer=%s AND gi.subject=%s
+                    FOR UPDATE
+                """, (issuer, subject))
+                linked = cur.fetchone()
+                if linked:
+                    if linked["email"].strip().lower() != verified_email:
+                        return None, "email_mismatch"
+                    cur.execute("UPDATE user_google_identities SET email=%s,last_login=NOW() WHERE user_id=%s", (verified_email, linked["user_id"]))
+                    user_id = linked["user_id"]
+                else:
+                    cur.execute("""
+                        SELECT u.id FROM users u JOIN people p ON p.id=u.person_id
+                        WHERE lower(p.email)=lower(%s)
+                    """, (verified_email,))
+                    local = cur.fetchone()
+                    if not local:
+                        return None, "member_missing"
+                    cur.execute("SELECT 1 FROM user_google_identities WHERE user_id=%s", (local["id"],))
+                    if cur.fetchone():
+                        return None, "identity_conflict"
+                    cur.execute("""
+                        INSERT INTO user_google_identities(user_id,issuer,subject,email,last_login)
+                        VALUES(%s,%s,%s,%s,NOW())
+                    """, (local["id"], issuer, subject, verified_email))
+                    user_id = local["id"]
+                cur.execute("UPDATE users SET last_login=NOW() WHERE id=%s", (user_id,))
+        return self.get_user_by_id(user_id), None
+
     def username_exists(self, username):
         with self.db.cursor() as cur:
             cur.execute("SELECT EXISTS(SELECT 1 FROM users WHERE lower(username)=lower(%s)) present", (username,))
@@ -81,22 +135,27 @@ class ChoirRepository:
             """, (person_id,))
             return self._one(cur)
 
-    def create_member(self, person, username, password_hash, role_names):
+    def create_member(self, person, username, password_hash, role_names, must_change_password=False):
         with self.db.connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 cur.execute("""INSERT INTO people(first_name,last_name,birth_date,email,phone,voice)
                     VALUES(%s,%s,%s,%s,%s,%s) RETURNING id""",
                     (person["first_name"],person["last_name"],person.get("birth_date") or None,person["email"],person.get("phone",''),person["voice"]))
                 person_id=cur.fetchone()["id"]
-                cur.execute("INSERT INTO users(person_id,username,password_hash,must_change_password) VALUES(%s,%s,%s,TRUE)", (person_id,username,password_hash))
+                cur.execute("INSERT INTO users(person_id,username,password_hash,must_change_password) VALUES(%s,%s,%s,%s)", (person_id,username,password_hash,must_change_password))
                 selected=set(role_names)|{"Član"}
                 cur.execute("INSERT INTO person_roles(person_id,role_id) SELECT %s,id FROM roles WHERE name=ANY(%s)", (person_id,list(selected)))
                 return person_id
 
     def update_member(self, person_id, values):
-        with self.db.cursor() as cur:
-            cur.execute("""UPDATE people SET first_name=%s,last_name=%s,birth_date=%s,email=%s,phone=%s,voice=%s WHERE id=%s""",
-                (values["first_name"],values["last_name"],values.get("birth_date") or None,values["email"],values.get("phone",''),values["voice"],person_id))
+        with self.db.connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("SELECT email FROM people WHERE id=%s", (person_id,))
+                current = cur.fetchone()
+                cur.execute("""UPDATE people SET first_name=%s,last_name=%s,birth_date=%s,email=%s,phone=%s,voice=%s WHERE id=%s""",
+                    (values["first_name"],values["last_name"],values.get("birth_date") or None,values["email"],values.get("phone",''),values["voice"],person_id))
+                if current and current["email"].strip().lower() != values["email"]:
+                    cur.execute("DELETE FROM user_google_identities WHERE user_id=(SELECT id FROM users WHERE person_id=%s)", (person_id,))
 
     def delete_member(self, person_id):
         with self.db.cursor() as cur:
@@ -231,6 +290,83 @@ class ChoirRepository:
     def delete_event(self, event_id):
         with self.db.cursor() as cur:
             cur.execute("DELETE FROM events WHERE id=%s",(event_id,))
+
+    def get_calendar_connection(self):
+        with self.db.cursor() as cur:
+            cur.execute("SELECT * FROM google_calendar_connection WHERE singleton=TRUE")
+            return self._one(cur)
+
+    def save_calendar_credentials(self, values):
+        with self.db.cursor() as cur:
+            cur.execute("""
+                INSERT INTO google_calendar_connection(
+                    singleton,google_email,access_token_encrypted,refresh_token_encrypted,
+                    token_expires_at,scopes,connected_by,active,updated_at
+                ) VALUES(TRUE,%s,%s,%s,%s,%s,%s,TRUE,NOW())
+                ON CONFLICT(singleton) DO UPDATE SET
+                    google_email=EXCLUDED.google_email,
+                    access_token_encrypted=EXCLUDED.access_token_encrypted,
+                    refresh_token_encrypted=COALESCE(EXCLUDED.refresh_token_encrypted,google_calendar_connection.refresh_token_encrypted),
+                    token_expires_at=EXCLUDED.token_expires_at,
+                    scopes=EXCLUDED.scopes,
+                    connected_by=EXCLUDED.connected_by,
+                    active=TRUE,
+                    updated_at=NOW()
+            """, (
+                values["google_email"], values.get("access_token_encrypted"),
+                values.get("refresh_token_encrypted"), values.get("token_expires_at"),
+                values.get("scopes", ""), values.get("connected_by"),
+            ))
+
+    def update_calendar_tokens(self, access_token_encrypted, refresh_token_encrypted, expires_at):
+        with self.db.cursor() as cur:
+            cur.execute("""
+                UPDATE google_calendar_connection
+                SET access_token_encrypted=%s,
+                    refresh_token_encrypted=COALESCE(%s,refresh_token_encrypted),
+                    token_expires_at=%s,active=TRUE,updated_at=NOW()
+                WHERE singleton=TRUE
+            """, (access_token_encrypted, refresh_token_encrypted, expires_at))
+
+    def select_google_calendar(self, calendar_id, calendar_name):
+        with self.db.cursor() as cur:
+            cur.execute("""
+                UPDATE google_calendar_connection
+                SET calendar_id=%s,calendar_name=%s,updated_at=NOW()
+                WHERE singleton=TRUE AND active=TRUE
+            """, (calendar_id, calendar_name))
+
+    def disconnect_google_calendar(self):
+        with self.db.cursor() as cur:
+            cur.execute("""
+                UPDATE google_calendar_connection
+                SET access_token_encrypted=NULL,refresh_token_encrypted=NULL,
+                    token_expires_at=NULL,active=FALSE,updated_at=NOW()
+                WHERE singleton=TRUE
+            """)
+
+    def get_event_calendar_link(self, event_id):
+        with self.db.cursor() as cur:
+            cur.execute("SELECT * FROM event_google_calendar_links WHERE event_id=%s", (event_id,))
+            return self._one(cur)
+
+    def record_event_calendar_sync(self, event_id, calendar_id, google_event_id, error=None):
+        with self.db.cursor() as cur:
+            cur.execute("""
+                INSERT INTO event_google_calendar_links(
+                    event_id,calendar_id,google_event_id,last_synced_at,last_error,updated_at
+                ) VALUES(%s,%s,%s,CASE WHEN %s IS NULL THEN NOW() END,%s,NOW())
+                ON CONFLICT(event_id) DO UPDATE SET
+                    calendar_id=EXCLUDED.calendar_id,
+                    google_event_id=EXCLUDED.google_event_id,
+                    last_synced_at=CASE WHEN EXCLUDED.last_error IS NULL THEN NOW() ELSE event_google_calendar_links.last_synced_at END,
+                    last_error=EXCLUDED.last_error,
+                    updated_at=NOW()
+            """, (event_id, calendar_id, google_event_id, error, error))
+
+    def clear_event_calendar_link(self, event_id):
+        with self.db.cursor() as cur:
+            cur.execute("DELETE FROM event_google_calendar_links WHERE event_id=%s", (event_id,))
 
     def update_performance(self, event_id, song_id, rating, comment):
         with self.db.cursor() as cur:

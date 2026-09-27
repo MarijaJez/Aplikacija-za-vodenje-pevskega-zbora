@@ -1,5 +1,5 @@
 % status_labels={'present':'Prisoten','late_under':'Zamuda < 10 min','late_over':'Zamuda > 10 min','excused':'Opravičeno','absent':'Odsoten'}
-<div class="back-row"><a href="/clani">← Nazaj na člane</a><div><button class="button secondary" data-password-reset="{{member['username']}}" data-reset-url="/clani/{{member['id']}}/geslo" data-permission="admin">Ponastavi geslo</button><button class="button secondary" data-member-edit data-permission="{{'self' if member['id'] == current_user['person_id'] else 'admin'}}">Uredi</button>
+<div class="back-row"><a href="/clani">← Nazaj na člane</a><div><button class="button secondary" data-member-edit data-permission="{{'self' if member['id'] == current_user['person_id'] else 'admin'}}">Uredi</button>
 % if member['id'] != current_user['person_id']:
 <form method="post" action="/clani/{{member['id']}}/izbrisi" class="inline-form" data-permission="admin"><button class="button danger" onclick="return confirm('Res želiš izbrisati člana?')">Izbriši</button></form>
 % end

@@ -4,7 +4,7 @@ import uuid
 from datetime import timedelta, timezone
 from functools import wraps
 from pathlib import Path
-from urllib.parse import quote_plus, urlencode
+from urllib.parse import quote_plus
 
 from bottle import Bottle, HTTPError, abort, redirect, request, response, static_file, template
 from psycopg2 import IntegrityError
@@ -12,17 +12,45 @@ from psycopg2 import IntegrityError
 from Data.repository import ChoirRepository
 from Services.auth_service import AuthService
 from Services.choir_service import ChoirService
+from Services.google_calendar import CALENDAR_SCOPE, CalendarError, CalendarNotConnected, GoogleCalendarService
+from Services.google_oauth import GoogleOAuthClient, GoogleOAuthError
 
 ROOT = Path(__file__).resolve().parents[1]
 VIEWS = ROOT / "Presentation" / "views"
 STATIC = ROOT / "Presentation" / "static"
 UPLOADS = ROOT / "uploads"
 COOKIE_SECRET = os.getenv("COOKIE_SECRET", "zborissimo-local-development-secret-change-me")
+COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"
+APP_BASE_URL = os.getenv("APP_BASE_URL", "http://127.0.0.1:8091").rstrip("/")
+GOOGLE_LOGIN_REDIRECT_URI = os.getenv("GOOGLE_LOGIN_REDIRECT_URI", f"{APP_BASE_URL}/prijava/google/povratni-klic")
+GOOGLE_CALENDAR_REDIRECT_URI = os.getenv("GOOGLE_CALENDAR_REDIRECT_URI", f"{APP_BASE_URL}/nastavitve/google-koledar/povratni-klic")
 
 app = Bottle()
 repository = ChoirRepository()
 service = ChoirService(repository)
 auth_service = AuthService(repository)
+google_oauth = GoogleOAuthClient()
+calendar_service = GoogleCalendarService(repository)
+
+
+def set_signed_cookie(name, value, **kwargs):
+    response.set_cookie(
+        name, value, secret=COOKIE_SECRET, httponly=True, samesite="lax",
+        secure=COOKIE_SECURE, path="/", **kwargs,
+    )
+
+
+def set_session(user_id, method):
+    set_signed_cookie("zbor_session", str(user_id))
+    set_signed_cookie("zbor_auth_method", method)
+
+
+def oauth_flow_cookie(name):
+    raw = request.get_cookie(name, secret=COOKIE_SECRET)
+    try:
+        return json.loads(raw) if raw else None
+    except (TypeError, ValueError):
+        return None
 
 
 def current_user():
@@ -61,7 +89,8 @@ def require_login(callback):
         user = current_user()
         if not user:
             redirect(f"/prijava?naprej={request.path}")
-        if user["must_change_password"] and request.path != "/prva-prijava":
+        auth_method = request.get_cookie("zbor_auth_method", secret=COOKIE_SECRET)
+        if user["must_change_password"] and auth_method != "google" and request.path != "/prva-prijava":
             redirect("/prva-prijava")
         return callback(*args, **kwargs)
     return wrapped
@@ -82,10 +111,11 @@ def require_permission(permission):
 def render(view, title, **context):
     user = current_user()
     permissions = permission_set(user)
+    auth_method = request.get_cookie("zbor_auth_method", secret=COOKIE_SECRET) or "password"
     return template(
         "layout.tpl", template_lookup=[str(VIEWS)], view=f"{view}.tpl", title=title,
         active=view, json=json, current_user=user, permissions=permissions,
-        message=request.query.getunicode("sporocilo") or "", **context,
+        auth_method=auth_method, message=request.query.getunicode("sporocilo") or "", **context,
     )
 
 
@@ -93,7 +123,11 @@ def render(view, title, **context):
 def login_page():
     if current_user():
         redirect("/")
-    return template("login.tpl", template_lookup=[str(VIEWS)], error=None)
+    return template(
+        "login.tpl", template_lookup=[str(VIEWS)],
+        error=request.query.getunicode("napaka") or None,
+        google_configured=google_oauth.configured,
+    )
 
 
 @app.post("/prijava")
@@ -102,14 +136,57 @@ def login_submit():
     password = request.forms.getunicode("password") or ""
     user = auth_service.authenticate(username, password)
     if not user:
-        return template("login.tpl", template_lookup=[str(VIEWS)], error="Napačno uporabniško ime ali geslo.")
-    response.set_cookie("zbor_session", str(user["id"]), secret=COOKIE_SECRET, httponly=True, samesite="lax", path="/")
+        return template("login.tpl", template_lookup=[str(VIEWS)], error="Napačno uporabniško ime ali geslo.", google_configured=google_oauth.configured)
+    set_session(user["id"], "password")
     redirect("/prva-prijava" if user["must_change_password"] else "/")
+
+
+@app.get("/prijava/google")
+def google_login_start():
+    try:
+        flow = google_oauth.new_flow_values()
+        url = google_oauth.authorization_url(
+            GOOGLE_LOGIN_REDIRECT_URI, ["openid", "email"], flow,
+        )
+    except GoogleOAuthError as error:
+        redirect(f"/prijava?napaka={quote_plus(str(error))}")
+    set_signed_cookie("zbor_google_login_flow", json.dumps(flow), max_age=600)
+    redirect(url)
+
+
+@app.get("/prijava/google/povratni-klic")
+def google_login_callback():
+    flow = oauth_flow_cookie("zbor_google_login_flow")
+    response.delete_cookie("zbor_google_login_flow", path="/")
+    if request.query.get("error"):
+        redirect("/prijava?napaka=Google+prijava+je+bila+preklicana.")
+    if not flow or request.query.get("state") != flow.get("state"):
+        redirect("/prijava?napaka=Prijavna+zahteva+je+potekla.+Poskusi+znova.")
+    try:
+        tokens = google_oauth.exchange_code(request.query.get("code") or "", GOOGLE_LOGIN_REDIRECT_URI, flow["verifier"])
+        claims = google_oauth.verify_identity(tokens["id_token"], flow["nonce"])
+        user, reason = auth_service.authenticate_google(claims)
+    except GoogleOAuthError as error:
+        redirect(f"/prijava?napaka={quote_plus(str(error))}")
+    except IntegrityError:
+        redirect("/prijava?napaka=Google+račun+je+že+povezan+z+drugim+članom.")
+    if not user:
+        messages = {
+            "member_missing": "Ta Google e-pošta še ni pripisana članu. Najprej naj te doda zborovodja ali skrbnik.",
+            "email_mismatch": "E-pošta Google računa se ne ujema več z e-pošto člana. Obrni se na skrbnika.",
+            "identity_conflict": "Ta članski račun je že povezan z drugim Google računom. Obrni se na skrbnika.",
+            "unverified_email": "Google e-poštni naslov ni potrjen.",
+            "invalid_identity": "Google identiteta ni veljavna.",
+        }
+        redirect(f"/prijava?napaka={quote_plus(messages.get(reason, 'Prijava ni uspela.'))}")
+    set_session(user["id"], "google")
+    redirect("/")
 
 
 @app.get("/odjava")
 def logout():
     response.delete_cookie("zbor_session", path="/")
+    response.delete_cookie("zbor_auth_method", path="/")
     redirect("/prijava")
 
 
@@ -142,7 +219,11 @@ def change_own_password():
     confirmation=request.forms.getunicode("confirmation") or ""
     try:
         if new_password != confirmation: raise ValueError("Novi gesli se ne ujemata.")
-        auth_service.change_own_password(current_user()["id"],request.forms.getunicode("current_password") or "",new_password)
+        auth_method = request.get_cookie("zbor_auth_method", secret=COOKIE_SECRET)
+        if auth_method == "google":
+            auth_service.change_password(current_user()["id"], new_password)
+        else:
+            auth_service.change_own_password(current_user()["id"],request.forms.getunicode("current_password") or "",new_password)
     except ValueError as error:
         redirect(f"/?sporocilo={quote_plus(str(error))}")
     redirect("/?sporocilo=Geslo je uspešno spremenjeno.")
@@ -167,9 +248,11 @@ def create_member():
     roles=request.forms.getall("roles")
     try:
         _,username=service.create_member(values,roles)
-    except (IntegrityError, ValueError) as error:
-        redirect("/clani?sporocilo=Člana ni bilo mogoče dodati; preveri vnesene podatke.")
-    redirect(f"/clani?sporocilo=Član in račun {username} sta ustvarjena.")
+    except IntegrityError:
+        redirect("/clani?sporocilo=E-poštni naslov ali uporabniško ime že uporablja drug član.")
+    except ValueError as error:
+        redirect(f"/clani?sporocilo={quote_plus(str(error))}")
+    redirect(f"/clani?sporocilo=Član in račun {username} sta ustvarjena. Prijavi se lahko z dodanim Google računom.")
 
 
 @app.get("/clani/<member_id:int>")
@@ -189,9 +272,16 @@ def update_member(member_id):
     current=repository.get_member(member_id)
     if not current: abort(404)
     values={key:(request.forms.getunicode(key) or "").strip() for key in ("first_name","last_name","birth_date","email","phone","voice")}
-    repository.update_member(member_id,values)
+    email_changed = current["email"].strip().lower() != values["email"].strip().lower()
+    try:
+        service.update_member(member_id,values)
+    except IntegrityError:
+        redirect(f"/clani/{member_id}?sporocilo=E-poštni naslov že uporablja drug član.")
+    except ValueError as error:
+        redirect(f"/clani/{member_id}?sporocilo={quote_plus(str(error))}")
     if "admin" in permission_set(user): repository.set_member_roles(member_id,request.forms.getall("roles"))
-    redirect(f"/clani/{member_id}?sporocilo=Podatki so shranjeni.")
+    message = "Podatki so shranjeni. Zaradi spremembe e-pošte je Google račun odvezan in se bo ob naslednji prijavi povezal na novo." if email_changed else "Podatki so shranjeni."
+    redirect(f"/clani/{member_id}?sporocilo={quote_plus(message)}")
 
 
 @app.post("/clani/<member_id:int>/izbrisi")
@@ -199,13 +289,6 @@ def update_member(member_id):
 def delete_member(member_id):
     if current_user()["person_id"] == member_id: abort(400,"Svojega računa ne moreš izbrisati.")
     repository.delete_member(member_id); redirect("/clani?sporocilo=Član je izbrisan.")
-
-
-@app.post("/clani/<member_id:int>/geslo")
-@require_permission("admin")
-def reset_password(member_id):
-    username=auth_service.reset_password(member_id)
-    redirect(f"/clani/{member_id}?sporocilo=Geslo za {username} je ponastavljeno.")
 
 
 @app.get("/vloge")
@@ -325,7 +408,96 @@ def save_review(song_id):
 @app.get("/dogodki")
 @require_login
 def events():
-    return render("events", "Vaje in dogodki", events=service.events(), songs=service.songs(), categories=repository.list_categories(), event_types=repository.list_event_types())
+    connection = repository.get_calendar_connection()
+    return render(
+        "events", "Vaje in dogodki", events=service.events(), songs=service.songs(),
+        categories=repository.list_categories(), event_types=repository.list_event_types(),
+        calendar_connection=connection,
+    )
+
+
+@app.get("/nastavitve/google-koledar")
+@require_permission("admin")
+def calendar_settings():
+    connection = repository.get_calendar_connection()
+    calendars = []
+    calendar_error = None
+    if connection and connection.get("active") and calendar_service.configured:
+        try:
+            calendars = calendar_service.list_calendars()
+        except CalendarError as error:
+            calendar_error = str(error)
+    return render(
+        "calendar_settings", "Skupni Google Koledar",
+        connection=connection, calendars=calendars,
+        calendar_error=calendar_error, configured=calendar_service.configured,
+    )
+
+
+@app.get("/nastavitve/google-koledar/povezi")
+@require_permission("admin")
+def calendar_connect():
+    if not calendar_service.configured:
+        redirect("/nastavitve/google-koledar?sporocilo=Najprej+dopolni+Google+OAuth+konfiguracijo+na+strežniku.")
+    flow = google_oauth.new_flow_values()
+    try:
+        url = google_oauth.authorization_url(
+            GOOGLE_CALENDAR_REDIRECT_URI,
+            ["openid", "email", CALENDAR_SCOPE], flow, offline=True,
+        )
+    except GoogleOAuthError as error:
+        redirect(f"/nastavitve/google-koledar?sporocilo={quote_plus(str(error))}")
+    set_signed_cookie("zbor_google_calendar_flow", json.dumps(flow), max_age=600)
+    redirect(url)
+
+
+@app.get("/nastavitve/google-koledar/povratni-klic")
+@require_permission("admin")
+def calendar_callback():
+    flow = oauth_flow_cookie("zbor_google_calendar_flow")
+    response.delete_cookie("zbor_google_calendar_flow", path="/")
+    if request.query.get("error"):
+        redirect("/nastavitve/google-koledar?sporocilo=Povezovanje+je+bilo+preklicano.")
+    if not flow or request.query.get("state") != flow.get("state"):
+        redirect("/nastavitve/google-koledar?sporocilo=Zahteva+je+potekla.+Začni+znova.")
+    try:
+        tokens = google_oauth.exchange_code(request.query.get("code") or "", GOOGLE_CALENDAR_REDIRECT_URI, flow["verifier"])
+        claims = google_oauth.verify_identity(tokens["id_token"], flow["nonce"])
+        if claims.get("email_verified") is not True:
+            raise CalendarError("Google e-poštni naslov ni potrjen.")
+        calendar_service.store_authorization(tokens, claims, current_user()["id"])
+    except (GoogleOAuthError, CalendarError) as error:
+        redirect(f"/nastavitve/google-koledar?sporocilo={quote_plus(str(error))}")
+    redirect("/nastavitve/google-koledar?sporocilo=Google+račun+je+povezan.+Izberi+skupni+koledar.")
+
+
+@app.post("/nastavitve/google-koledar/izberi")
+@require_permission("admin")
+def calendar_select():
+    try:
+        selected = calendar_service.select_calendar(request.forms.getunicode("calendar_id") or "")
+        succeeded, failed = calendar_service.sync_all()
+    except CalendarError as error:
+        redirect(f"/nastavitve/google-koledar?sporocilo={quote_plus(str(error))}")
+    message = f"Koledar {selected['name']} je izbran. Sinhronizirano: {succeeded}; napake: {failed}."
+    redirect(f"/nastavitve/google-koledar?sporocilo={quote_plus(message)}")
+
+
+@app.post("/nastavitve/google-koledar/sinhroniziraj")
+@require_permission("admin")
+def calendar_sync_all():
+    try:
+        succeeded, failed = calendar_service.sync_all()
+    except CalendarError as error:
+        redirect(f"/nastavitve/google-koledar?sporocilo={quote_plus(str(error))}")
+    redirect(f"/nastavitve/google-koledar?sporocilo=Sinhronizirano:+{succeeded};+napake:+{failed}.")
+
+
+@app.post("/nastavitve/google-koledar/prekini")
+@require_permission("admin")
+def calendar_disconnect():
+    repository.disconnect_google_calendar()
+    redirect("/nastavitve/google-koledar?sporocilo=Povezava+je+prekinjena.+Dogodki+v+Google+Koledarju+so+ostali+nespremenjeni.")
 
 
 def ics_escape(value):
@@ -346,13 +518,25 @@ def events_calendar():
 @require_permission("admin")
 def create_event():
     event_id=repository.create_event({"event_date":request.forms.get("event_date"),"event_type":request.forms.getunicode("event_type"),"name":request.forms.getunicode("name"),"place":request.forms.getunicode("place")},[int(value) for value in request.forms.getall("songs")])
-    redirect(f"/dogodki/{event_id}?sporocilo=Dogodek je dodan.")
+    try:
+        calendar_service.sync_event(repository.get_event(event_id))
+        message="Dogodek je dodan in sinhroniziran z Google Koledarjem."
+    except CalendarNotConnected:
+        message="Dogodek je dodan. Skupni Google Koledar še ni povezan."
+    except CalendarError:
+        message="Dogodek je dodan, sinhronizacija z Google Koledarjem pa ni uspela. Poskusi jo znova v nastavitvah."
+    redirect(f"/dogodki/{event_id}?sporocilo={quote_plus(message)}")
 
 
 @app.post("/dogodki/<event_id:int>/izbrisi")
 @require_permission("admin")
 def delete_event(event_id):
-    repository.delete_event(event_id); redirect("/dogodki?sporocilo=Dogodek je izbrisan.")
+    try:
+        calendar_service.delete_event(event_id)
+    except CalendarError as error:
+        redirect(f"/dogodki/{event_id}?sporocilo={quote_plus('Dogodek ni izbrisan: '+str(error))}")
+    repository.delete_event(event_id)
+    redirect("/dogodki?sporocilo=Dogodek je izbrisan. Če je bil povezan s skupnim koledarjem, je odstranjen tudi tam.")
 
 
 @app.get("/dogodki/<event_id:int>")
@@ -361,16 +545,21 @@ def event_detail(event_id):
     event = service.event(event_id)
     if not event:
         raise HTTPError(404, "Dogodek ne obstaja")
-    start=event["event_date"].astimezone(timezone.utc); end=start+timedelta(hours=2)
-    google_url="https://calendar.google.com/calendar/render?"+urlencode({"action":"TEMPLATE","text":event["name"],"dates":f"{start.strftime('%Y%m%dT%H%M%SZ')}/{end.strftime('%Y%m%dT%H%M%SZ')}","location":event["place"],"details":event["event_type"]})
-    return render("event_detail", event["title"], event=event, songs=service.songs(), members=service.members(), categories=repository.list_categories(), event_types=repository.list_event_types(), conductor=is_conductor(), google_url=google_url)
+    return render("event_detail", event["title"], event=event, songs=service.songs(), members=service.members(), categories=repository.list_categories(), event_types=repository.list_event_types(), conductor=is_conductor())
 
 
 @app.post("/dogodki/<event_id:int>/uredi")
 @require_permission("admin")
 def update_event(event_id):
     repository.update_event(event_id,{"event_date":request.forms.get("event_date"),"event_type":request.forms.getunicode("event_type"),"name":request.forms.getunicode("name"),"place":request.forms.getunicode("place")},[int(value) for value in request.forms.getall("songs")])
-    redirect(f"/dogodki/{event_id}?sporocilo=Dogodek je posodobljen.")
+    try:
+        calendar_service.sync_event(repository.get_event(event_id))
+        message="Dogodek je posodobljen tudi v Google Koledarju."
+    except CalendarNotConnected:
+        message="Dogodek je posodobljen. Skupni Google Koledar ni povezan."
+    except CalendarError:
+        message="Dogodek je posodobljen, sinhronizacija z Google Koledarjem pa ni uspela."
+    redirect(f"/dogodki/{event_id}?sporocilo={quote_plus(message)}")
 
 
 @app.post("/dogodki/<event_id:int>/program/<song_id:int>")
@@ -432,6 +621,18 @@ def update_transaction(transaction_id):
 @require_login
 def uploaded_file(filepath):
     return static_file(filepath, root=str(UPLOADS))
+
+
+@app.get("/manifest.webmanifest")
+def web_manifest():
+    return static_file("manifest.webmanifest", root=str(STATIC), mimetype="application/manifest+json")
+
+
+@app.get("/sw.js")
+def service_worker():
+    response.set_header("Service-Worker-Allowed", "/")
+    response.set_header("Cache-Control", "no-cache")
+    return static_file("sw.js", root=str(STATIC), mimetype="application/javascript")
 
 
 @app.get("/static/<filepath:path>")

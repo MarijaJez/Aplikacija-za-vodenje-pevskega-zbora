@@ -37,7 +37,6 @@ function updateGeneratedAccount() {
   let username = base; let suffix = 1;
   while (existingUsernames.has(username)) username = `${base}${suffix++}`;
   document.querySelector('#generated-username')?.replaceChildren(username);
-  document.querySelector('#generated-password')?.replaceChildren(username);
   return username;
 }
 document.querySelector('[data-member-dialog]')?.addEventListener('click', () => { updateGeneratedAccount(); memberDialog?.showModal(); });
@@ -48,17 +47,6 @@ const memberEditDialog = document.querySelector('#member-edit-dialog');
 document.querySelector('[data-member-edit]')?.addEventListener('click', () => memberEditDialog?.showModal());
 document.querySelector('.member-edit-close')?.addEventListener('click', () => memberEditDialog.close());
 document.querySelector('.member-edit-cancel')?.addEventListener('click', () => memberEditDialog.close());
-
-const resetPasswordDialog = document.querySelector('#reset-password-dialog');
-let resetUsername = '';
-document.querySelectorAll('[data-password-reset]').forEach(button => button.addEventListener('click', () => {
-  resetUsername = button.dataset.passwordReset;
-  document.querySelector('#reset-username').textContent = resetUsername;
-  document.querySelector('#reset-password-form').action = button.dataset.resetUrl;
-  resetPasswordDialog?.showModal();
-}));
-document.querySelector('.reset-password-close')?.addEventListener('click', () => resetPasswordDialog.close());
-document.querySelector('.reset-password-cancel')?.addEventListener('click', () => resetPasswordDialog.close());
 
 const reviewDialog = document.querySelector('#review-dialog');
 document.querySelector('[data-review-dialog]')?.addEventListener('click', () => reviewDialog?.showModal());
@@ -266,3 +254,7 @@ function drawAttendanceCharts() {
 }
 drawAttendanceCharts();
 window.addEventListener('resize', drawAttendanceCharts);
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
