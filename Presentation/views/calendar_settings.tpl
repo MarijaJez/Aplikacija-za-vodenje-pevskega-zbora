@@ -27,7 +27,7 @@
     </select></label><button class="button primary" type="submit">Shrani in sinhroniziraj vse dogodke</button></form>
     % elif not connection or not connection.get('active'):
     <p>Koledar bo mogoče izbrati po povezavi Google računa.</p>
-    % endif
+    % end
     % if connection and connection.get('active') and connection.get('calendar_id'):
     <hr><p>Izbran: <strong>{{connection['calendar_name']}}</strong></p><form method="post" action="/nastavitve/google-koledar/sinhroniziraj"><button class="button secondary">Ponovi sinhronizacijo vseh dogodkov</button></form>
     % end
