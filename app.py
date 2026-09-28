@@ -1,5 +1,13 @@
 import os
 
+if os.getenv("GOOGLE_FORCE_IPV6", "false").lower() == "true":
+    # This host can reach Google over IPv6, while IPv4 HTTPS connections time out.
+    # All outbound requests in this app currently target Google APIs.
+    import socket
+    from urllib3.util import connection as urllib3_connection
+
+    urllib3_connection.allowed_gai_family = lambda: socket.AF_INET6
+
 from Presentation.app import app
 from waitress import serve
 
