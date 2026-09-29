@@ -24,6 +24,8 @@ if not COOKIE_SECRET:
     raise RuntimeError("Nastavi COOKIE_SECRET za podpisovanje sej.")
 COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"
 APP_BASE_URL = os.getenv("APP_BASE_URL", "http://127.0.0.1:8091").rstrip("/")
+PUBLIC_ORGANIZATION = "Mladinski pevski zbor Homec"
+PUBLIC_CONTACT_EMAIL = "mladinskipevskizborhomec@gmail.com"
 GOOGLE_LOGIN_REDIRECT_URI = os.getenv("GOOGLE_LOGIN_REDIRECT_URI", f"{APP_BASE_URL}/prijava/google/povratni-klic")
 GOOGLE_CALENDAR_REDIRECT_URI = os.getenv("GOOGLE_CALENDAR_REDIRECT_URI", f"{APP_BASE_URL}/nastavitve/google-koledar/povratni-klic")
 
@@ -119,6 +121,29 @@ def render(view, title, **context):
         active=view, json=json, current_user=user, permissions=permissions,
         auth_method=auth_method, message=request.query.getunicode("sporocilo") or "", **context,
     )
+
+
+def public_page(section, title):
+    return template(
+        "public_info.tpl", template_lookup=[str(VIEWS)],
+        section=section, title=title,
+        organization=PUBLIC_ORGANIZATION, contact_email=PUBLIC_CONTACT_EMAIL,
+    )
+
+
+@app.get("/o-aplikaciji")
+def about_app():
+    return public_page("about", "O aplikaciji")
+
+
+@app.get("/zasebnost")
+def privacy_policy():
+    return public_page("privacy", "Zasebnost")
+
+
+@app.get("/pogoji-uporabe")
+def terms_of_use():
+    return public_page("terms", "Pogoji uporabe")
 
 
 @app.get("/prijava")

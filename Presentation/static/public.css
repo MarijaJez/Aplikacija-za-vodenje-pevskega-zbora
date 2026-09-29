@@ -1,0 +1,24 @@
+:root{color-scheme:light;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f8f7;color:#17353b}
+*{box-sizing:border-box}
+body{margin:0}
+a{color:#176b66;text-underline-offset:3px}
+a:focus-visible{outline:3px solid #d39d36;outline-offset:3px}
+.public-header,.public-footer{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px clamp(20px,6vw,90px)}
+.public-header{border-bottom:1px solid #dbe6e2;background:#fff}
+.public-brand{color:#17353b;text-decoration:none;font-weight:750;font-size:1.1rem}
+.public-brand span{font-size:1.5rem;color:#3d897b;vertical-align:middle;margin-right:5px}
+.public-header nav,.public-footer nav{display:flex;flex-wrap:wrap;gap:18px}
+.public-header nav a,.public-footer nav a{text-decoration:none;color:#426168;font-size:.9rem}
+.public-header nav a.active{font-weight:700;color:#176b66}
+.public-main{max-width:940px;margin:auto;padding:clamp(35px,6vw,80px) 24px 80px}
+.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:.74rem;font-weight:700;color:#397e74}
+h1{font-size:clamp(2.2rem,5vw,4rem);letter-spacing:-.045em;line-height:1.12;margin:12px 0 20px}
+h2{font-size:1.2rem;margin:0 0 10px}
+p{line-height:1.7;margin:0 0 15px}
+.lead{font-size:1.15rem;max-width:760px;color:#45626a}
+.public-actions{display:flex;align-items:center;flex-wrap:wrap;gap:22px;margin:30px 0 55px}
+.primary-link{background:#176b66;color:#fff;text-decoration:none;padding:12px 19px;border-radius:8px;font-weight:650}
+.feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:35px 0}
+.feature-grid article,.public-note,.public-main>section:not(.feature-grid){background:#fff;border:1px solid #dce7e3;border-radius:12px;padding:23px 25px;margin-top:18px}
+.public-footer{border-top:1px solid #dbe6e2;color:#587078;font-size:.85rem;background:#fff}
+@media(max-width:650px){.public-header,.public-footer{align-items:flex-start;flex-direction:column}.public-header nav,.public-footer nav{gap:10px 18px}.feature-grid{grid-template-columns:1fr}}

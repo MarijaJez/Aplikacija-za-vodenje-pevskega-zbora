@@ -1,6 +1,6 @@
-const CACHE = 'zbor-app-shell-v1';
+const CACHE = 'zbor-app-shell-v2';
 const APP_SHELL = [
-  '/static/styles.css?v=7',
+  '/static/styles.css?v=8',
   '/static/refinements.css?v=2',
   '/static/hotfix.css?v=2',
   '/static/app.js?v=7',

@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=7">
+  <link rel="stylesheet" href="/static/styles.css?v=8">
   <link rel="stylesheet" href="/static/refinements.css?v=2">
   <link rel="stylesheet" href="/static/hotfix.css?v=2">
 </head>
@@ -35,6 +35,7 @@
         <button class="button primary wide" type="submit">Prijava <span>→</span></button>
       </form>
     </div>
+    <nav class="legal-links" aria-label="Informacije o aplikaciji"><a href="/o-aplikaciji">O aplikaciji</a><a href="/zasebnost">Zasebnost</a><a href="/pogoji-uporabe">Pogoji uporabe</a></nav>
   </main>
   <div id="toast" role="status"></div><script src="/static/app.js?v=7"></script>
 </body></html>
