@@ -142,7 +142,7 @@ class GoogleIntegrationTests(unittest.TestCase):
             service.store_authorization({
                 "access_token": "access-secret",
                 "refresh_token": "refresh-secret",
-                "scope": "openid email https://www.googleapis.com/auth/calendar",
+                "scope": "openid email https://www.googleapis.com/auth/calendar.calendarlist.readonly https://www.googleapis.com/auth/calendar.events",
                 "expires_in": 3600,
             }, {"email": "choir@example.si"}, 5)
         stored = repository.credentials

@@ -12,7 +12,7 @@ from psycopg2 import IntegrityError
 from Data.repository import ChoirRepository
 from Services.auth_service import AuthService
 from Services.choir_service import ChoirService
-from Services.google_calendar import CALENDAR_SCOPE, CalendarError, CalendarNotConnected, GoogleCalendarService
+from Services.google_calendar import CALENDAR_SCOPES, CalendarError, CalendarNotConnected, GoogleCalendarService
 from Services.google_oauth import GoogleOAuthClient, GoogleOAuthError
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -475,7 +475,7 @@ def calendar_connect():
     try:
         url = google_oauth.authorization_url(
             GOOGLE_CALENDAR_REDIRECT_URI,
-            ["openid", "email", CALENDAR_SCOPE], flow, offline=True,
+            ["openid", "email", *CALENDAR_SCOPES], flow, offline=True,
         )
     except GoogleOAuthError as error:
         redirect(f"/nastavitve/google-koledar?sporocilo={quote_plus(str(error))}")
