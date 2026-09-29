@@ -146,6 +146,11 @@ def terms_of_use():
     return public_page("terms", "Pogoji uporabe")
 
 
+@app.get("/google0c9e4048e8675404.html")
+def google_site_verification():
+    return static_file("google0c9e4048e8675404.html", root=str(STATIC), mimetype="text/html")
+
+
 @app.get("/prijava")
 def login_page():
     if current_user():
