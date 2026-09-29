@@ -12,11 +12,7 @@ from cryptography.fernet import Fernet, InvalidToken
 from Services.google_oauth import TOKEN_ENDPOINT
 
 
-CALENDAR_SCOPES = (
-    "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
-    "https://www.googleapis.com/auth/calendar.events",
-)
-LEGACY_CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar"
+CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar"
 CALENDAR_API = "https://www.googleapis.com/calendar/v3"
 
 
@@ -67,8 +63,7 @@ class GoogleCalendarService:
         return datetime.now(timezone.utc) + timedelta(seconds=max(seconds - 30, 0))
 
     def store_authorization(self, token_data, claims, user_id):
-        granted_scopes = set((token_data.get("scope") or "").split())
-        if not (set(CALENDAR_SCOPES).issubset(granted_scopes) or LEGACY_CALENDAR_SCOPE in granted_scopes):
+        if CALENDAR_SCOPE not in (token_data.get("scope") or "").split():
             raise CalendarError("Google ni odobril zahtevanega dostopa do koledarja.")
         self.repository.save_calendar_credentials({
             "google_email": claims["email"].strip().lower(),
