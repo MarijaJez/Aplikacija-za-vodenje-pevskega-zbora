@@ -109,6 +109,73 @@ CREATE TABLE event_google_calendar_links (
     UNIQUE (calendar_id, google_event_id)
 );
 
+CREATE TABLE push_subscriptions (
+    endpoint TEXT PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    p256dh TEXT NOT NULL,
+    auth TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX push_subscriptions_user_idx ON push_subscriptions(user_id);
+
+CREATE TABLE user_google_calendar_connections (
+    user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    google_subject VARCHAR(255) NOT NULL UNIQUE,
+    google_email VARCHAR(255) NOT NULL,
+    access_token_encrypted TEXT,
+    refresh_token_encrypted TEXT,
+    token_expires_at TIMESTAMPTZ,
+    scopes TEXT NOT NULL DEFAULT '',
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE user_event_google_calendar_links (
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    google_event_id VARCHAR(255) NOT NULL,
+    last_synced_at TIMESTAMPTZ,
+    last_error TEXT,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (user_id, event_id),
+    UNIQUE (user_id, google_event_id)
+);
+
+CREATE TABLE user_google_calendar_pending_deletions (
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    google_event_id VARCHAR(255) NOT NULL,
+    last_error TEXT,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (user_id, google_event_id)
+);
+
+CREATE TABLE event_photos (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    file_name VARCHAR(80) NOT NULL UNIQUE,
+    caption VARCHAR(300) NOT NULL DEFAULT '',
+    alt_text VARCHAR(160) NOT NULL,
+    uploaded_by BIGINT REFERENCES users(id) ON DELETE SET NULL,
+    uploaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX event_photos_event_idx ON event_photos(event_id, uploaded_at DESC, id DESC);
+
+CREATE TABLE chat_messages (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    author_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
+    body VARCHAR(2000) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    edited_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ,
+    deleted_by BIGINT REFERENCES users(id) ON DELETE SET NULL,
+    CHECK (length(btrim(body)) > 0)
+);
+
+CREATE INDEX chat_messages_recent_idx ON chat_messages(id DESC);
+
 CREATE TABLE event_program (
     event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     song_id BIGINT NOT NULL REFERENCES songs(id) ON DELETE CASCADE,

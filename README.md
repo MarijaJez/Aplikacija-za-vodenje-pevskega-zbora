@@ -1,6 +1,6 @@
 # Aplikacija za upravljanje pevskega zbora
 
-Spletna aplikacija Python/Bottle in PostgreSQL za člane, program, dogodke, prisotnost ter blagajno. Podpira obstoječo prijavo z uporabniškim imenom in geslom, prijavo z Googlom, enosmerno sinhronizacijo enega skupnega Google Koledarja in namestitev na domači zaslon kot PWA.
+Spletna aplikacija Python/Bottle in PostgreSQL za člane, program, dogodke, prisotnost ter blagajno. Podpira obstoječo prijavo z uporabniškim imenom in geslom, prijavo z Googlom, enosmerno sinhronizacijo dogodkov v osebne Google Koledarje članov in namestitev na domači zaslon kot PWA.
 
 ## Lokalni zagon
 
@@ -68,18 +68,23 @@ Zborovodja ali predsednik člana najprej doda v aplikacijo z veljavnim in enoli�
 
 Če e-pošte ni med člani, se račun ne ustvari samodejno. Obstoječi uporabniki lahko še naprej uporabljajo svoja dosedanja uporabniška imena in gesla. Novi članski račun dobi naključno, uporabniku nerazkrito vrednost gesla in se prijavlja z Googlom; po Google prijavi si lahko član v uporabniškem meniju po želji nastavi tudi zasebno geslo za rezervno prijavo. Aplikacija ne ustvarja več gesel iz imena ali priimka.
 
-### Skupni Google Koledar
+### Osebni Google Koledarji članov
 
-Prijavi se kot predsednik ali zborovodja in odpri **Vaje in dogodki → Nastavitve koledarja**:
+Vsak član odpre **Vaje in dogodki → Moj koledar** in poveže svoj Google račun. E-pošta Google računa se mora ujemati z e-pošto članskega računa. Odobri samo dovoljenje za dogodke na koledarjih v svoji lasti (`calendar.events.owned`); aplikacija ne izbira ali upravlja drugih koledarjev.
 
-1. poveži zborovski Google račun;
-2. odobri dostop do koledarja;
-3. izberi en koledar, ki ga ta račun lahko ureja;
-4. ob izboru se obstoječi dogodki sinhronizirajo, nadaljnje ustvarjanje, urejanje in brisanje pa se prenese samodejno.
+Po odobritvi se obstoječi zborovski dogodki dodajo v članov glavni Google Koledar. Nadaljnje ustvarjanje, urejanje in brisanje se prenese v koledarje vseh povezanih članov. Povezava starega zborovskega računa ni samodejno prenesena v osebne povezave; vsak član mora povezavo odobriti sam.
 
-Člani ostanejo vabljeni oziroma naročeni na ta skupni koledar neposredno v Googlu. Aplikacija ne povezuje osebnih koledarjev članov. Sinhronizacija je samo v smeri aplikacija → Google; spremembe v Googlu se ne uvozijo nazaj. Vsak dogodek ima stabilen deterministični Google ID in shranjeno povezavo, zato ponovni poskus ne ustvari dvojnika. Trenutni podatkovni model nima ponavljajočih se dogodkov, zato se vsak zapis sinhronizira kot samostojen dvourni dogodek.
+Sinhronizacija je samo v smeri aplikacija → Google; spremembe v Googlu se ne uvozijo nazaj. Vsak par člana in dogodka ima stabilen Google ID, zato ponovni poskus ne ustvari dvojnika. Trenutni podatkovni model nima ponavljajočih se dogodkov, zato se vsak zapis sinhronizira kot samostojen dvourni dogodek.
 
-Če Google API začasno odpove, sprememba v aplikaciji ostane shranjena in v nastavitvah je na voljo ponovna sinhronizacija. Brisanje že povezanega dogodka se ob napaki Googla ustavi, da dogodek ne ostane nenadzorovano v skupnem koledarju.
+Če Google API začasno odpove ali član prekliče dovoljenje, sprememba v aplikaciji ostane shranjena. Napaka je vidna v nastavitvah in član lahko po ponovni povezavi sproži ponoven prenos. Neuspeli izbrisi so v čakalni vrsti. Prekinitev povezave ne izbriše že dodanih dogodkov iz Googla.
+
+### Potisna obvestila
+
+Član lahko obvestila o novih, spremenjenih in odpovedanih dogodkih ter o novih sporočilih v klepetu vključi v uporabniškem meniju. Tam lahko pošlje preizkusno obvestilo in naročnino pozneje izključi. Brskalnik mora podpirati Web Push, stran pa mora biti odprta prek HTTPS. Za strežnik nastavite `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY_FILE` (pot do zasebnega ključa PEM) in `VAPID_CONTACT_EMAIL`; brez teh nastavitev je stikalo za obvestila onemogočeno. Obvestila o klepetu ne vsebujejo besedila sporočila.
+
+### Zasebna galerija in klepet
+
+Vsak dogodek ima album, ki ga lahko vidijo prijavljeni člani. Fotografije nalagajo in brišejo pooblaščeni uporabniki; slika je omejena na 8 MB, pred shranjevanjem se pretvori v JPEG in odstrani metapodatke. Naložite samo fotografije z dovoljenjem za deljenje med člani. Skupinski klepet omogoča zadnjih 100 sporočil, urejanje in izbris lastnih sporočil ter skrbniško moderiranje. Novo sporočilo lahko naročenim članom pošlje splošno potisno obvestilo.
 
 ## Namestitev na telefon (PWA)
 

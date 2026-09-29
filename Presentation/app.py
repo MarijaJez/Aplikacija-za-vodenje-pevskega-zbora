@@ -14,6 +14,8 @@ from Services.auth_service import AuthService
 from Services.choir_service import ChoirService
 from Services.google_calendar import CALENDAR_SCOPE, CalendarError, CalendarNotConnected, GoogleCalendarService
 from Services.google_oauth import GoogleOAuthClient, GoogleOAuthError
+from Services.push_notifications import PushNotificationService
+from Presentation.community import register_community_routes
 
 ROOT = Path(__file__).resolve().parents[1]
 VIEWS = ROOT / "Presentation" / "views"
@@ -35,6 +37,7 @@ service = ChoirService(repository)
 auth_service = AuthService(repository)
 google_oauth = GoogleOAuthClient()
 calendar_service = GoogleCalendarService(repository)
+push_service = PushNotificationService(repository)
 
 
 def set_signed_cookie(name, value, **kwargs):
@@ -100,6 +103,9 @@ def require_login(callback):
     return wrapped
 
 
+push_service.register_routes(app, current_user, require_login, APP_BASE_URL)
+
+
 def require_permission(permission):
     def decorator(callback):
         @wraps(callback)
@@ -121,6 +127,16 @@ def render(view, title, **context):
         active=view, json=json, current_user=user, permissions=permissions,
         auth_method=auth_method, message=request.query.getunicode("sporocilo") or "", **context,
     )
+
+
+community_store = register_community_routes(
+    app, repository.db, render, current_user, require_login, require_permission,
+    UPLOADS, COOKIE_SECRET,
+    on_message=lambda user_id: push_service.notify(
+        "Novo sporočilo v klepetu", "V zborovskem klepetu je novo sporočilo.",
+        "/klepet", exclude_user_id=user_id, tag="chat"
+    ),
+)
 
 
 def public_page(section, title):
@@ -440,7 +456,7 @@ def save_review(song_id):
 @app.get("/dogodki")
 @require_login
 def events():
-    connection = repository.get_calendar_connection()
+    connection = repository.get_user_calendar_connection(current_user()["id"])
     return render(
         "events", "Vaje in dogodki", events=service.events(), songs=service.songs(),
         categories=repository.list_categories(), event_types=repository.list_event_types(),
@@ -449,29 +465,24 @@ def events():
 
 
 @app.get("/nastavitve/google-koledar")
-@require_permission("admin")
+@require_login
 def calendar_settings():
-    connection = repository.get_calendar_connection()
-    calendars = []
-    calendar_error = None
-    if connection and connection.get("active") and calendar_service.configured:
-        try:
-            calendars = calendar_service.list_calendars()
-        except CalendarError as error:
-            calendar_error = str(error)
+    user_id = current_user()["id"]
+    connection = repository.get_user_calendar_connection(user_id)
     return render(
-        "calendar_settings", "Skupni Google Koledar",
-        connection=connection, calendars=calendars,
-        calendar_error=calendar_error, configured=calendar_service.configured,
+        "calendar_settings", "Moj Google Koledar",
+        connection=connection, status=repository.user_calendar_sync_status(user_id),
+        configured=calendar_service.configured,
     )
 
 
 @app.get("/nastavitve/google-koledar/povezi")
-@require_permission("admin")
+@require_login
 def calendar_connect():
     if not calendar_service.configured:
         redirect("/nastavitve/google-koledar?sporocilo=Najprej+dopolni+Google+OAuth+konfiguracijo+na+strežniku.")
     flow = google_oauth.new_flow_values()
+    flow["user_id"] = current_user()["id"]
     try:
         url = google_oauth.authorization_url(
             GOOGLE_CALENDAR_REDIRECT_URI,
@@ -484,13 +495,13 @@ def calendar_connect():
 
 
 @app.get("/nastavitve/google-koledar/povratni-klic")
-@require_permission("admin")
+@require_login
 def calendar_callback():
     flow = oauth_flow_cookie("zbor_google_calendar_flow")
     response.delete_cookie("zbor_google_calendar_flow", path="/")
     if request.query.get("error"):
         redirect("/nastavitve/google-koledar?sporocilo=Povezovanje+je+bilo+preklicano.")
-    if not flow or request.query.get("state") != flow.get("state"):
+    if not flow or request.query.get("state") != flow.get("state") or flow.get("user_id") != current_user()["id"]:
         redirect("/nastavitve/google-koledar?sporocilo=Zahteva+je+potekla.+Začni+znova.")
     try:
         tokens = google_oauth.exchange_code(request.query.get("code") or "", GOOGLE_CALENDAR_REDIRECT_URI, flow["verifier"])
@@ -498,38 +509,29 @@ def calendar_callback():
         if claims.get("email_verified") is not True:
             raise CalendarError("Google e-poštni naslov ni potrjen.")
         calendar_service.store_authorization(tokens, claims, current_user()["id"])
+        succeeded, failed = calendar_service.sync_all(current_user()["id"])
+    except IntegrityError:
+        redirect("/nastavitve/google-koledar?sporocilo=Ta+Google+račun+je+že+povezan+z+drugim+članom.")
     except (GoogleOAuthError, CalendarError) as error:
         redirect(f"/nastavitve/google-koledar?sporocilo={quote_plus(str(error))}")
-    redirect("/nastavitve/google-koledar?sporocilo=Google+račun+je+povezan.+Izberi+skupni+koledar.")
-
-
-@app.post("/nastavitve/google-koledar/izberi")
-@require_permission("admin")
-def calendar_select():
-    try:
-        selected = calendar_service.select_calendar(request.forms.getunicode("calendar_id") or "")
-        succeeded, failed = calendar_service.sync_all()
-    except CalendarError as error:
-        redirect(f"/nastavitve/google-koledar?sporocilo={quote_plus(str(error))}")
-    message = f"Koledar {selected['name']} je izbran. Sinhronizirano: {succeeded}; napake: {failed}."
-    redirect(f"/nastavitve/google-koledar?sporocilo={quote_plus(message)}")
+    redirect(f"/nastavitve/google-koledar?sporocilo={quote_plus(f'Google Koledar je povezan. Sinhronizirano: {succeeded}; napake: {failed}.')}")
 
 
 @app.post("/nastavitve/google-koledar/sinhroniziraj")
-@require_permission("admin")
+@require_login
 def calendar_sync_all():
     try:
-        succeeded, failed = calendar_service.sync_all()
+        succeeded, failed = calendar_service.sync_all(current_user()["id"])
     except CalendarError as error:
         redirect(f"/nastavitve/google-koledar?sporocilo={quote_plus(str(error))}")
     redirect(f"/nastavitve/google-koledar?sporocilo=Sinhronizirano:+{succeeded};+napake:+{failed}.")
 
 
 @app.post("/nastavitve/google-koledar/prekini")
-@require_permission("admin")
+@require_login
 def calendar_disconnect():
-    repository.disconnect_google_calendar()
-    redirect("/nastavitve/google-koledar?sporocilo=Povezava+je+prekinjena.+Dogodki+v+Google+Koledarju+so+ostali+nespremenjeni.")
+    repository.disconnect_user_calendar(current_user()["id"])
+    redirect("/nastavitve/google-koledar?sporocilo=Povezava+je+prekinjena.+Dogodki+v+tvojem+Google+Koledarju+so+ostali+nespremenjeni.")
 
 
 def ics_escape(value):
@@ -550,25 +552,26 @@ def events_calendar():
 @require_permission("admin")
 def create_event():
     event_id=repository.create_event({"event_date":request.forms.get("event_date"),"event_type":request.forms.getunicode("event_type"),"name":request.forms.getunicode("name"),"place":request.forms.getunicode("place")},[int(value) for value in request.forms.getall("songs")])
-    try:
-        calendar_service.sync_event(repository.get_event(event_id))
-        message="Dogodek je dodan in sinhroniziran z Google Koledarjem."
-    except CalendarNotConnected:
-        message="Dogodek je dodan. Skupni Google Koledar še ni povezan."
-    except CalendarError:
-        message="Dogodek je dodan, sinhronizacija z Google Koledarjem pa ni uspela. Poskusi jo znova v nastavitvah."
+    event = repository.get_event(event_id)
+    succeeded, failed = calendar_service.sync_event(event)
+    push_service.notify_event("created", event)
+    message=f"Dogodek je dodan. Poslano v {succeeded} osebnih Google koledarjev; napake: {failed}."
     redirect(f"/dogodki/{event_id}?sporocilo={quote_plus(message)}")
 
 
 @app.post("/dogodki/<event_id:int>/izbrisi")
 @require_permission("admin")
 def delete_event(event_id):
-    try:
-        calendar_service.delete_event(event_id)
-    except CalendarError as error:
-        redirect(f"/dogodki/{event_id}?sporocilo={quote_plus('Dogodek ni izbrisan: '+str(error))}")
+    event = repository.get_event(event_id)
+    if not event:
+        abort(404, "Dogodek ne obstaja.")
+    gallery_files = community_store.photo_files_for_event(event_id)
+    succeeded, failed = calendar_service.delete_event(event_id)
     repository.delete_event(event_id)
-    redirect("/dogodki?sporocilo=Dogodek je izbrisan. Če je bil povezan s skupnim koledarjem, je odstranjen tudi tam.")
+    for name in gallery_files:
+        (UPLOADS / "gallery" / name).unlink(missing_ok=True)
+    push_service.notify_event("deleted", event)
+    redirect(f"/dogodki?sporocilo={quote_plus(f'Dogodek je izbrisan. Odstranjen iz {succeeded} osebnih koledarjev; za {failed} koledarjev bo izbris ponovljen po ponovni povezavi.')}")
 
 
 @app.get("/dogodki/<event_id:int>")
@@ -584,13 +587,10 @@ def event_detail(event_id):
 @require_permission("admin")
 def update_event(event_id):
     repository.update_event(event_id,{"event_date":request.forms.get("event_date"),"event_type":request.forms.getunicode("event_type"),"name":request.forms.getunicode("name"),"place":request.forms.getunicode("place")},[int(value) for value in request.forms.getall("songs")])
-    try:
-        calendar_service.sync_event(repository.get_event(event_id))
-        message="Dogodek je posodobljen tudi v Google Koledarju."
-    except CalendarNotConnected:
-        message="Dogodek je posodobljen. Skupni Google Koledar ni povezan."
-    except CalendarError:
-        message="Dogodek je posodobljen, sinhronizacija z Google Koledarjem pa ni uspela."
+    event = repository.get_event(event_id)
+    succeeded, failed = calendar_service.sync_event(event)
+    push_service.notify_event("updated", event)
+    message=f"Dogodek je posodobljen. Poslano v {succeeded} osebnih Google koledarjev; napake: {failed}."
     redirect(f"/dogodki/{event_id}?sporocilo={quote_plus(message)}")
 
 
@@ -652,6 +652,10 @@ def update_transaction(transaction_id):
 @app.get("/uploads/<filepath:path>")
 @require_login
 def uploaded_file(filepath):
+    target = (UPLOADS / filepath).resolve()
+    gallery_dir = (UPLOADS / "gallery").resolve()
+    if target == gallery_dir or gallery_dir in target.parents:
+        abort(404, "Datoteka ne obstaja.")
     return static_file(filepath, root=str(UPLOADS))
 
 

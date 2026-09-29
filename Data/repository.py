@@ -156,6 +156,9 @@ class ChoirRepository:
                     (values["first_name"],values["last_name"],values.get("birth_date") or None,values["email"],values.get("phone",''),values["voice"],person_id))
                 if current and current["email"].strip().lower() != values["email"]:
                     cur.execute("DELETE FROM user_google_identities WHERE user_id=(SELECT id FROM users WHERE person_id=%s)", (person_id,))
+                    cur.execute("""UPDATE user_google_calendar_connections SET active=FALSE,
+                        access_token_encrypted=NULL,refresh_token_encrypted=NULL,token_expires_at=NULL,
+                        updated_at=NOW() WHERE user_id=(SELECT id FROM users WHERE person_id=%s)""", (person_id,))
 
     def delete_member(self, person_id):
         with self.db.cursor() as cur:
@@ -290,6 +293,100 @@ class ChoirRepository:
     def delete_event(self, event_id):
         with self.db.cursor() as cur:
             cur.execute("DELETE FROM events WHERE id=%s",(event_id,))
+
+    def get_user_calendar_connection(self, user_id):
+        with self.db.cursor() as cur:
+            cur.execute("SELECT * FROM user_google_calendar_connections WHERE user_id=%s", (user_id,))
+            return self._one(cur)
+
+    def list_user_calendar_connections(self):
+        with self.db.cursor() as cur:
+            cur.execute("SELECT * FROM user_google_calendar_connections WHERE active=TRUE ORDER BY user_id")
+            return self._all(cur)
+
+    def save_user_calendar_credentials(self, values):
+        with self.db.cursor() as cur:
+            cur.execute("""
+                INSERT INTO user_google_calendar_connections
+                    (user_id,google_subject,google_email,access_token_encrypted,
+                     refresh_token_encrypted,token_expires_at,scopes,active,updated_at)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,TRUE,NOW())
+                ON CONFLICT (user_id) DO UPDATE SET
+                    google_subject=EXCLUDED.google_subject,
+                    google_email=EXCLUDED.google_email,
+                    access_token_encrypted=EXCLUDED.access_token_encrypted,
+                    refresh_token_encrypted=COALESCE(EXCLUDED.refresh_token_encrypted,user_google_calendar_connections.refresh_token_encrypted),
+                    token_expires_at=EXCLUDED.token_expires_at,
+                    scopes=EXCLUDED.scopes,active=TRUE,updated_at=NOW()
+            """, (values["user_id"], values["google_subject"], values["google_email"],
+                  values["access_token_encrypted"], values.get("refresh_token_encrypted"),
+                  values["token_expires_at"], values["scopes"]))
+
+    def reset_user_calendar_account(self, user_id):
+        """Remove old event IDs before a deliberate switch to another Google account."""
+        with self.db.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("DELETE FROM user_event_google_calendar_links WHERE user_id=%s", (user_id,))
+                cur.execute("DELETE FROM user_google_calendar_pending_deletions WHERE user_id=%s", (user_id,))
+
+    def update_user_calendar_tokens(self, user_id, access_token, refresh_token, expires_at):
+        with self.db.cursor() as cur:
+            cur.execute("""UPDATE user_google_calendar_connections
+                SET access_token_encrypted=%s,refresh_token_encrypted=COALESCE(%s,refresh_token_encrypted),
+                    token_expires_at=%s,updated_at=NOW() WHERE user_id=%s""",
+                (access_token, refresh_token, expires_at, user_id))
+
+    def disconnect_user_calendar(self, user_id):
+        with self.db.cursor() as cur:
+            cur.execute("""UPDATE user_google_calendar_connections SET active=FALSE,
+                access_token_encrypted=NULL,refresh_token_encrypted=NULL,token_expires_at=NULL,
+                updated_at=NOW() WHERE user_id=%s""", (user_id,))
+
+    def get_user_event_calendar_link(self, user_id, event_id):
+        with self.db.cursor() as cur:
+            cur.execute("SELECT * FROM user_event_google_calendar_links WHERE user_id=%s AND event_id=%s", (user_id,event_id))
+            return self._one(cur)
+
+    def list_event_calendar_links(self, event_id):
+        with self.db.cursor() as cur:
+            cur.execute("SELECT * FROM user_event_google_calendar_links WHERE event_id=%s", (event_id,))
+            return self._all(cur)
+
+    def record_user_event_calendar_sync(self, user_id, event_id, google_event_id, error=None):
+        with self.db.cursor() as cur:
+            cur.execute("""INSERT INTO user_event_google_calendar_links
+                (user_id,event_id,google_event_id,last_synced_at,last_error,updated_at)
+                VALUES (%s,%s,%s,CASE WHEN %s IS NULL THEN NOW() END,%s,NOW())
+                ON CONFLICT (user_id,event_id) DO UPDATE SET
+                google_event_id=EXCLUDED.google_event_id,
+                last_synced_at=CASE WHEN EXCLUDED.last_error IS NULL THEN NOW() ELSE user_event_google_calendar_links.last_synced_at END,
+                last_error=EXCLUDED.last_error,updated_at=NOW()""",
+                (user_id,event_id,google_event_id,error,error))
+
+    def queue_user_calendar_deletion(self, user_id, google_event_id, error):
+        with self.db.cursor() as cur:
+            cur.execute("""INSERT INTO user_google_calendar_pending_deletions
+                (user_id,google_event_id,last_error,updated_at) VALUES (%s,%s,%s,NOW())
+                ON CONFLICT (user_id,google_event_id) DO UPDATE SET last_error=EXCLUDED.last_error,updated_at=NOW()""",
+                (user_id,google_event_id,error))
+
+    def list_user_calendar_pending_deletions(self, user_id):
+        with self.db.cursor() as cur:
+            cur.execute("SELECT * FROM user_google_calendar_pending_deletions WHERE user_id=%s", (user_id,))
+            return self._all(cur)
+
+    def clear_user_calendar_pending_deletion(self, user_id, google_event_id):
+        with self.db.cursor() as cur:
+            cur.execute("DELETE FROM user_google_calendar_pending_deletions WHERE user_id=%s AND google_event_id=%s", (user_id,google_event_id))
+
+    def user_calendar_sync_status(self, user_id):
+        with self.db.cursor() as cur:
+            cur.execute("""SELECT COUNT(*) FILTER (WHERE l.last_error IS NOT NULL)::int errors,
+                COUNT(*) FILTER (WHERE l.last_error IS NULL)::int synced
+                FROM user_event_google_calendar_links l WHERE l.user_id=%s""", (user_id,))
+            status=self._one(cur)
+            cur.execute("SELECT COUNT(*)::int pending FROM user_google_calendar_pending_deletions WHERE user_id=%s", (user_id,))
+            return {**status, **self._one(cur)}
 
     def get_calendar_connection(self):
         with self.db.cursor() as cur:

@@ -9,7 +9,7 @@ from cryptography.fernet import Fernet
 
 from Services.auth_service import AuthService
 from Services.choir_service import ChoirService
-from Services.google_calendar import GoogleCalendarService
+from Services.google_calendar import CALENDAR_SCOPE, CalendarError, GoogleCalendarService
 from Services.google_oauth import GoogleOAuthClient
 
 
@@ -46,24 +46,48 @@ class MemberRepository:
 
 class CalendarRepository:
     def __init__(self):
-        self.connection = {"active": True, "calendar_id": "choir@example.si"}
+        self.connection = {"user_id": 5, "active": True, "google_subject": "abc", "google_email": "member@example.si"}
         self.links = {}
         self.credentials = None
+        self.pending = {}
 
-    def get_calendar_connection(self):
+    def get_user_by_id(self, user_id):
+        return {"id": user_id, "email": "member@example.si"}
+
+    def get_user_calendar_connection(self, user_id):
         return self.connection
 
-    def get_event_calendar_link(self, event_id):
-        return self.links.get(event_id)
+    def list_user_calendar_connections(self):
+        return [self.connection] if self.connection["active"] else []
 
-    def record_event_calendar_sync(self, event_id, calendar_id, google_event_id, error=None):
-        self.links[event_id] = {
-            "event_id": event_id, "calendar_id": calendar_id,
+    def get_user_event_calendar_link(self, user_id, event_id):
+        return self.links.get((user_id, event_id))
+
+    def record_user_event_calendar_sync(self, user_id, event_id, google_event_id, error=None):
+        previous = self.links.get((user_id, event_id), {})
+        self.links[(user_id, event_id)] = {
+            "user_id": user_id, "event_id": event_id,
             "google_event_id": google_event_id, "last_error": error,
+            "last_synced_at": 1 if error is None else previous.get("last_synced_at"),
         }
 
-    def save_calendar_credentials(self, values):
+    def save_user_calendar_credentials(self, values):
         self.credentials = values
+
+    def list_event_calendar_links(self, event_id):
+        return [link for (user_id, linked_event), link in self.links.items() if linked_event == event_id]
+
+    def queue_user_calendar_deletion(self, user_id, google_id, error):
+        self.pending[(user_id, google_id)] = error
+
+    def list_user_calendar_pending_deletions(self, user_id):
+        return [{"google_event_id": google_id} for (member_id, google_id) in self.pending if member_id == user_id]
+
+    def clear_user_calendar_pending_deletion(self, user_id, google_id):
+        del self.pending[(user_id, google_id)]
+
+    def list_events(self):
+        return []
 
 
 class GoogleIntegrationTests(unittest.TestCase):
@@ -127,9 +151,10 @@ class GoogleIntegrationTests(unittest.TestCase):
         first, second = service._request.call_args_list
         self.assertEqual(first.args[0], "POST")
         self.assertEqual(second.args[0], "PUT")
-        google_id = repository.links[42]["google_event_id"]
+        google_id = repository.links[(5, 42)]["google_event_id"]
         self.assertRegex(google_id, r"^[0-9a-v]{5,1024}$")
         self.assertIn(google_id, second.args[1])
+        self.assertIn("/calendars/primary/events", first.args[1])
 
     def test_calendar_tokens_are_encrypted_before_repository_storage(self):
         key = Fernet.generate_key().decode()
@@ -142,28 +167,58 @@ class GoogleIntegrationTests(unittest.TestCase):
             service.store_authorization({
                 "access_token": "access-secret",
                 "refresh_token": "refresh-secret",
-                "scope": "openid email https://www.googleapis.com/auth/calendar",
+                "scope": f"openid email {CALENDAR_SCOPE}",
                 "expires_in": 3600,
-            }, {"email": "choir@example.si"}, 5)
+            }, {"email": "member@example.si", "sub": "abc"}, 5)
         stored = repository.credentials
         self.assertNotIn("access-secret", stored["access_token_encrypted"])
         self.assertNotIn("refresh-secret", stored["refresh_token_encrypted"])
         cipher = Fernet(key.encode())
         self.assertEqual(cipher.decrypt(stored["refresh_token_encrypted"].encode()).decode(), "refresh-secret")
 
+    def test_member_cannot_connect_another_google_account(self):
+        key = Fernet.generate_key().decode()
+        repository = CalendarRepository()
+        with patch.dict("os.environ", {
+            "GOOGLE_CLIENT_ID": "client", "GOOGLE_CLIENT_SECRET": "secret",
+            "GOOGLE_TOKEN_ENCRYPTION_KEY": key,
+        }):
+            service = GoogleCalendarService(repository)
+            with self.assertRaises(CalendarError):
+                service.store_authorization({
+                    "access_token": "access", "refresh_token": "refresh",
+                    "scope": CALENDAR_SCOPE,
+                }, {"email": "other@example.si", "sub": "other"}, 5)
+        self.assertIsNone(repository.credentials)
+
     def test_calendar_retry_recreates_event_when_previous_create_never_arrived(self):
         repository = CalendarRepository()
-        google_id = GoogleCalendarService.google_event_id(9)
-        repository.record_event_calendar_sync(9, "choir@example.si", google_id, "temporary error")
+        google_id = GoogleCalendarService.google_event_id(5, 9)
+        repository.record_user_event_calendar_sync(5, 9, google_id, "temporary error")
         service = GoogleCalendarService(repository)
-        service._request = Mock(side_effect=[FakeResponse(404), FakeResponse(200)])
-        service.sync_event({
+        service._request = Mock(side_effect=[FakeResponse(409), FakeResponse(200)])
+        service.sync_event_for_user({
             "id": 9, "name": "Koncert", "place": "Dvorana",
             "event_type": "Koncert",
             "event_date": datetime(2026, 10, 2, 19, 0, tzinfo=timezone.utc),
-        })
-        self.assertEqual([call.args[0] for call in service._request.call_args_list], ["PUT", "POST"])
-        self.assertIsNone(repository.links[9]["last_error"])
+        }, 5)
+        self.assertEqual([call.args[0] for call in service._request.call_args_list], ["POST", "PUT"])
+        self.assertIsNone(repository.links[(5, 9)]["last_error"])
+
+    def test_failed_member_does_not_prevent_other_member_sync(self):
+        repository = CalendarRepository()
+        repository.list_user_calendar_connections = Mock(return_value=[{"user_id": 5}, {"user_id": 6}])
+        service = GoogleCalendarService(repository)
+        service.sync_event_for_user = Mock(side_effect=[CalendarError("revoked"), None])
+        self.assertEqual(service.sync_event({"id": 10}), (1, 1))
+
+    def test_failed_delete_is_queued_for_retry(self):
+        repository = CalendarRepository()
+        repository.record_user_event_calendar_sync(5, 9, GoogleCalendarService.google_event_id(5, 9))
+        service = GoogleCalendarService(repository)
+        service._request = Mock(return_value=FakeResponse(403))
+        self.assertEqual(service.delete_event(9), (0, 1))
+        self.assertEqual(len(repository.pending), 1)
 
 
 if __name__ == "__main__":

@@ -14,3 +14,5 @@
 }
 @media(max-width:480px){.page-tools>.button{flex:1 1 100%}.event-toolbar{flex-direction:column}.event-toolbar form,.event-toolbar .button{width:100%}.topbar h1{font-size:20px}.content{padding-left:12px;padding-right:12px}}
 @media(display-mode:standalone){body{padding-bottom:env(safe-area-inset-bottom)}.topbar{padding-top:max(18px,env(safe-area-inset-top))}}
+.push-settings { border-top: 1px solid var(--border, #d9e1df); margin-top: 1rem; padding-top: 1rem; }
+.push-settings p { font-size: .85rem; line-height: 1.45; margin: .35rem 0 .7rem; }
