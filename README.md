@@ -93,7 +93,7 @@ V brskalniku odpri produkcijsko HTTPS stran:
 - Android/Chrome: meni → **Namesti aplikacijo** ali **Dodaj na začetni zaslon**.
 - iPhone/Safari: **Deli** → **Add to Home Screen / Dodaj na domači zaslon**.
 
-PWA ima samostojni prikaz, barve in ikono. Service worker predpomni statične datoteke aplikacijske lupine. Članski podatki, dogodki in prisotnost brez povezave niso na voljo; namesto zastarelih podatkov se pokaže jasen zaslon brez povezave.
+Navodila za namestitev so tudi na prijavni strani in v uporabniškem meniju. Če brskalnik ponudi neposredno namestitev, se tam prikaže gumb **Namesti zdaj**. PWA ima samostojni prikaz, barve ter ikone PNG za Android in iOS. Service worker predpomni statične datoteke aplikacijske lupine. Članski podatki, dogodki in prisotnost brez povezave niso na voljo; namesto zastarelih podatkov se pokaže jasen zaslon brez povezave.
 
 ## Testni računi za lokalne začetne podatke
 

@@ -258,3 +258,27 @@ window.addEventListener('resize', drawAttendanceCharts);
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
 }
+
+// Browsers decide when a direct install prompt is available. The written steps
+// remain visible for Safari and for browsers without beforeinstallprompt.
+let installPrompt = null;
+const installButtons = [...document.querySelectorAll('[data-install-trigger]')];
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPrompt = event;
+  installButtons.forEach(button => { button.hidden = false; });
+});
+installButtons.forEach(button => button.addEventListener('click', async () => {
+  if (!installPrompt) return;
+  const prompt = installPrompt;
+  installPrompt = null;
+  installButtons.forEach(item => { item.hidden = true; });
+  await prompt.prompt();
+}));
+window.addEventListener('appinstalled', () => {
+  installPrompt = null;
+  document.querySelectorAll('[data-install-help]').forEach(help => { help.hidden = true; });
+});
+if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) {
+  document.querySelectorAll('[data-install-help]').forEach(help => { help.hidden = true; });
+}

@@ -1,11 +1,14 @@
-const CACHE = 'zbor-app-shell-v3';
+const CACHE = 'zbor-app-shell-v4';
 const APP_SHELL = [
   '/static/styles.css?v=8',
   '/static/refinements.css?v=2',
-  '/static/hotfix.css?v=2',
-  '/static/app.js?v=7',
+  '/static/hotfix.css?v=3',
+  '/static/app.js?v=8',
   '/static/push.js?v=1',
   '/static/icons/icon.svg',
+  '/static/icons/icon-192.png',
+  '/static/icons/icon-512.png',
+  '/static/icons/apple-touch-icon.png',
   '/static/offline.html',
   '/manifest.webmanifest'
 ];
@@ -22,8 +25,8 @@ self.addEventListener('push', event => {
   const url = typeof data.url === 'string' && data.url.startsWith('/') && !data.url.startsWith('//') ? data.url : '/dogodki';
   event.waitUntil(self.registration.showNotification(title, {
     body,
-    icon: '/static/icons/icon.svg',
-    badge: '/static/icons/icon.svg',
+    icon: '/static/icons/icon-192.png',
+    badge: '/static/icons/icon-192.png',
     tag: typeof data.tag === 'string' ? data.tag : 'zbor-dogodek',
     data: { url }
   }));
