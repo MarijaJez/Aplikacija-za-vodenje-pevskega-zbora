@@ -129,6 +129,10 @@ class ChoirService:
         income=sum(item["amount"] for item in rows if item["kind"]=="Prihodek");expenses=sum(item["amount"] for item in rows if item["kind"]=="Odhodek")
         return {"transactions":rows,"income":income,"expenses":expenses,"balance":income-expenses,"unsettled":sum(item["amount"] for item in rows if not item["settled"])}
 
-    def dashboard(self):
+    def dashboard(self, user):
         members=self.members();songs=self.songs();events=self.events();voices=Counter(member["voice"] for member in members);ranked=sorted(members,key=lambda item:item["attendance"],reverse=True)
-        return {"member_count":len(members),"voices":dict(voices),"top_members":ranked[:3],"low_members":list(reversed(ranked[-3:])),"song_count":len(songs),"latest_songs":songs[:3],"forgotten_songs":sorted(songs,key=lambda item:item["last"] or "")[:3],"events":events,"attendance":ranked,"upcoming_count":sum(event["status"]=="upcoming" for event in events),"average_attendance":round(sum(member["attendance"] for member in members)/max(len(members),1))}
+        upcoming = [event for event in events if event["status"] == "upcoming"]
+        personal_member = self.member(user["person_id"])
+        next_event = self.event(upcoming[0]["id"]) if upcoming else None
+        treasury = self.treasury() if "Blagajnik" in user["roles"] else None
+        return {"personal_member":personal_member,"next_event":next_event,"treasury":treasury,"member_count":len(members),"voices":[{"voice":voice,"count":count} for voice,count in voices.items()],"top_members":ranked[:3],"low_members":list(reversed(ranked[-3:])),"song_count":len(songs),"latest_songs":songs[:3],"forgotten_songs":sorted(songs,key=lambda item:item["last"] or "")[:3],"events":upcoming[:5],"attendance":ranked,"upcoming_count":sum(event["status"]=="upcoming" for event in events),"average_attendance":round(sum(member["attendance"] for member in members)/max(len(members),1))}

@@ -280,7 +280,7 @@ def change_own_password():
 @app.get("/")
 @require_login
 def dashboard():
-    return render("dashboard", "Nadzorna plošča", data=service.dashboard())
+    return render("dashboard", "Moj pregled", data=service.dashboard(current_user()))
 
 
 @app.get("/clani")
