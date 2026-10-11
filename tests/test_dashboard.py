@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 from bottle import template
 import os
 with patch.dict(os.environ, {"COOKIE_SECRET": "dashboard-unit-test-secret"}), patch("Data.repository.Database"):
-    from Presentation.app import permission_set
+    from Presentation.app import permission_set, avatar
 from Services.choir_service import ChoirService
 
 class DashboardTests(unittest.TestCase):
@@ -29,7 +29,7 @@ class DashboardTests(unittest.TestCase):
                 self.assertEqual(data['personal_member']['attendance'], 82)
                 self.assertIsNone(data['next_event'])
                 self.assertEqual(data['treasury'] is not None, 'Blagajnik' in roles)
-                html = template('dashboard.tpl', template_lookup=[views], current_user=user, permissions=permission_set(user), data=data)
+                html = template('dashboard.tpl', template_lookup=[views], current_user=user, permissions=permission_set(user), data=data, avatar=avatar)
                 self.assertIn('82%', html)
                 self.assertIn('Trenutno ni napovedane', html)
                 self.assertEqual('Upravljanje zbora</h3>' in html, bool(set(roles) & {'Predsednik', 'Zborovodja'}))
@@ -40,7 +40,7 @@ class DashboardTests(unittest.TestCase):
         service.events.return_value = [upcoming]
         service.event.return_value = upcoming
         data = service.dashboard(user)
-        html = template('dashboard.tpl', template_lookup=[views], current_user=user, permissions=permission_set(user), data=data)
+        html = template('dashboard.tpl', template_lookup=[views], current_user=user, permissions=permission_set(user), data=data, avatar=avatar)
         self.assertIn('/program/3', html)
         self.assertIn('Pesem za vajo', html)
         service.event.assert_called_once_with(9)

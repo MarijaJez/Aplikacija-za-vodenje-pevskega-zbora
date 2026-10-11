@@ -22,7 +22,8 @@ class ChoirRepository:
         with self.db.cursor() as cur:
             cur.execute("""
                 SELECT u.id, u.person_id, u.username, u.password_hash, u.must_change_password,
-                       p.first_name, p.last_name, p.email,
+
+                       p.first_name, p.last_name, p.email, p.avatar_path,
                        COALESCE(array_agg(r.name ORDER BY r.name) FILTER (WHERE r.id IS NOT NULL), '{}') roles
                 FROM users u JOIN people p ON p.id=u.person_id
                 LEFT JOIN person_roles pr ON pr.person_id=p.id LEFT JOIN roles r ON r.id=pr.role_id
@@ -35,7 +36,8 @@ class ChoirRepository:
         with self.db.cursor() as cur:
             cur.execute("""
                 SELECT u.id, u.person_id, u.username, u.password_hash, u.must_change_password,
-                       p.first_name, p.last_name, p.email,
+
+                       p.first_name, p.last_name, p.email, p.avatar_path,
                        COALESCE(array_agg(r.name ORDER BY r.name) FILTER (WHERE r.id IS NOT NULL), '{}') roles
                 FROM users u JOIN people p ON p.id=u.person_id
                 LEFT JOIN person_roles pr ON pr.person_id=p.id LEFT JOIN roles r ON r.id=pr.role_id
@@ -47,7 +49,8 @@ class ChoirRepository:
         with self.db.cursor() as cur:
             cur.execute("""
                 SELECT u.id, u.person_id, u.username, u.password_hash, u.must_change_password,
-                       p.first_name, p.last_name, p.email,
+
+                       p.first_name, p.last_name, p.email, p.avatar_path,
                        COALESCE(array_agg(r.name ORDER BY r.name) FILTER (WHERE r.id IS NOT NULL), '{}') roles
                 FROM users u JOIN people p ON p.id=u.person_id
                 LEFT JOIN person_roles pr ON pr.person_id=p.id LEFT JOIN roles r ON r.id=pr.role_id
@@ -110,10 +113,18 @@ class ChoirRepository:
         with self.db.cursor() as cur:
             cur.execute("UPDATE users SET password_hash=%s,must_change_password=%s WHERE id=%s", (password_hash, must_change, user_id))
 
+    def set_own_avatar(self, user_id, filename):
+        with self.db.cursor() as cur:
+            cur.execute("SELECT p.avatar_path FROM people p JOIN users u ON u.person_id=p.id WHERE u.id=%s FOR UPDATE OF p", (user_id,))
+            old = cur.fetchone()["avatar_path"]
+            cur.execute("UPDATE people SET avatar_path=%s WHERE id=(SELECT person_id FROM users WHERE id=%s)", (filename, user_id))
+            return old
+
     def list_members(self):
         with self.db.cursor() as cur:
             cur.execute("""
-                SELECT p.id,p.first_name,p.last_name,p.birth_date,p.email,p.phone,p.voice,u.username,
+
+                SELECT p.id,p.first_name,p.last_name,p.birth_date,p.email,p.phone,p.voice,p.avatar_path,u.username,
                   COALESCE(array_agg(DISTINCT r.name ORDER BY r.name) FILTER (WHERE r.id IS NOT NULL),'{}') roles,
                   ROUND(100.0 * COUNT(DISTINCT a.event_id) FILTER (WHERE a.status IN ('present','late_under','late_over')) / NULLIF(COUNT(DISTINCT a.event_id),0))::int attendance
                 FROM people p JOIN users u ON u.person_id=p.id
@@ -126,7 +137,8 @@ class ChoirRepository:
     def get_member(self, person_id):
         with self.db.cursor() as cur:
             cur.execute("""
-                SELECT p.id,p.first_name,p.last_name,p.birth_date,p.email,p.phone,p.voice,u.username,u.must_change_password,
+
+                SELECT p.id,p.first_name,p.last_name,p.birth_date,p.email,p.phone,p.voice,p.avatar_path,u.username,u.must_change_password,
                   COALESCE(array_agg(DISTINCT r.name ORDER BY r.name) FILTER (WHERE r.id IS NOT NULL),'{}') roles,
                   ROUND(100.0 * COUNT(DISTINCT a.event_id) FILTER (WHERE a.status IN ('present','late_under','late_over')) / NULLIF(COUNT(DISTINCT a.event_id),0))::int attendance
                 FROM people p JOIN users u ON u.person_id=p.id
@@ -225,7 +237,8 @@ class ChoirRepository:
         song=songs[0]
         with self.db.cursor() as cur:
             cur.execute("""SELECT sr.rating,sr.comment,sr.updated_at,p.first_name||' '||p.last_name member,
-              upper(left(p.first_name,1)||left(p.last_name,1)) initials,sr.person_id FROM song_reviews sr JOIN people p ON p.id=sr.person_id WHERE sr.song_id=%s ORDER BY sr.updated_at DESC""",(song_id,))
+
+              p.avatar_path,upper(left(p.first_name,1)||left(p.last_name,1)) initials,sr.person_id FROM song_reviews sr JOIN people p ON p.id=sr.person_id WHERE sr.song_id=%s ORDER BY sr.updated_at DESC""",(song_id,))
             song["reviews"]=self._all(cur)
             cur.execute("""SELECT e.id,e.name,e.event_type,e.event_date,e.place,ep.performance_rating rating,ep.comment
               FROM event_program ep JOIN events e ON e.id=ep.event_id WHERE ep.song_id=%s AND e.event_date<NOW() ORDER BY e.event_date DESC""",(song_id,))

@@ -60,7 +60,7 @@
 % if "admin" in permissions:
   <article class="card"><div class="card-head"><div><p class="eyebrow">Evidenca zbora</p><h3>Najboljša prisotnost</h3></div></div><div class="rank-list">
 % for index, member in enumerate(data['top_members']):
-    <a href="/clani/{{member['id']}}"><span class="rank">{{index + 1}}</span><span class="avatar small">{{member['initials']}}</span><span><strong>{{member['name']}}</strong><small>{{member['voice']}}</small></span><b>{{str(member['attendance'])+'%' if member['attendance'] is not None else 'Še ni vneseno'}}</b></a>
+    <a href="/clani/{{member['id']}}"><span class="rank">{{index + 1}}</span><span class="avatar small">{{!avatar(member, member['initials'])}}</span><span><strong>{{member['name']}}</strong><small>{{member['voice']}}</small></span><b>{{str(member['attendance'])+'%' if member['attendance'] is not None else 'Še ni vneseno'}}</b></a>
 % end
   </div><hr><p class="mini-title">Potrebujejo spodbudo</p><div class="compact-list">
 % for member in data['low_members']:

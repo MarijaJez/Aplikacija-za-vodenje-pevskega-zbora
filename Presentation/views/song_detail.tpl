@@ -14,7 +14,7 @@
 % end
 </article><article class="card span-2"><div class="rating-hero"><div><strong>{{song['rating']}}</strong><span>★★★★★</span><small>{{song['ratings']}} ocen članov</small></div><button class="button primary" data-review-dialog>{{'Uredi svojo oceno' if song['my_review'] else 'Dodaj svojo oceno'}}</button></div><hr><div class="card-head"><h3>Komentarji članov</h3><span class="muted">Najnovejši najprej</span></div><div class="comments">
 % for review in song['reviews']:
-<div><span class="avatar small">{{review['initials']}}</span><p><strong>{{review['member']}} <span>{{'★' * review['rating']}}{{'☆' * (5-review['rating'])}}</span></strong><small>{{review['updated_at'].strftime('%d. %m. %Y')}}</small>{{review['comment']}}</p></div>
+<div><span class="avatar small">{{!avatar(review, review['initials'])}}</span><p><strong>{{review['member']}} <span>{{'★' * review['rating']}}{{'☆' * (5-review['rating'])}}</span></strong><small>{{review['updated_at'].strftime('%d. %m. %Y')}}</small>{{review['comment']}}</p></div>
 % end
 % if not song['reviews']:
 <p class="muted">Pesem še nima ocen.</p>

@@ -15,7 +15,7 @@
 <th class="total-column"><small>SKUPAJ</small>Prisoten</th><th class="total-column"><small>SKUPAJ</small>Zamudil &lt; 10</th><th class="total-column"><small>SKUPAJ</small>Zamudil &gt; 10</th><th class="total-column"><small>SKUPAJ</small>Opravičeno</th><th class="total-column"><small>SKUPAJ</small>Odsoten</th><th class="total-column">Še ni vneseno</th></tr></thead><tbody>
 % labels = {'present': ('✓', 'Prisoten'), 'late_under': ('<10', 'Zamudil manj kot 10 minut'), 'late_over': ('>10', 'Zamudil več kot 10 minut'), 'excused': ('O', 'Opravičeno odsoten'), 'absent': ('×', 'Odsoten'), 'unentered': ('—', 'Še ni vneseno')}
 % for row, member in enumerate(data['members']):
-<tr data-member-row="{{row}}"><td class="sticky-member"><a class="person" href="/clani/{{member['id']}}"><span class="avatar small">{{member['initials']}}</span><span><strong>{{member['name']}}</strong><small>{{member['voice']}}</small></span></a></td>
+<tr data-member-row="{{row}}"><td class="sticky-member"><a class="person" href="/clani/{{member['id']}}"><span class="avatar small">{{!avatar(member, member['initials'])}}</span><span><strong>{{member['name']}}</strong><small>{{member['voice']}}</small></span></a></td>
 % for col, event in enumerate(data['events']):
 % state = data['matrix'][row][col]
 <td><button class="attendance-dot {{state}}" data-cycle data-row="{{row}}" data-col="{{col}}" data-person-id="{{member['id']}}" data-event-id="{{event['id']}}" data-status="{{state}}" data-tooltip="{{labels[state][1]}}" aria-label="{{member['name']}} – {{event['title']}}: {{labels[state][1]}}" {{'disabled' if not can_edit_attendance(current_user, member['id'], event) else ''}}>{{labels[state][0]}}</button></td>

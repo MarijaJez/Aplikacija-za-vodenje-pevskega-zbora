@@ -1,3 +1,7 @@
+
+import hashlib
+import hmac
+from html import escape
 import json
 import os
 import uuid
@@ -16,6 +20,8 @@ from Services.google_calendar import CALENDAR_SCOPE, CalendarError, CalendarNotC
 from Services.google_oauth import GoogleOAuthClient, GoogleOAuthError
 from Services.push_notifications import PushNotificationService
 from Presentation.community import register_community_routes
+
+from Services.community_service import normalize_photo, CommunityValidationError
 
 ROOT = Path(__file__).resolve().parents[1]
 VIEWS = ROOT / "Presentation" / "views"
@@ -117,6 +123,39 @@ def require_permission(permission):
         return wrapped
     return decorator
 
+def avatar(user, initials=None):
+    filename = user.get("avatar_path")
+    if filename:
+        return '<img src="/uploads/avatars/' + escape(filename, quote=True) + '" alt="" loading="lazy">'
+    return escape(initials if initials is not None else (user.get("first_name", "")[:1] + user.get("last_name", "")[:1]))
+def avatar_token(user):
+    return hmac.new(COOKIE_SECRET.encode(), f"avatar:{user['id']}".encode(), hashlib.sha256).hexdigest()
+@app.post("/profil/slika")
+@require_login
+def update_avatar():
+    user = current_user()
+    if not hmac.compare_digest(request.forms.get("csrf") or "", avatar_token(user)):
+        abort(403, "Neveljavna zaščita obrazca. Osveži stran.")
+    folder = UPLOADS / "avatars"
+    filename = None
+    if request.forms.get("remove") != "1":
+        try:
+            data = normalize_photo(request.files.get("avatar"), max_dimension=512)
+        except CommunityValidationError as error:
+            redirect(f"/clani/{user['person_id']}?sporocilo={quote_plus(str(error))}")
+        folder.mkdir(parents=True, exist_ok=True)
+        filename = uuid.uuid4().hex + ".jpg"
+        (folder / filename).write_bytes(data)
+    try:
+        old = repository.set_own_avatar(user["id"], filename)
+    except Exception:
+        if filename:
+            (folder / filename).unlink(missing_ok=True)
+        raise
+    if old and Path(old).name == old:
+        (folder / old).unlink(missing_ok=True)
+    redirect(f"/clani/{user['person_id']}?sporocilo=Profilna+slika+je+posodobljena.")
+
 
 def can_edit_attendance(user, person_id, event):
     return bool(user and event and (
@@ -132,6 +171,7 @@ def render(view, title, **context):
     return template(
         "layout.tpl", template_lookup=[str(VIEWS)], view=f"{view}.tpl", title=title,
         active=view, json=json, current_user=user, permissions=permissions,
+        avatar=avatar, avatar_csrf=avatar_token(user) if user else "",
         can_edit_attendance=can_edit_attendance, auth_method=auth_method, message=request.query.getunicode("sporocilo") or "", **context,
     )
 

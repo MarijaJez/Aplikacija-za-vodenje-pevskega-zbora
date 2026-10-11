@@ -4,7 +4,7 @@
 <form method="post" action="/clani/{{member['id']}}/izbrisi" class="inline-form" data-permission="admin"><button class="button danger" onclick="return confirm('Res želiš izbrisati člana?')">Izbriši</button></form>
 % end
 </div></div>
-<div class="detail-grid"><article class="card profile-card"><div class="avatar xlarge">{{member['initials']}}</div><h2>{{member['name']}}</h2><span class="tag">{{member['voice']}}</span><dl><dt>E-pošta</dt><dd>{{member['email']}}</dd><dt>Telefon</dt><dd>{{member['phone']}}</dd><dt>Datum rojstva</dt><dd>{{member['birth']}}</dd><dt>Vloge</dt><dd>
+<div class="detail-grid"><article class="card profile-card"><div class="avatar xlarge">{{!avatar(member, member['initials'])}}</div><h2>{{member['name']}}</h2><span class="tag">{{member['voice']}}</span><dl><dt>E-pošta</dt><dd>{{member['email']}}</dd><dt>Telefon</dt><dd>{{member['phone']}}</dd><dt>Datum rojstva</dt><dd>{{member['birth']}}</dd><dt>Vloge</dt><dd>
 % for role in member['roles']:
 <span class="badge">{{role}}</span>
 % end
@@ -30,3 +30,11 @@
 </div><p class="field-help">Za opis se pomakni nad posamezno vlogo.</p></fieldset>
 % end
 <div class="dialog-actions"><button type="button" class="button secondary member-edit-cancel">Prekliči</button><button type="submit" class="button primary">Shrani spremembe</button></div></form></dialog>
+
+% if current_user['person_id'] == member['id']:
+<section class="card avatar-settings"><h3>Moja profilna slika</h3><p>JPEG, PNG ali WebP, do 8 MB. Slika je vidna prijavljenim članom zbora.</p><form method="post" action="/profil/slika" enctype="multipart/form-data"><input type="hidden" name="csrf" value="{{avatar_csrf}}"><label>Izberi sliko<input type="file" name="avatar" accept="image/jpeg,image/png,image/webp" required></label><button class="button primary" type="submit">{{'Zamenjaj sliko' if member.get('avatar_path') else 'Naloži sliko'}}</button></form>
+% if member.get('avatar_path'):
+<form method="post" action="/profil/slika"><input type="hidden" name="csrf" value="{{avatar_csrf}}"><button class="button danger" name="remove" value="1">Odstrani sliko</button></form>
+% end
+</section>
+% end

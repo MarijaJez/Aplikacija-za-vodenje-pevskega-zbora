@@ -6,3 +6,5 @@ dialog{width:min(520px,calc(100% - 30px));max-width:520px;color:var(--ink)}dialo
 .status-check{display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:9px;font-weight:700}.status-check span{color:var(--muted)}.status-check input:checked+span{color:var(--green)}.standalone-check{margin:14px 0 0!important}.treasury-table td:last-child{text-align:center}
 [data-theme="dark"] .choice-section{background:#142328}[data-theme="dark"] .multi-filter-panel,[data-theme="dark"] .lookup-song{background:var(--surface)}
 @media(max-width:1050px){.compact-song-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.home-shortcut{display:none}.choice-grid,.lookup-tools{grid-template-columns:1fr}.compact-song-grid{grid-template-columns:repeat(2,1fr)}.performance-list>div{grid-template-columns:1fr}.performance-list .rating{justify-self:start}}@media(max-width:480px){.compact-song-grid{grid-template-columns:1fr}}
+
+.avatar{overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit}.avatar-settings{margin-top:18px}.avatar-settings form{margin-top:12px}

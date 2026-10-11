@@ -24,8 +24,7 @@ def clean_text(value, limit, label, required=False):
         raise CommunityValidationError(f"{label} je lahko dolg največ {limit} znakov.")
     return value
 
-
-def normalize_photo(upload):
+def normalize_photo(upload, max_dimension=2400):
     if not upload or not upload.file:
         raise CommunityValidationError("Izberi fotografijo.")
     declared = (upload.content_type or "").split(";", 1)[0].lower()
@@ -44,7 +43,8 @@ def normalize_photo(upload):
                 probe.verify()
             with Image.open(io.BytesIO(raw)) as image:
                 image = ImageOps.exif_transpose(image)
-                image.thumbnail((2400, 2400), Image.Resampling.LANCZOS)
+
+                image.thumbnail((max_dimension, max_dimension), Image.Resampling.LANCZOS)
                 if image.mode in ("RGBA", "LA") or "transparency" in image.info:
                     alpha = image.convert("RGBA")
                     flattened = Image.new("RGB", alpha.size, "white")

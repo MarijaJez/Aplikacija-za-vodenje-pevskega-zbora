@@ -65,7 +65,7 @@ class AttendanceTests(unittest.TestCase):
         self.assertEqual(data['event_totals'][0]['absent'],0)
         self.assertEqual(data['event_totals'][0]['unentered'],1)
         self.assertEqual(data['average'],100)
-        html=template('attendance.tpl',template_lookup=[VIEWS],data=data,json=json,current_user=self.user,can_edit_attendance=web.can_edit_attendance)
+        html=template('attendance.tpl',template_lookup=[VIEWS],data=data,json=json,current_user=self.user,can_edit_attendance=web.can_edit_attendance,avatar=web.avatar)
         self.assertIn('Še ni vneseno',html)
         self.assertIn('data-person-id="8"',html)
         self.assertIn('disabled',html)
@@ -95,3 +95,4 @@ class AttendanceTests(unittest.TestCase):
         self.assertNotIn('actions',json.loads(send.call_args_list[0].kwargs['data']))
 
 if __name__=='__main__':unittest.main()
+
