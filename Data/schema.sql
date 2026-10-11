@@ -57,6 +57,7 @@ CREATE TABLE songs (
     title VARCHAR(255) NOT NULL,
     author VARCHAR(255) NOT NULL,
     notes_path TEXT,
+    notes_comment TEXT NOT NULL DEFAULT '',
     audio_path TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

@@ -209,7 +209,7 @@ class ChoirRepository:
     def list_songs(self):
         with self.db.cursor() as cur:
             cur.execute("""
-              SELECT s.id,s.title,s.author,s.notes_path,s.audio_path,s.created_at,
+              SELECT s.id,s.title,s.author,s.notes_path,s.audio_path,s.created_at,s.notes_comment,
                 COALESCE(array_agg(DISTINCT c.name ORDER BY c.name) FILTER(WHERE c.id IS NOT NULL),'{}') categories,
                 COALESCE(ROUND(AVG(sr.rating)::numeric,1),0)::float rating,COUNT(DISTINCT sr.person_id)::int ratings,
                 MAX(e.event_date) last_performed

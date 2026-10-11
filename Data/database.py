@@ -15,6 +15,7 @@ class Database:
         self.timezone = os.getenv("APP_TIMEZONE", "Europe/Ljubljana")
         self._pool = ThreadedConnectionPool(1, 10, self.dsn, options=f"-c timezone={self.timezone}")
         with self.cursor() as cursor:
+            cursor.execute("ALTER TABLE songs ADD COLUMN IF NOT EXISTS notes_comment TEXT NOT NULL DEFAULT ''")
             cursor.execute("ALTER TABLE events ADD COLUMN IF NOT EXISTS event_end TIMESTAMPTZ CHECK (event_end > event_date)")
 
     @contextmanager

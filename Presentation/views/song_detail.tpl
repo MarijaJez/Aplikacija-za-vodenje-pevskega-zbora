@@ -3,6 +3,9 @@
 <span class="tag">{{category}}</span>
 % end
 </div>
+% if song.get('notes_comment'):
+<div class="song-notes-comment"><h3>Komentar k notam</h3><p>{{song['notes_comment']}}</p></div>
+% end
 % if song.get('notes_path'):
 <a class="button secondary wide" href="/uploads/{{song['notes_path']}}">Odpri note</a>
 % end
