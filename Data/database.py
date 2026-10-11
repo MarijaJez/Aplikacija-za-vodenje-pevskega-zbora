@@ -1,6 +1,7 @@
 """PostgreSQL connection management for the data layer."""
 
 import os
+from pathlib import Path
 from contextlib import contextmanager
 
 from psycopg2.extras import RealDictCursor
@@ -17,6 +18,7 @@ class Database:
         with self.cursor() as cursor:
 
             cursor.execute("ALTER TABLE people ADD COLUMN IF NOT EXISTS avatar_path TEXT")
+            cursor.execute((Path(__file__).parent / "migrations" / "007_notification_preferences.sql").read_text())
             cursor.execute("ALTER TABLE songs ADD COLUMN IF NOT EXISTS notes_comment TEXT NOT NULL DEFAULT ''")
             cursor.execute("ALTER TABLE events ADD COLUMN IF NOT EXISTS event_end TIMESTAMPTZ CHECK (event_end > event_date)")
 

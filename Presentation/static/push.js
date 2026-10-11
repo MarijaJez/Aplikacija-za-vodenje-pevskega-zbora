@@ -41,7 +41,7 @@ if (pushButton && pushStatus) {
         const statusResponse = await fetch(`/api/push/status?endpoint=${encodeURIComponent(subscription.endpoint)}`, { credentials: 'same-origin' });
         subscribed = statusResponse.ok && (await statusResponse.json()).subscribed;
       }
-      setStatus(subscribed ? 'Obvestila o dogodkih in klepetu so vključena.' : 'Prejemaj obvestila o dogodkih in novih sporočilih v klepetu.');
+      setStatus(subscribed ? 'Ta naprava prejema obvestila po tvojih osebnih nastavitvah.' : 'Prejemaj obvestila o dogodkih in novih sporočilih v klepetu.');
     } catch {
       setStatus('Stanja obvestil trenutno ni mogoče preveriti.', false);
     }
@@ -77,7 +77,7 @@ if (pushButton && pushStatus) {
         });
         if (!result.ok) throw new Error('subscribe');
         subscribed = true;
-        setStatus('Obvestila o dogodkih in klepetu so vključena.');
+        setStatus('Ta naprava prejema obvestila po tvojih osebnih nastavitvah.');
       }
     } catch {
       setStatus('Nastavitve obvestil ni bilo mogoče shraniti. Poskusi znova.');
@@ -98,4 +98,38 @@ if (pushButton && pushStatus) {
     }
   });
   refresh();
+}
+
+const preferencesForm = document.querySelector('[data-notification-preferences]');
+if (preferencesForm) {
+  const status = preferencesForm.querySelector('[data-preferences-status]');
+  const save = preferencesForm.querySelector('button');
+  const mode = preferencesForm.elements.chat_mode;
+  const interval = preferencesForm.elements.chat_interval_minutes;
+  const updateInterval = () => { interval.disabled = mode.value !== 'limited'; };
+  mode.addEventListener('change', updateInterval);
+  fetch('/api/push/preferences', {credentials: 'same-origin'}).then(async result => {
+    if (!result.ok) throw new Error();
+    const data = await result.json();
+    preferencesForm.elements.events_enabled.checked = data.events_enabled;
+    mode.value = data.chat_mode;
+    interval.value = data.chat_interval_minutes;
+    updateInterval();
+    status.textContent = '';
+    save.disabled = false;
+  }).catch(() => { status.textContent = 'Nastavitev ni mogoče prebrati. Osveži stran.'; });
+  preferencesForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    save.disabled = true;
+    try {
+      const result = await fetch('/api/push/preferences', {
+        method: 'POST', credentials: 'same-origin', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({events_enabled: preferencesForm.elements.events_enabled.checked,
+          chat_mode: mode.value, chat_interval_minutes: Number(interval.value)})
+      });
+      if (!result.ok) throw new Error();
+      status.textContent = 'Nastavitve so shranjene. Za dostavo vključi obvestila tudi na tej napravi.';
+    } catch { status.textContent = 'Nastavitev ni mogoče shraniti. Poskusi znova.'; }
+    finally { save.disabled = false; }
+  });
 }

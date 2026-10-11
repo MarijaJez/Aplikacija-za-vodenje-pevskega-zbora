@@ -46,7 +46,7 @@ class PushTests(unittest.TestCase):
         service.private_key_file = __file__
         with patch('Services.push_notifications.webpush') as sender:
             service._deliver(json.dumps({'title': 'Novo sporočilo', 'body': 'Živjo', 'url': '/klepet'}), 7)
-        self.assertEqual(db.cursor_value.queries[0][1], (None, 7, 7, None, None))
+        self.assertEqual(db.cursor_value.queries[1][1], (None, 7, 7, None, None, None, None, None, None))
         self.assertEqual(sender.call_args.kwargs['subscription_info']['endpoint'], endpoint)
         self.assertEqual(json.loads(sender.call_args.kwargs['data'])['url'], '/klepet')
         with self.assertRaises(ValueError):

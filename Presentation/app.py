@@ -181,7 +181,7 @@ community_store = register_community_routes(
     UPLOADS, COOKIE_SECRET,
     on_message=lambda user_id: push_service.notify(
         "Novo sporočilo v klepetu", "V zborovskem klepetu je novo sporočilo.",
-        "/klepet", exclude_user_id=user_id, tag="chat"
+        "/klepet", exclude_user_id=user_id, tag="chat", category="chat"
     ),
 )
 

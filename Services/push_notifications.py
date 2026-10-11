@@ -72,6 +72,32 @@ class PushNotificationService:
             if request.content_type != "application/json" or length is None or length < 0 or length > 8192:
                 raise HTTPError(400, "Pričakovani so podatki JSON.")
 
+        @app.get("/api/push/preferences")
+        @require_login
+        def get_preferences():
+            response.set_header("Cache-Control", "no-store")
+            with self.db.cursor() as cur:
+                cur.execute("SELECT events_enabled,chat_mode,chat_interval_minutes FROM notification_preferences WHERE user_id=%s", (current_user()["id"],))
+                return dict(cur.fetchone() or {"events_enabled": True, "chat_mode": "limited", "chat_interval_minutes": 30})
+
+        @app.post("/api/push/preferences")
+        @require_login
+        def save_preferences():
+            check_post()
+            data = request.json
+            if (not isinstance(data, dict) or type(data.get("events_enabled")) is not bool
+                    or data.get("chat_mode") not in ("off", "all", "limited")
+                    or type(data.get("chat_interval_minutes")) is not int
+                    or data["chat_interval_minutes"] not in (15, 30, 60, 120)):
+                raise HTTPError(400, "Neveljavne nastavitve obvestil.")
+            with self.db.cursor() as cur:
+                cur.execute("""INSERT INTO notification_preferences(user_id,events_enabled,chat_mode,chat_interval_minutes)
+                    VALUES(%s,%s,%s,%s) ON CONFLICT(user_id) DO UPDATE SET
+                    events_enabled=EXCLUDED.events_enabled,chat_mode=EXCLUDED.chat_mode,
+                    chat_interval_minutes=EXCLUDED.chat_interval_minutes""",
+                    (current_user()["id"], data["events_enabled"], data["chat_mode"], data["chat_interval_minutes"]))
+            return {"saved": True}
+
         @app.get("/api/push/config")
         @require_login
         def push_config():
@@ -150,9 +176,9 @@ class PushNotificationService:
         when = event.get("event_date")
         date_label = when.strftime("%d. %m. %Y ob %H:%M") if hasattr(when, "strftime") else ""
         body = f"{event['name']} · {date_label}" if date_label else str(event["name"])
-        self.notify(title, body, f"/dogodki/{event['id']}" if action != "deleted" else "/dogodki", tag=f"event-{event['id']}")
+        self.notify(title, body, f"/dogodki/{event['id']}" if action != "deleted" else "/dogodki", tag=f"event-{event['id']}", category="event")
 
-    def notify(self, title, body, url, exclude_user_id=None, tag=None, recipient_user_id=None):
+    def notify(self, title, body, url, exclude_user_id=None, tag=None, recipient_user_id=None, category=None):
         """Queue a visible notification; reusable for chat and other member updates."""
         if not self.configured:
             return
@@ -161,20 +187,35 @@ class PushNotificationService:
         event_match = re.fullmatch(r"/dogodki/(\d+)", url)
         payload = json.dumps({"title": str(title)[:100], "body": str(body)[:300], "url": url, "tag": tag or secrets.token_urlsafe(8), "event_id": int(event_match[1]) if event_match else None}, ensure_ascii=False)
         try:
-            _DELIVERY_POOL.submit(self._deliver, payload, exclude_user_id, recipient_user_id)
+            _DELIVERY_POOL.submit(self._deliver, payload, exclude_user_id, recipient_user_id, category)
         except RuntimeError:
             LOG.exception("Push worker is unavailable")
 
-    def _deliver(self, payload, exclude_user_id=None, recipient_user_id=None):
+    def _deliver(self, payload, exclude_user_id=None, recipient_user_id=None, category=None):
         try:
             event_id = json.loads(payload).get("event_id")
             with self.db.cursor() as cur:
-                cur.execute("""SELECT s.endpoint,s.p256dh,s.auth,a.status attendance_status,e.event_date
-                    FROM push_subscriptions s JOIN users u ON u.id=s.user_id
-                    LEFT JOIN events e ON e.id=%s
-                    LEFT JOIN attendance a ON a.event_id=e.id AND a.person_id=u.person_id
-                    WHERE (%s::BIGINT IS NULL OR s.user_id<>%s)
-                      AND (%s::BIGINT IS NULL OR s.user_id=%s)""", (event_id, exclude_user_id, exclude_user_id, recipient_user_id, recipient_user_id))
+                # Create defaults only for subscribed recipients; lock claims atomically across workers.
+                cur.execute("""INSERT INTO notification_preferences(user_id)
+                    SELECT DISTINCT user_id FROM push_subscriptions ON CONFLICT DO NOTHING""")
+                cur.execute("""WITH eligible AS (
+                    UPDATE notification_preferences p SET last_chat_notification_at=
+                        CASE WHEN %s='chat' THEN NOW() ELSE p.last_chat_notification_at END
+                    WHERE EXISTS (SELECT 1 FROM push_subscriptions s WHERE s.user_id=p.user_id)
+                      AND (%s::BIGINT IS NULL OR p.user_id<>%s)
+                      AND (%s::BIGINT IS NULL OR p.user_id=%s)
+                      AND (%s::TEXT IS NULL OR (%s='event' AND p.events_enabled)
+                        OR (%s='chat' AND (p.chat_mode='all' OR
+                          (p.chat_mode='limited' AND (p.last_chat_notification_at IS NULL OR
+                           p.last_chat_notification_at <= NOW() - p.chat_interval_minutes * INTERVAL '1 minute')))))
+                    RETURNING p.user_id)
+                    SELECT s.endpoint,s.p256dh,s.auth,a.status attendance_status,ev.event_date
+                    FROM push_subscriptions s JOIN eligible e ON e.user_id=s.user_id
+                    JOIN users u ON u.id=s.user_id
+                    LEFT JOIN events ev ON ev.id=%s
+                    LEFT JOIN attendance a ON a.event_id=ev.id AND a.person_id=u.person_id""",
+                    (category, exclude_user_id, exclude_user_id, recipient_user_id, recipient_user_id,
+                     category, category, category, event_id))
                 subscriptions = cur.fetchall()
         except Exception:
             LOG.exception("Could not load push subscriptions")
