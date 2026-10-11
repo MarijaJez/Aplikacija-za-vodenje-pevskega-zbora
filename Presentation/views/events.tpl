@@ -15,3 +15,4 @@
 <label class="lookup-song" data-search="{{song['title']}} {{song['author']}}" data-categories="{{'|'.join(song['categories'])}}"><input type="checkbox" name="songs" value="{{song['id']}}"><span><strong>{{song['title']}}</strong><small>{{song['author']}} · {{', '.join(song['categories'])}}</small></span></label>
 % end
 </div></fieldset><div class="dialog-actions"><button type="button" class="button secondary event-dialog-cancel">Prekliči</button><button type="submit" class="button primary">Shrani dogodek</button></div></form></dialog>
+<script src="/static/event-defaults.js?v=1" defer></script>
