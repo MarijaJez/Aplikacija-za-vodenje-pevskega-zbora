@@ -22,6 +22,14 @@ class Database:
             cursor.execute("ALTER TABLE songs ADD COLUMN IF NOT EXISTS notes_comment TEXT NOT NULL DEFAULT ''")
             cursor.execute("ALTER TABLE events ADD COLUMN IF NOT EXISTS event_end TIMESTAMPTZ CHECK (event_end > event_date)")
 
+            cursor.execute("""CREATE TABLE IF NOT EXISTS event_reminder_deliveries (
+                event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+                local_date DATE NOT NULL,
+                endpoint TEXT NOT NULL,
+                claimed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                PRIMARY KEY(event_id, local_date, endpoint)
+            )""")
+
     @contextmanager
     def connection(self):
         connection = self._pool.getconn()

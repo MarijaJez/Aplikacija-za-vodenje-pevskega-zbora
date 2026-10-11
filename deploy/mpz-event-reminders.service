@@ -1,0 +1,18 @@
+[Unit]
+Description=MPZ daily event push reminders
+After=network-online.target postgresql@16-main.service
+Wants=network-online.target
+Requires=postgresql@16-main.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+User=mpz
+Group=mpz
+WorkingDirectory=/home/mpz/www
+EnvironmentFile=/home/mpz/.config/mpz-app.env
+ExecStart=/home/mpz/www/.venv/bin/python -m Services.event_reminders
+Restart=on-failure
+RestartSec=60
+UMask=0077
+TimeoutStartSec=1h

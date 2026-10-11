@@ -1,0 +1,10 @@
+[Unit]
+Description=MPZ event reminders at 08:00 Ljubljana time
+
+[Timer]
+OnCalendar=*-*-* 08:00:00 Europe/Ljubljana
+Persistent=true
+Unit=mpz-event-reminders.service
+
+[Install]
+WantedBy=timers.target

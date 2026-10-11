@@ -27,3 +27,18 @@ ssh -4 -o BatchMode=yes -p 22022 mpz@algorhythmo.com 'cd /home/mpz/www && git pu
 6. Ob težavi preveri dnevnik storitve in pripravi povrnitev z Git revert. Ohrani produkcijske podatke, uploads in nastavitve okolja.
 
 Čas konca dogodka: aplikacija ob inicializaciji povezave doda nullable `event_end` s preverjanjem `event_end > event_date`. Stari dogodki ostanejo brez znanega konca; koledarski izvoz pri njih ohrani dosedanjo predpostavko dveh ur.
+
+## Jutranji opomniki dogodkov
+
+`deploy/mpz-event-reminders.timer` uporablja systemd `OnCalendar=*-*-* 08:00:00 Europe/Ljubljana` in `Persistent=true`. Časovni pas samodejno upošteva poletni/zimski čas. Zamujen zagon se izvede po vklopu strežnika; delavec pred 08:00 ne pošilja, po 08:00 pa izbere samo še nezačete dogodke današnjega lokalnega dne. Vsi prejemniki in osebne nastavitve se določijo v obstoječem push sistemu. Člani brez odgovora dobijo gumba Prisoten/Odsoten in povezavo na dogodek.
+
+Namestitev (enkrat in ob spremembi enot):
+```sh
+sudo install -m 644 deploy/mpz-event-reminders.service deploy/mpz-event-reminders.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now mpz-event-reminders.timer
+```
+
+Delavec uporablja isti EnvironmentFile in virtualno okolje kot aplikacija. Ne potrebuje novih skrivnosti. Status: `systemctl list-timers mpz-event-reminders.timer`; dnevniki: `journalctl -u mpz-event-reminders.service`. Varno preverjanje brez pošiljanja ali zapisov deduplikacije: z naloženim produkcijskim okoljem `.venv/bin/python -m Services.event_reminders --dry-run`. Nikoli ročno ne zaganjaj storitve za testna obvestila članom.
+
+Združljiva migracija ustvari `event_reminder_deliveries`; unikatni ključ (dogodek, lokalni dan, endpoint) se atomarno in trajno rezervira **pred** zunanjim pošiljanjem. Ponovni zagon ali vzporedni delavci ne ponovijo poskusa. Dostava je best-effort / at-most-once: ob prekinitvi procesa po rezervaciji ali napaki ponudnika je opomnik lahko izpuščen. Web Push ne ponuja transakcijskega exactly-once pošiljanja, zato neuspelih rezerviranih dostav ne ponavljamo. Ne briši evidence med rednimi objavami. Potekli endpointi se odstranijo po obstoječem postopku. TTL opomnika je omejen tudi s časom do začetka dogodka.

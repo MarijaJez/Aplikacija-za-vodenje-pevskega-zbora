@@ -191,7 +191,7 @@ class PushNotificationService:
         except RuntimeError:
             LOG.exception("Push worker is unavailable")
 
-    def _deliver(self, payload, exclude_user_id=None, recipient_user_id=None, category=None):
+    def _deliver(self, payload, exclude_user_id=None, recipient_user_id=None, category=None, reminder_date=None, now=None):
         try:
             event_id = json.loads(payload).get("event_id")
             with self.db.cursor() as cur:
@@ -219,12 +219,27 @@ class PushNotificationService:
                 subscriptions = cur.fetchall()
         except Exception:
             LOG.exception("Could not load push subscriptions")
+            if reminder_date is not None:
+                raise
             return
         for subscription in subscriptions:
+            delivery_now = now or datetime.now().astimezone()
             endpoint = subscription["endpoint"]
+            if reminder_date is not None:
+                # Recheck start time immediately before claiming: delayed workers must
+                # never deliver a reminder for an event that has already started.
+                if not subscription.get("event_date") or subscription["event_date"] <= delivery_now:
+                    continue
+                with self.db.cursor() as cur:
+                    cur.execute("""INSERT INTO event_reminder_deliveries(event_id,local_date,endpoint)
+                        VALUES(%s,%s,%s) ON CONFLICT DO NOTHING RETURNING event_id""",
+                        (event_id, reminder_date, endpoint))
+                    claimed = cur.fetchone()
+                if not claimed:
+                    continue
             member_payload = json.loads(payload)
             when = subscription.get("event_date")
-            if event_id and when and when > datetime.now().astimezone() and not subscription.get("attendance_status"):
+            if event_id and when and when > delivery_now and not subscription.get("attendance_status"):
                 member_payload["actions"] = [{"action": "present", "title": "Prisoten"}, {"action": "absent", "title": "Odsoten"}]
                 member_payload["body"] = (member_payload["body"][:240] + " · Izberi Prisoten ali Odsoten; odgovor lahko vneseš tudi na dogodku.")
             try:
@@ -234,7 +249,7 @@ class PushNotificationService:
                     data=json.dumps(member_payload, ensure_ascii=False),
                     vapid_private_key=self.private_key_file,
                     vapid_claims={"sub": f"mailto:{self.contact}"},
-                    ttl=3600,
+                    ttl=min(3600, max(1, int((when - delivery_now).total_seconds()))) if reminder_date is not None else 3600,
                     timeout=5,
                     headers=headers,
                 )
