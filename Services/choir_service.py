@@ -78,19 +78,36 @@ class ChoirService:
         row["performances"]=[{**performance,"title":performance["name"],"kind":performance["event_type"],"date":date_label(performance["event_date"])} for performance in row["performances"]]
         return row
 
+    @staticmethod
+    def validate_event(values) -> None:
+        try:
+            start = datetime.fromisoformat(values["event_date"])
+            end = datetime.fromisoformat(values["event_end"])
+            valid = end > start
+        except (ValueError, TypeError, KeyError):
+            valid = False
+        if not valid:
+            raise ValueError("Konec dogodka mora biti po začetku. Vnesi veljaven datum in uro začetka ter konca.")
+
+    @staticmethod
+    def event_time(row):
+        start = row["event_date"]
+        end = row.get("event_end")
+        return start.strftime("%H:%M") + ("–" + end.strftime("%H:%M" if end.date() == start.date() else "%d. %m. %Y %H:%M") if end else "")
+
     def events(self):
         now=datetime.now().astimezone()
         result=[]
         for row in self.repository.list_events():
             value=row["event_date"]
-            result.append({**row,"date":date_label(value),"time":value.strftime("%H:%M"),"kind":row["event_type"],"title":row["name"],"status":"upcoming" if value>=now else "past"})
+            result.append({**row,"date":date_label(value),"time":self.event_time(row),"kind":row["event_type"],"title":row["name"],"status":"upcoming" if value>=now else "past"})
         return sorted(result,key=lambda item:(item["status"]=="past",item["event_date"] if item["status"]=="upcoming" else -item["event_date"].timestamp()))
 
     def event(self, event_id):
         row=self.repository.get_event(event_id)
         if not row:return None
         value=row["event_date"]
-        return {**row,"date":date_label(value),"time":value.strftime("%H:%M"),"kind":row["event_type"],"title":row["name"],"status":"upcoming" if value>=datetime.now().astimezone() else "past"}
+        return {**row,"date":date_label(value),"time":self.event_time(row),"kind":row["event_type"],"title":row["name"],"status":"upcoming" if value>=datetime.now().astimezone() else "past"}
 
     def roles(self):
         return self.repository.list_roles()

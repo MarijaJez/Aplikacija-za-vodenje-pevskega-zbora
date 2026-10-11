@@ -79,6 +79,7 @@ CREATE TABLE song_reviews (
 CREATE TABLE events (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     event_date TIMESTAMPTZ NOT NULL,
+    event_end TIMESTAMPTZ CHECK (event_end > event_date),
     event_type VARCHAR(40) NOT NULL,
     name VARCHAR(255) NOT NULL,
     place VARCHAR(255) NOT NULL DEFAULT '',

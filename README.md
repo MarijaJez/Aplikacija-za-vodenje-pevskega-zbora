@@ -124,3 +124,7 @@ python -m unittest discover -s tests -v
 ```
 
 Google enotski testi uporabljajo nadomestne odgovore in ne potrebujejo pravih Google skrivnosti. Integracijski testi prehodijo notranje povezave, preverijo zapis podatkov in dovoljenja ter začasne zapise odstranijo.
+
+## Produkcija
+
+Navodila in trajno dovoljenje za objavo po testiranju: [DEPLOYMENT.md](DEPLOYMENT.md).

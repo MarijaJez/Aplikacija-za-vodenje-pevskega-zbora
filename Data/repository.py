@@ -258,7 +258,7 @@ class ChoirRepository:
 
     def list_events(self):
         with self.db.cursor() as cur:
-            cur.execute("""SELECT e.id,e.event_date,e.event_type,e.name,e.place,COUNT(ep.song_id)::int songs FROM events e LEFT JOIN event_program ep ON ep.event_id=e.id GROUP BY e.id ORDER BY e.event_date DESC""")
+            cur.execute("""SELECT e.id,e.event_date,e.event_end,e.event_type,e.name,e.place,COUNT(ep.song_id)::int songs FROM events e LEFT JOIN event_program ep ON ep.event_id=e.id GROUP BY e.id ORDER BY e.event_date DESC""")
             return self._all(cur)
 
     def list_event_types(self):
@@ -276,7 +276,7 @@ class ChoirRepository:
     def create_event(self, values, song_ids):
         with self.db.connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute("INSERT INTO events(event_date,event_type,name,place) VALUES(%s,%s,%s,%s) RETURNING id",(values["event_date"],values["event_type"],values["name"],values["place"]))
+                cur.execute("INSERT INTO events(event_date,event_end,event_type,name,place) VALUES(%s,%s,%s,%s,%s) RETURNING id",(values["event_date"],values["event_end"],values["event_type"],values["name"],values["place"]))
                 event_id=cur.fetchone()["id"]
                 for position,song_id in enumerate(song_ids,1): cur.execute("INSERT INTO event_program(event_id,song_id,position) VALUES(%s,%s,%s)",(event_id,song_id,position))
                 return event_id
@@ -284,7 +284,7 @@ class ChoirRepository:
     def update_event(self, event_id, values, song_ids):
         with self.db.connection() as conn:
             with conn.cursor() as cur:
-                cur.execute("UPDATE events SET event_date=%s,event_type=%s,name=%s,place=%s WHERE id=%s",(values["event_date"],values["event_type"],values["name"],values["place"],event_id))
+                cur.execute("UPDATE events SET event_date=%s,event_end=%s,event_type=%s,name=%s,place=%s WHERE id=%s",(values["event_date"],values["event_end"],values["event_type"],values["name"],values["place"],event_id))
                 cur.execute("DELETE FROM event_program WHERE event_id=%s AND NOT(song_id=ANY(%s))",(event_id,song_ids))
                 for position,song_id in enumerate(song_ids,1):
                     cur.execute("""INSERT INTO event_program(event_id,song_id,position) VALUES(%s,%s,%s)

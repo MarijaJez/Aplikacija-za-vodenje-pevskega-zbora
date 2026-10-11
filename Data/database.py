@@ -14,6 +14,8 @@ class Database:
             raise RuntimeError("Nastavi DATABASE_URL za povezavo s PostgreSQL.")
         self.timezone = os.getenv("APP_TIMEZONE", "Europe/Ljubljana")
         self._pool = ThreadedConnectionPool(1, 10, self.dsn, options=f"-c timezone={self.timezone}")
+        with self.cursor() as cursor:
+            cursor.execute("ALTER TABLE events ADD COLUMN IF NOT EXISTS event_end TIMESTAMPTZ CHECK (event_end > event_date)")
 
     @contextmanager
     def connection(self):

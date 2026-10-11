@@ -543,7 +543,7 @@ def ics_escape(value):
 def events_calendar():
     lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Upravljanje zbora//SL","CALSCALE:GREGORIAN"]
     for event in repository.list_events():
-        start=event["event_date"].astimezone(timezone.utc); end=start+timedelta(hours=2)
+        start=event["event_date"].astimezone(timezone.utc); end=event["event_end"].astimezone(timezone.utc) if event.get("event_end") else start+timedelta(hours=2)
         lines.extend(["BEGIN:VEVENT",f"UID:dogodek-{event['id']}@upravljanje-zbora.local",f"DTSTAMP:{start.strftime('%Y%m%dT%H%M%SZ')}",f"DTSTART:{start.strftime('%Y%m%dT%H%M%SZ')}",f"DTEND:{end.strftime('%Y%m%dT%H%M%SZ')}",f"SUMMARY:{ics_escape(event['name'])}",f"LOCATION:{ics_escape(event['place'])}",f"DESCRIPTION:{ics_escape(event['event_type'])}","END:VEVENT"])
     lines.append("END:VCALENDAR"); response.content_type="text/calendar; charset=utf-8"; response.set_header("Content-Disposition","attachment; filename=dogodki-zbora.ics"); return "\r\n".join(lines)+"\r\n"
 
@@ -551,7 +551,12 @@ def events_calendar():
 @app.post("/dogodki")
 @require_permission("admin")
 def create_event():
-    event_id=repository.create_event({"event_date":request.forms.get("event_date"),"event_type":request.forms.getunicode("event_type"),"name":request.forms.getunicode("name"),"place":request.forms.getunicode("place")},[int(value) for value in request.forms.getall("songs")])
+    values={"event_end":request.forms.get("event_end"),"event_date":request.forms.get("event_date"),"event_type":request.forms.getunicode("event_type"),"name":request.forms.getunicode("name"),"place":request.forms.getunicode("place")}
+    try:
+        service.validate_event(values)
+    except ValueError as exc:
+        abort(400, str(exc))
+    event_id=repository.create_event(values,[int(value) for value in request.forms.getall("songs")])
     event = repository.get_event(event_id)
     succeeded, failed = calendar_service.sync_event(event)
     push_service.notify_event("created", event)
@@ -586,7 +591,12 @@ def event_detail(event_id):
 @app.post("/dogodki/<event_id:int>/uredi")
 @require_permission("admin")
 def update_event(event_id):
-    repository.update_event(event_id,{"event_date":request.forms.get("event_date"),"event_type":request.forms.getunicode("event_type"),"name":request.forms.getunicode("name"),"place":request.forms.getunicode("place")},[int(value) for value in request.forms.getall("songs")])
+    values={"event_end":request.forms.get("event_end"),"event_date":request.forms.get("event_date"),"event_type":request.forms.getunicode("event_type"),"name":request.forms.getunicode("name"),"place":request.forms.getunicode("place")}
+    try:
+        service.validate_event(values)
+    except ValueError as exc:
+        abort(400, str(exc))
+    repository.update_event(event_id,values,[int(value) for value in request.forms.getall("songs")])
     event = repository.get_event(event_id)
     succeeded, failed = calendar_service.sync_event(event)
     push_service.notify_event("updated", event)

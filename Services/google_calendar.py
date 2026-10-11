@@ -155,7 +155,7 @@ class GoogleCalendarService:
             "location": event.get("place") or "",
             "description": event.get("event_type") or "",
             "start": {"dateTime": start.isoformat()},
-            "end": {"dateTime": (start + timedelta(hours=2)).isoformat()},
+            "end": {"dateTime": (event.get("event_end") or start + timedelta(hours=2)).isoformat()},
             "extendedProperties": {"private": {"zborissimoEventId": str(event["id"])}}
         }
 

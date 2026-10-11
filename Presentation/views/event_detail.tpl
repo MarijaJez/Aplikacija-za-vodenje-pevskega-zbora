@@ -17,7 +17,7 @@
 % end
 </div></article><article class="card"><div class="card-head"><div><p class="eyebrow">Prisotnost</p><h3>Člani</h3></div><a href="/prisotnost">Odpri evidenco →</a></div><p class="muted">Prisotnost za dogodek ureja pooblaščena vloga na skupni strani evidence.</p></article></div>
 <script id="event-playlist" type="application/json">{{!json.dumps(tracks, ensure_ascii=False)}}</script>
-<dialog id="event-edit-dialog" class="wide-dialog"><button class="event-edit-close dialog-close" aria-label="Zapri">×</button><form method="post" action="/dogodki/{{event['id']}}/uredi"><p class="eyebrow">Koledar</p><h2>Uredi dogodek</h2><div class="form-grid"><label>Datum in ura<input type="datetime-local" name="event_date" value="{{event['event_date'].strftime('%Y-%m-%dT%H:%M')}}" required></label><label>Vrsta<input name="event_type" list="event-types-edit" value="{{event['event_type']}}" required><datalist id="event-types-edit">
+<dialog id="event-edit-dialog" class="wide-dialog"><button class="event-edit-close dialog-close" aria-label="Zapri">×</button><form method="post" action="/dogodki/{{event['id']}}/uredi"><p class="eyebrow">Koledar</p><h2>Uredi dogodek</h2><div class="form-grid"><label>Začetek<input type="datetime-local" name="event_date" value="{{event['event_date'].strftime('%Y-%m-%dT%H:%M')}}" required></label><label>Konec<input type="datetime-local" name="event_end" value="{{event['event_end'].strftime('%Y-%m-%dT%H:%M') if event.get('event_end') else ''}}" required></label><label>Vrsta<input name="event_type" list="event-types-edit" value="{{event['event_type']}}" required><datalist id="event-types-edit">
 % for event_type in event_types:
 <option value="{{event_type}}">
 % end
