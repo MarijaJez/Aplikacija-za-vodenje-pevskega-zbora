@@ -1,4 +1,4 @@
-% status_labels={'present':'Prisoten','late_under':'Zamuda < 10 min','late_over':'Zamuda > 10 min','excused':'Opravičeno','absent':'Odsoten'}
+% status_labels={'present':'Prisoten','late_under':'Zamuda < 10 min','late_over':'Zamuda > 10 min','excused':'Opravičeno','absent':'Odsoten','unentered':'Še ni vneseno'}
 <div class="back-row"><a href="/clani">← Nazaj na člane</a><div><button class="button secondary" data-member-edit data-permission="{{'self' if member['id'] == current_user['person_id'] else 'admin'}}">Uredi</button>
 % if member['id'] != current_user['person_id']:
 <form method="post" action="/clani/{{member['id']}}/izbrisi" class="inline-form" data-permission="admin"><button class="button danger" onclick="return confirm('Res želiš izbrisati člana?')">Izbriši</button></form>
@@ -8,8 +8,8 @@
 % for role in member['roles']:
 <span class="badge">{{role}}</span>
 % end
-</dd></dl></article><article class="card span-2"><div class="card-head"><div><p class="eyebrow">Tekoče šolsko leto</p><h3>Prisotnost na dogodkih</h3></div><strong class="big-percent">{{member['attendance']}}%</strong></div><div class="attendance-summary">
-% for state in ('present','late_under','late_over','excused','absent'):
+</dd></dl></article><article class="card span-2"><div class="card-head"><div><p class="eyebrow">Tekoče šolsko leto</p><h3>Prisotnost na dogodkih</h3></div><strong class="big-percent">{{str(member['attendance'])+'%' if member['attendance'] is not None else 'Še ni vneseno'}}</strong></div><div class="attendance-summary">
+% for state in ('present','late_under','late_over','excused','absent','unentered'):
 <span><b>{{member['attendance_totals'][state]}}</b>{{status_labels[state]}}</span>
 % end
 </div><div class="simple-list">

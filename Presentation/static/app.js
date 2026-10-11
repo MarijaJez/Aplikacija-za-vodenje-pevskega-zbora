@@ -204,7 +204,8 @@ const attendanceStates = [
   {name:'late_under', icon:'<10', label:'Zamudil manj kot 10 minut'},
   {name:'late_over', icon:'>10', label:'Zamudil več kot 10 minut'},
   {name:'excused', icon:'O', label:'Opravičeno odsoten'},
-  {name:'absent', icon:'×', label:'Odsoten'}
+  {name:'absent', icon:'×', label:'Odsoten'},
+  {name:'unentered', icon:'—', label:'Še ni vneseno'}
 ];
 const attendanceButtons = [...document.querySelectorAll('[data-cycle]')];
 function setAttendanceButton(button, stateName) {
@@ -235,15 +236,30 @@ function updateAttendanceTotals() {
     const target = document.querySelector(`[data-grand-total="${state.name}-${state.name}"]`);
     if (target) target.textContent = count;
   });
+  const entered = attendanceButtons.filter(button => button.dataset.status !== 'unentered');
+  const attending = entered.filter(button => ['present','late_under','late_over'].includes(button.dataset.status));
+  const average = document.querySelector('[data-attendance-average]');
+  if (average) average.textContent = entered.length ? `${Math.round(100 * attending.length / entered.length)}%` : 'Še ni vneseno';
+  const source = document.querySelector('#attendance-data');
+  const best = document.querySelector('[data-attendance-best-voice]');
+  if (source && best) {
+    const voices = JSON.parse(source.textContent).voices;
+    const rates = [...new Set(voices)].map(voice => {
+      const records = entered.filter(button => voices[Number(button.dataset.row)] === voice);
+      const present = attending.filter(button => voices[Number(button.dataset.row)] === voice);
+      return {voice, count:records.length, rate:records.length ? Math.round(100 * present.length / records.length) : 0};
+    }).filter(item => item.count).sort((a,b) => b.rate-a.rate);
+    best.textContent = rates.length ? `${rates[0].voice} · ${rates[0].rate}%` : 'Še ni vneseno';
+  }
 }
 updateAttendanceTotals();
 attendanceButtons.forEach(button => button.addEventListener('click', async () => {
   const current = attendanceStates.findIndex(item => item.name === button.dataset.status);
-  const next = attendanceStates[(current + 1) % attendanceStates.length];
+  const next = attendanceStates[button.dataset.status === 'unentered' ? 0 : (current + 1) % (attendanceStates.length - 1)];
   button.disabled = true;
-  const result = await fetch('/api/prisotnost', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({event_id:Number(button.dataset.eventId), person_id:Number(button.dataset.personId), status:next.name})});
+  const result = await fetch('/api/prisotnost', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({event_id:Number(button.dataset.eventId), person_id:Number(button.dataset.personId), status:next.name})}).catch(() => null);
   button.disabled = false;
-  if (!result.ok) { showToast('Prisotnosti ni bilo mogoče shraniti.'); return; }
+  if (!result?.ok) { showToast('Prisotnosti ni bilo mogoče shraniti.'); return; }
   setAttendanceButton(button, next.name);
   updateAttendanceTotals();
   drawAttendanceCharts();
@@ -267,7 +283,7 @@ function drawAttendanceCharts() {
   const matrix = currentAttendanceMatrix();
   const voiceNames = ['Sopran','Alt','Tenor','Bas'];
   const voiceColors = ['#287080','#355C7D','#D09A45','#6E858C'];
-  const statusColors = ['#4F8174','#4E86A0','#7478A0','#D09A45','#B45F5A'];
+  const statusColors = ['#4F8174','#4E86A0','#7478A0','#D09A45','#B45F5A','#899499'];
   const dark = document.documentElement.dataset.theme === 'dark';
   document.querySelectorAll('[data-attendance-chart]').forEach(canvas => {
     const status = canvas.dataset.attendanceChart;
@@ -320,3 +336,20 @@ window.addEventListener('appinstalled', () => {
 if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) {
   document.querySelectorAll('[data-install-help]').forEach(help => { help.hidden = true; });
 }
+
+// Notification links preselect a choice; only the explicit button saves it.
+const ownChoices = [...document.querySelectorAll('[data-own-attendance-choice]')];
+const suggestedAttendance = new URLSearchParams(location.search).get('attendance');
+ownChoices.forEach(button => {
+  if (button.dataset.ownAttendanceChoice === suggestedAttendance) button.focus();
+  button.addEventListener('click', async () => {
+    ownChoices.forEach(item => item.disabled = true);
+    try {
+      const result = await fetch('/api/prisotnost', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({event_id:Number(button.dataset.eventId), status:button.dataset.ownAttendanceChoice})});
+      if (!result.ok) throw new Error('save');
+      document.querySelector('[data-own-attendance]').textContent = button.textContent;
+      showToast('Prisotnost je shranjena.');
+    } catch { showToast('Prisotnosti ni bilo mogoče shraniti. Osveži dogodek in poskusi znova.'); }
+    finally { ownChoices.forEach(item => item.disabled = false); }
+  });
+});

@@ -8,17 +8,17 @@
 % end
 </select><span class="autosave"><i></i> Spremembe se shranjujejo sproti</span></form>
 
-<article class="card table-card attendance-card"><div class="table-meta"><p><strong>Evidenca prisotnosti</strong><span>Klikni ikono za spremembo statusa; za razlago se pomakni nadnjo.</span></p><div class="legend"><i class="green"></i>Prisoten <i class="blue"></i>Zamuda <i class="gold"></i>Opravičeno <i class="red"></i>Odsoten</div></div><div class="table-wrap attendance-scroll"><table class="attendance-table"><thead><tr><th class="sticky-member">Član</th>
+<article class="card table-card attendance-card"><div class="table-meta"><p><strong>Evidenca prisotnosti</strong><span>Klikni ikono za spremembo statusa; za razlago se pomakni nadnjo.</span></p><div class="legend"><i class="green"></i>Prisoten <i class="blue"></i>Zamuda <i class="gold"></i>Opravičeno <i class="red"></i>Odsoten <i class="unentered"></i>Še ni vneseno</div></div><div class="table-wrap attendance-scroll"><table class="attendance-table"><thead><tr><th class="sticky-member">Član</th>
 % for event in data['events']:
 <th class="event-column"><small>{{event['date'].split(' ')[0]}} {{event['date'].split(' ')[1]}}</small>{{event['title']}}</th>
 % end
-<th class="total-column"><small>SKUPAJ</small>Prisoten</th><th class="total-column"><small>SKUPAJ</small>Zamudil &lt; 10</th><th class="total-column"><small>SKUPAJ</small>Zamudil &gt; 10</th><th class="total-column"><small>SKUPAJ</small>Opravičeno</th><th class="total-column"><small>SKUPAJ</small>Odsoten</th></tr></thead><tbody>
-% labels = {'present': ('✓', 'Prisoten'), 'late_under': ('<10', 'Zamudil manj kot 10 minut'), 'late_over': ('>10', 'Zamudil več kot 10 minut'), 'excused': ('O', 'Opravičeno odsoten'), 'absent': ('×', 'Odsoten')}
+<th class="total-column"><small>SKUPAJ</small>Prisoten</th><th class="total-column"><small>SKUPAJ</small>Zamudil &lt; 10</th><th class="total-column"><small>SKUPAJ</small>Zamudil &gt; 10</th><th class="total-column"><small>SKUPAJ</small>Opravičeno</th><th class="total-column"><small>SKUPAJ</small>Odsoten</th><th class="total-column">Še ni vneseno</th></tr></thead><tbody>
+% labels = {'present': ('✓', 'Prisoten'), 'late_under': ('<10', 'Zamudil manj kot 10 minut'), 'late_over': ('>10', 'Zamudil več kot 10 minut'), 'excused': ('O', 'Opravičeno odsoten'), 'absent': ('×', 'Odsoten'), 'unentered': ('—', 'Še ni vneseno')}
 % for row, member in enumerate(data['members']):
 <tr data-member-row="{{row}}"><td class="sticky-member"><a class="person" href="/clani/{{member['id']}}"><span class="avatar small">{{member['initials']}}</span><span><strong>{{member['name']}}</strong><small>{{member['voice']}}</small></span></a></td>
 % for col, event in enumerate(data['events']):
 % state = data['matrix'][row][col]
-<td><button class="attendance-dot {{state}}" data-cycle data-row="{{row}}" data-col="{{col}}" data-person-id="{{member['id']}}" data-event-id="{{event['id']}}" data-status="{{state}}" data-tooltip="{{labels[state][1]}}" aria-label="{{member['name']}} – {{event['title']}}: {{labels[state][1]}}" data-permission="attendance">{{labels[state][0]}}</button></td>
+<td><button class="attendance-dot {{state}}" data-cycle data-row="{{row}}" data-col="{{col}}" data-person-id="{{member['id']}}" data-event-id="{{event['id']}}" data-status="{{state}}" data-tooltip="{{labels[state][1]}}" aria-label="{{member['name']}} – {{event['title']}}: {{labels[state][1]}}" {{'disabled' if not can_edit_attendance(current_user, member['id'], event) else ''}}>{{labels[state][0]}}</button></td>
 % end
 % for state in data['status_keys']:
 <td class="member-total" data-member-total="{{row}}-{{state}}"><b>{{data['member_totals'][row][state]}}</b></td>
@@ -26,7 +26,7 @@
 </tr>
 % end
 </tbody><tfoot>
-% summary_labels = [('present', 'Skupaj prisotnih'), ('late_under', 'Skupaj zamud < 10 min'), ('late_over', 'Skupaj zamud > 10 min'), ('excused', 'Skupaj opravičeno odsotnih'), ('absent', 'Skupaj odsotnih')]
+% summary_labels = [('present', 'Skupaj prisotnih'), ('late_under', 'Skupaj zamud < 10 min'), ('late_over', 'Skupaj zamud > 10 min'), ('excused', 'Skupaj opravičeno odsotnih'), ('absent', 'Skupaj odsotnih'), ('unentered', 'Še ni vneseno')]
 % for summary_state, summary_label in summary_labels:
 <tr class="summary-row"><th class="sticky-member">{{summary_label}}</th>
 % for col, event in enumerate(data['events']):
@@ -39,14 +39,14 @@
 % end
 </tfoot></table></div></article>
 
-<div class="attendance-kpis"><article><span class="stat-icon green">✓</span><div><p>Povprečna prisotnost</p><strong>{{data['average']}}%</strong></div></article><article><span class="stat-icon gold">◷</span><div><p>Dogodkov v evidenci</p><strong>{{data['event_count']}}</strong></div></article><article><span class="stat-icon blue">≋</span><div><p>Najbolj reden glas</p><strong>{{data['best_voice']}} · {{data['best_voice_rate']}}%</strong></div></article></div>
+<div class="attendance-kpis"><article><span class="stat-icon green">✓</span><div><p>Povprečna prisotnost (samo vneseni odgovori)</p><strong data-attendance-average>{{str(data['average'])+'%' if data['average'] is not None else 'Še ni vneseno'}}</strong></div></article><article><span class="stat-icon gold">◷</span><div><p>Dogodkov v evidenci</p><strong>{{data['event_count']}}</strong></div></article><article><span class="stat-icon blue">≋</span><div><p>Najbolj reden glas</p><strong data-attendance-best-voice>{{data['best_voice']+' · '+str(data['best_voice_rate'])+'%' if data['average'] is not None else 'Še ni vneseno'}}</strong></div></article></div>
 
 <article class="card attendance-charts"><div class="card-head"><div><p class="eyebrow">Analitika po glasovih</p><h3>Prisotnost skozi šolsko leto</h3><p class="muted">Število članov po dogodkih; črte predstavljajo posamezne glasove.</p></div><div class="voice-legend"><span><i class="soprano"></i>Sopran</span><span><i class="alto"></i>Alt</span><span><i class="tenor"></i>Tenor</span><span><i class="bass"></i>Bas</span></div></div><div class="chart-grid">
-  <section class="chart-all"><h4>Skupaj <small>seštevek vseh glasov</small></h4><canvas data-attendance-chart="all" height="200" aria-label="Skupni graf prisotnosti vseh glasov"></canvas><div class="status-chart-legend"><span><i class="present"></i>Prisotni</span><span><i class="late-under"></i>Zamuda &lt; 10</span><span><i class="late-over"></i>Zamuda &gt; 10</span><span><i class="excused"></i>Opravičeno</span><span><i class="absent"></i>Odsotni</span></div></section>
+  <section class="chart-all"><h4>Skupaj <small>seštevek vseh glasov</small></h4><canvas data-attendance-chart="all" height="200" aria-label="Skupni graf prisotnosti vseh glasov"></canvas><div class="status-chart-legend"><span><i class="present"></i>Prisotni</span><span><i class="late-under"></i>Zamuda &lt; 10</span><span><i class="late-over"></i>Zamuda &gt; 10</span><span><i class="excused"></i>Opravičeno</span><span><i class="absent"></i>Odsotni</span><span><i class="unentered"></i>Še ni vneseno</span></div></section>
   <section><h4>Prisotni</h4><canvas data-attendance-chart="present" height="180" aria-label="Graf prisotnih po glasovih"></canvas></section>
   <section><h4>Zamuda manj kot 10 min</h4><canvas data-attendance-chart="late_under" height="180" aria-label="Graf zamud manj kot 10 minut po glasovih"></canvas></section>
   <section><h4>Zamuda več kot 10 min</h4><canvas data-attendance-chart="late_over" height="180" aria-label="Graf zamud več kot 10 minut po glasovih"></canvas></section>
   <section><h4>Opravičeno odsotni</h4><canvas data-attendance-chart="excused" height="180" aria-label="Graf opravičeno odsotnih po glasovih"></canvas></section>
   <section><h4>Odsotni</h4><canvas data-attendance-chart="absent" height="180" aria-label="Graf odsotnih po glasovih"></canvas></section>
-</div></article>
+<section><h4>Še ni vneseno</h4><canvas data-attendance-chart="unentered" height="180" aria-label="Graf še nevnesene prisotnosti po glasovih"></canvas></section></div></article>
 <script id="attendance-data" type="application/json">{{!json.dumps(data['chart_data'], ensure_ascii=False)}}</script>

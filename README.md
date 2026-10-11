@@ -128,3 +128,14 @@ Google enotski testi uporabljajo nadomestne odgovore in ne potrebujejo pravih Go
 ## Produkcija
 
 Navodila in trajno dovoljenje za objavo po testiranju: [DEPLOYMENT.md](DEPLOYMENT.md).
+
+
+## Prisotnost
+
+Vsak prijavljen član lahko vnese ali spremeni svojo prisotnost za dogodek, ki se še ni začel, neposredno na dogodku ali v skupni evidenci. Predsednik, Zborovodja in Beleženje prisotnosti ohranijo pravico urejati vse člane tudi za pretekle dogodke. Strežnik preveri članstvo, dogodek in dovoljenja pri vsakem vnosu.
+
+Manjkajoč zapis pomeni **Še ni vneseno**. Tabele, osebna evidenca in grafi ga prikažejo posebej; odstotki upoštevajo samo vnesene odgovore. Brez odgovorov odstotek ni prikazan, član pa ni uvrščen med najmanj prisotne.
+
+Potisna obvestila o prihodnjem dogodku dobijo izbiri Prisoten/Odsoten samo za naročnike brez vnosa. Podprti brskalniki izbiro shranijo s prijavljeno sejo; ob potekli seji ali nedosegljivi povezavi odprejo dogodek. Brskalniki brez gumbov odprejo dogodek z enakima izbirama. Google Koledar ponuja povezavi do izbire, saj njegova standardna obvestila ne podpirajo naših gumbov. Povezava sama ne spreminja podatkov; na dogodku član potrdi izbiro. Obstoječi osebni koledarski vnosi dobijo povezavi pri naslednji sinhronizaciji.
+
+Preverjanje brez pošiljanja obvestil: `python -m unittest tests.test_attendance tests.test_push_notifications tests.test_dashboard tests.test_event_times tests.test_google_integrations tests.test_community` in `node tests/test_attendance_sw.js`. Stari `test_backend.py` zahteva posebej pripravljeno lokalno testno bazo in strežnik; ne izvajaj ga na produkciji.

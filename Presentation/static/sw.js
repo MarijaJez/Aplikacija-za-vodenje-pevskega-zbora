@@ -1,9 +1,9 @@
-const CACHE = 'zbor-app-shell-v4';
+const CACHE = 'zbor-app-shell-v5';
 const APP_SHELL = [
-  '/static/styles.css?v=8',
+  '/static/styles.css?v=9',
   '/static/refinements.css?v=2',
   '/static/hotfix.css?v=3',
-  '/static/app.js?v=8',
+  '/static/app.js?v=11',
   '/static/push.js?v=1',
   '/static/icons/icon.svg',
   '/static/icons/icon-192.png',
@@ -28,7 +28,8 @@ self.addEventListener('push', event => {
     icon: '/static/icons/icon-192.png',
     badge: '/static/icons/icon-192.png',
     tag: typeof data.tag === 'string' ? data.tag : 'zbor-dogodek',
-    data: { url }
+    actions: Array.isArray(data.actions) ? data.actions.filter(item => ['present','absent'].includes(item.action)).slice(0, 2) : [],
+    data: { url, eventId: data.event_id }
   }));
 });
 
@@ -37,9 +38,19 @@ self.addEventListener('notificationclick', event => {
   const target = new URL(event.notification.data?.url || '/dogodki', self.location.origin);
   if (target.origin !== self.location.origin) return;
   event.waitUntil((async () => {
+    if (['present','absent'].includes(event.action) && Number.isInteger(event.notification.data?.eventId)) {
+      try {
+        const result = await fetch('/api/prisotnost', {method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body:JSON.stringify({event_id:event.notification.data.eventId, status:event.action})});
+        if (result.ok && result.headers.get('content-type')?.includes('application/json')) {
+          await self.registration.showNotification('Prisotnost je shranjena', {body:event.action === 'present' ? 'Prisoten' : 'Odsoten', data:{url:target.pathname}, tag:'attendance-saved'});
+          return;
+        }
+      } catch { /* Offline or expired session: continue on the event page. */ }
+      target.searchParams.set('attendance', event.action);
+    }
     const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     const open = windows.find(client => new URL(client.url).pathname === target.pathname);
-    if (open) { await open.focus(); return; }
+    if (open) { await open.navigate(target.href); await open.focus(); return; }
     await self.clients.openWindow(target.href);
   })());
 });

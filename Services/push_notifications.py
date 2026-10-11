@@ -6,6 +6,7 @@ import logging
 import os
 import re
 import secrets
+from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 
@@ -157,7 +158,8 @@ class PushNotificationService:
             return
         if not isinstance(url, str) or not url.startswith("/") or url.startswith("//"):
             raise ValueError("Push target must be a local path")
-        payload = json.dumps({"title": str(title)[:100], "body": str(body)[:300], "url": url, "tag": tag or secrets.token_urlsafe(8)}, ensure_ascii=False)
+        event_match = re.fullmatch(r"/dogodki/(\d+)", url)
+        payload = json.dumps({"title": str(title)[:100], "body": str(body)[:300], "url": url, "tag": tag or secrets.token_urlsafe(8), "event_id": int(event_match[1]) if event_match else None}, ensure_ascii=False)
         try:
             _DELIVERY_POOL.submit(self._deliver, payload, exclude_user_id, recipient_user_id)
         except RuntimeError:
@@ -165,21 +167,30 @@ class PushNotificationService:
 
     def _deliver(self, payload, exclude_user_id=None, recipient_user_id=None):
         try:
+            event_id = json.loads(payload).get("event_id")
             with self.db.cursor() as cur:
-                cur.execute("""SELECT endpoint,p256dh,auth FROM push_subscriptions
-                    WHERE (%s::BIGINT IS NULL OR user_id<>%s)
-                      AND (%s::BIGINT IS NULL OR user_id=%s)""", (exclude_user_id, exclude_user_id, recipient_user_id, recipient_user_id))
+                cur.execute("""SELECT s.endpoint,s.p256dh,s.auth,a.status attendance_status,e.event_date
+                    FROM push_subscriptions s JOIN users u ON u.id=s.user_id
+                    LEFT JOIN events e ON e.id=%s
+                    LEFT JOIN attendance a ON a.event_id=e.id AND a.person_id=u.person_id
+                    WHERE (%s::BIGINT IS NULL OR s.user_id<>%s)
+                      AND (%s::BIGINT IS NULL OR s.user_id=%s)""", (event_id, exclude_user_id, exclude_user_id, recipient_user_id, recipient_user_id))
                 subscriptions = cur.fetchall()
         except Exception:
             LOG.exception("Could not load push subscriptions")
             return
         for subscription in subscriptions:
             endpoint = subscription["endpoint"]
+            member_payload = json.loads(payload)
+            when = subscription.get("event_date")
+            if event_id and when and when > datetime.now().astimezone() and not subscription.get("attendance_status"):
+                member_payload["actions"] = [{"action": "present", "title": "Prisoten"}, {"action": "absent", "title": "Odsoten"}]
+                member_payload["body"] = (member_payload["body"][:240] + " · Izberi Prisoten ali Odsoten; odgovor lahko vneseš tudi na dogodku.")
             try:
                 headers = {"X-WNS-Type": "wns/toast"} if urlparse(endpoint).hostname.endswith(".notify.windows.com") else None
                 webpush(
                     subscription_info={"endpoint": endpoint, "keys": {"p256dh": subscription["p256dh"], "auth": subscription["auth"]}},
-                    data=payload,
+                    data=json.dumps(member_payload, ensure_ascii=False),
                     vapid_private_key=self.private_key_file,
                     vapid_claims={"sub": f"mailto:{self.contact}"},
                     ttl=3600,

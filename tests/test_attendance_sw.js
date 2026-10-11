@@ -1,0 +1,20 @@
+const fs = require('node:fs');
+const vm = require('node:vm');
+const assert = require('node:assert/strict');
+const callbacks = {};
+let notices = [], opened = [], requests = [], responseOk = true;
+const context = {URL, Number, fetch:async(url,options)=>{requests.push({url,body:JSON.parse(options.body)});return {ok:responseOk,headers:{get:()=>responseOk?'application/json':'text/html'}}}, self:{location:{origin:'https://choir.test'},addEventListener:(name,fn)=>callbacks[name]=fn,registration:{showNotification:async(title,options)=>notices.push({title,...options})},clients:{matchAll:async()=>[],openWindow:async(url)=>opened.push(url)}}};
+vm.runInNewContext(fs.readFileSync('Presentation/static/sw.js','utf8'),context);
+(async()=>{
+ let task;
+ callbacks.push({data:{json:()=>({title:'Vaja',url:'/dogodki/2',event_id:2,actions:[{action:'present',title:'Prisoten'},{action:'absent',title:'Odsoten'}]})},waitUntil:p=>task=p});await task;
+ assert.equal(notices[0].actions.length,2);
+ const click={action:'present',notification:{data:notices[0].data,close(){}},waitUntil:p=>task=p};
+ callbacks.notificationclick(click);await task;
+ assert.deepEqual(requests[0].body,{event_id:2,status:'present'});
+ assert.equal(opened.length,0);
+ assert.equal(notices[1].title,'Prisotnost je shranjena');
+ responseOk=false;callbacks.notificationclick(click);await task;
+ assert.equal(opened[0],'https://choir.test/dogodki/2?attendance=present');
+ console.log('PASS: push actions, authenticated POST and expired-session fallback');
+})().catch(error=>{console.error(error);process.exitCode=1});

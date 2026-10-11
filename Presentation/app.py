@@ -1,7 +1,7 @@
 import json
 import os
 import uuid
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from pathlib import Path
 from urllib.parse import quote_plus
@@ -118,6 +118,13 @@ def require_permission(permission):
     return decorator
 
 
+def can_edit_attendance(user, person_id, event):
+    return bool(user and event and (
+        "attendance" in permission_set(user)
+        or (user["person_id"] == person_id and event["event_date"] > datetime.now().astimezone())
+    ))
+
+
 def render(view, title, **context):
     user = current_user()
     permissions = permission_set(user)
@@ -125,7 +132,7 @@ def render(view, title, **context):
     return template(
         "layout.tpl", template_lookup=[str(VIEWS)], view=f"{view}.tpl", title=title,
         active=view, json=json, current_user=user, permissions=permissions,
-        auth_method=auth_method, message=request.query.getunicode("sporocilo") or "", **context,
+        can_edit_attendance=can_edit_attendance, auth_method=auth_method, message=request.query.getunicode("sporocilo") or "", **context,
     )
 
 
@@ -544,7 +551,7 @@ def events_calendar():
     lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Upravljanje zbora//SL","CALSCALE:GREGORIAN"]
     for event in repository.list_events():
         start=event["event_date"].astimezone(timezone.utc); end=event["event_end"].astimezone(timezone.utc) if event.get("event_end") else start+timedelta(hours=2)
-        lines.extend(["BEGIN:VEVENT",f"UID:dogodek-{event['id']}@upravljanje-zbora.local",f"DTSTAMP:{start.strftime('%Y%m%dT%H%M%SZ')}",f"DTSTART:{start.strftime('%Y%m%dT%H%M%SZ')}",f"DTEND:{end.strftime('%Y%m%dT%H%M%SZ')}",f"SUMMARY:{ics_escape(event['name'])}",f"LOCATION:{ics_escape(event['place'])}",f"DESCRIPTION:{ics_escape(event['event_type'])}","END:VEVENT"])
+        lines.extend(["BEGIN:VEVENT",f"UID:dogodek-{event['id']}@upravljanje-zbora.local",f"DTSTAMP:{start.strftime('%Y%m%dT%H%M%SZ')}",f"DTSTART:{start.strftime('%Y%m%dT%H%M%SZ')}",f"DTEND:{end.strftime('%Y%m%dT%H%M%SZ')}",f"SUMMARY:{ics_escape(event['name'])}",f"LOCATION:{ics_escape(event['place'])}",f"DESCRIPTION:{ics_escape(event['event_type'] + chr(10) + 'Prisotnost (Prisoten / Odsoten): ' + APP_BASE_URL.rstrip('/') + '/dogodki/' + str(event['id']))}","END:VEVENT"])
     lines.append("END:VCALENDAR"); response.content_type="text/calendar; charset=utf-8"; response.set_header("Content-Disposition","attachment; filename=dogodki-zbora.ics"); return "\r\n".join(lines)+"\r\n"
 
 
@@ -585,7 +592,7 @@ def event_detail(event_id):
     event = service.event(event_id)
     if not event:
         raise HTTPError(404, "Dogodek ne obstaja")
-    return render("event_detail", event["title"], event=event, songs=service.songs(), members=service.members(), categories=repository.list_categories(), event_types=repository.list_event_types(), conductor=is_conductor())
+    return render("event_detail", event["title"], event=event, songs=service.songs(), members=service.members(), categories=repository.list_categories(), event_types=repository.list_event_types(), conductor=is_conductor(), own_attendance=next((row["status"] for row in repository.member_attendance(current_user()["person_id"]) if row["id"] == event_id), "unentered"))
 
 
 @app.post("/dogodki/<event_id:int>/uredi")
@@ -621,13 +628,27 @@ def attendance():
 
 
 @app.post("/api/prisotnost")
-@require_permission("attendance")
+@require_login
 def save_attendance():
+    if request.get_header("Origin") and request.get_header("Origin") != APP_BASE_URL:
+        abort(403, "Neveljaven izvor zahteve.")
     payload=request.json or {}
+    if not isinstance(payload, dict):
+        abort(400, "Neveljavni podatki.")
+    try:
+        event_id=int(payload["event_id"])
+        person_id=int(payload.get("person_id", current_user()["person_id"]))
+    except (KeyError, TypeError, ValueError, OverflowError):
+        abort(400, "Neveljaven dogodek ali član.")
+    event=repository.get_event(event_id)
+    if not event: abort(404, "Dogodek ne obstaja.")
+    if not can_edit_attendance(current_user(), person_id, event):
+        abort(403, "Urejaš lahko samo svojo prisotnost za prihodnje dogodke.")
+    if not repository.get_member(person_id): abort(404, "Član ne obstaja.")
     status=payload.get("status")
     if status not in {"present","late_under","late_over","excused","absent"}:
         abort(400,"Neveljaven status.")
-    repository.upsert_attendance(int(payload["event_id"]),int(payload["person_id"]),status,current_user()["id"])
+    repository.upsert_attendance(event_id,person_id,status,current_user()["id"])
     response.content_type="application/json"
     return {"ok":True}
 

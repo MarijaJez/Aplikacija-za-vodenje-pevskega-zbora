@@ -8,7 +8,7 @@
 <div class="dashboard-grid personal-dashboard">
 <article class="card"><div class="card-head"><div><p class="eyebrow">Moja zasedba</p><h3>Moja prisotnost</h3></div></div>
 % if member:
-<p><strong>{{member['attendance']}}%</strong> · {{member['voice']}}</p><p>Pregled tvoje evidence prisotnosti.</p><a class="text-link" href="/clani/{{member['id']}}">Moja evidenca →</a>
+<p><strong>{{str(member['attendance'])+'%' if member['attendance'] is not None else 'Še ni vneseno'}}</strong> · {{member['voice']}}</p><p>Pregled tvoje evidence prisotnosti.</p><a class="text-link" href="/clani/{{member['id']}}">Moja evidenca →</a>
 % else:
 <p>Podatki o tvojem članstvu niso na voljo.</p>
 % end
@@ -44,7 +44,7 @@
 <div class="stat-grid">
   <article class="stat-card plum"><span class="stat-icon">♟</span><div><p>Člani zbora</p><strong>{{data['member_count']}}</strong><small>trenutna zasedba</small></div><a href="/clani">Preglej →</a></article>
   <article class="stat-card gold"><span class="stat-icon">♫</span><div><p>Pesmi v programu</p><strong>{{data['song_count']}}</strong><small>v notni zbirki</small></div><a href="/program">Preglej →</a></article>
-  <article class="stat-card green"><span class="stat-icon">✓</span><div><p>Povprečna prisotnost</p><strong>{{data['average_attendance']}}%</strong><small>tekoče šolsko leto</small></div><a href="/prisotnost">Preglej →</a></article>
+  <article class="stat-card green"><span class="stat-icon">✓</span><div><p>Povprečna prisotnost</p><strong>{{str(data['average_attendance'])+'%' if data['average_attendance'] is not None else 'Še ni vneseno'}}</strong><small>tekoče šolsko leto</small></div><a href="/prisotnost">Preglej →</a></article>
   <article class="stat-card blue"><span class="stat-icon">◷</span><div><p>Prihajajoči dogodki</p><strong>{{data['upcoming_count']}}</strong><small>Na časovnici zbora</small></div><a href="/dogodki">Preglej →</a></article>
 </div>
 % end
@@ -60,11 +60,11 @@
 % if "admin" in permissions:
   <article class="card"><div class="card-head"><div><p class="eyebrow">Evidenca zbora</p><h3>Najboljša prisotnost</h3></div></div><div class="rank-list">
 % for index, member in enumerate(data['top_members']):
-    <a href="/clani/{{member['id']}}"><span class="rank">{{index + 1}}</span><span class="avatar small">{{member['initials']}}</span><span><strong>{{member['name']}}</strong><small>{{member['voice']}}</small></span><b>{{member['attendance']}}%</b></a>
+    <a href="/clani/{{member['id']}}"><span class="rank">{{index + 1}}</span><span class="avatar small">{{member['initials']}}</span><span><strong>{{member['name']}}</strong><small>{{member['voice']}}</small></span><b>{{str(member['attendance'])+'%' if member['attendance'] is not None else 'Še ni vneseno'}}</b></a>
 % end
   </div><hr><p class="mini-title">Potrebujejo spodbudo</p><div class="compact-list">
 % for member in data['low_members']:
-    <a href="/clani/{{member['id']}}"><span>{{member['name']}}</span><b>{{member['attendance']}}%</b></a>
+    <a href="/clani/{{member['id']}}"><span>{{member['name']}}</span><b>{{str(member['attendance'])+'%' if member['attendance'] is not None else 'Še ni vneseno'}}</b></a>
 % end
   </div></article>
   <article class="card"><div class="card-head"><div><p class="eyebrow">Zasedba</p><h3>Člani po glasovih</h3></div></div><div class="voice-chart">

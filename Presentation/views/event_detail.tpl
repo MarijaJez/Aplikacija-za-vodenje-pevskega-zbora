@@ -15,7 +15,16 @@
 </select></label><label>Komentar<textarea name="comment" rows="4">{{song['comment'] or ''}}</textarea></label><div class="dialog-actions"><button type="button" class="button secondary performance-cancel">Prekliči</button><button type="submit" class="button primary">Shrani oceno izvedbe</button></div></form></dialog>
 % end
 % end
-</div></article><article class="card"><div class="card-head"><div><p class="eyebrow">Prisotnost</p><h3>Člani</h3></div><a href="/prisotnost">Odpri evidenco →</a></div><p class="muted">Prisotnost za dogodek ureja pooblaščena vloga na skupni strani evidence.</p></article></div>
+</div></article><article class="card"><div class="card-head"><div><p class="eyebrow">Prisotnost</p><h3>Člani</h3></div><a href="/prisotnost">Odpri evidenco →</a></div><p>Moja prisotnost: <strong data-own-attendance>{{{'present':'Prisoten','absent':'Odsoten','late_under':'Zamuda < 10 min','late_over':'Zamuda > 10 min','excused':'Opravičeno','unentered':'Še ni vneseno'}[own_attendance]}}</strong></p>
+% if can_edit_attendance(current_user, current_user['person_id'], event):
+<div class="event-toolbar">
+<button class="button primary" data-own-attendance-choice="present" data-event-id="{{event['id']}}">Prisoten</button>
+<button class="button secondary" data-own-attendance-choice="absent" data-event-id="{{event['id']}}">Odsoten</button>
+</div>
+% else:
+<p class="muted">Prisotnost preteklega dogodka lahko spremeni pooblaščena vloga.</p>
+% end
+</article></div>
 <script id="event-playlist" type="application/json">{{!json.dumps(tracks, ensure_ascii=False)}}</script>
 <dialog id="event-edit-dialog" class="wide-dialog"><button class="event-edit-close dialog-close" aria-label="Zapri">×</button><form method="post" action="/dogodki/{{event['id']}}/uredi"><p class="eyebrow">Koledar</p><h2>Uredi dogodek</h2><div class="form-grid"><label>Začetek<input type="datetime-local" name="event_date" value="{{event['event_date'].strftime('%Y-%m-%dT%H:%M')}}" required></label><label>Konec<input type="datetime-local" name="event_end" value="{{event['event_end'].strftime('%Y-%m-%dT%H:%M') if event.get('event_end') else ''}}" required></label><label>Vrsta<input name="event_type" list="event-types-edit" value="{{event['event_type']}}" required><datalist id="event-types-edit">
 % for event_type in event_types:

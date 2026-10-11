@@ -11,7 +11,7 @@ from Services.auth_service import AuthService
 
 
 MONTHS = {1:"jan.",2:"feb.",3:"mar.",4:"apr.",5:"maj",6:"jun.",7:"jul.",8:"avg.",9:"sep.",10:"okt.",11:"nov.",12:"dec."}
-STATUS_KEYS = ["present", "late_under", "late_over", "excused", "absent"]
+STATUS_KEYS = ["present", "late_under", "late_over", "excused", "absent", "unentered"]
 
 
 def date_label(value, include_year=True):
@@ -132,11 +132,17 @@ class ChoirService:
         if years and year_start not in years: year_start=years[0]
         events=[event for event in all_events if self.school_year_start(event["event_date"])==year_start and (selected_type in (None,"","Vse") or self.event_group(event["event_type"])==selected_type)]
         lookup={(item["person_id"],item["event_id"]):item["status"] for item in records}
-        matrix=[[lookup.get((member["id"],event["id"]),"absent") for event in events] for member in members]
+        matrix=[[lookup.get((member["id"],event["id"]),"unentered") for event in events] for member in members]
         member_totals=[{state:row.count(state) for state in STATUS_KEYS} for row in matrix]
         event_totals=[{state:sum(row[col]==state for row in matrix) for state in STATUS_KEYS} for col in range(len(events))]
-        total_records=max(len(members)*len(events),1); attended=sum(total[state] for total in member_totals for state in ("present","late_under","late_over")); voice_rates={voice:round(100*sum(sum(matrix[index][col] in ("present","late_under","late_over") for col in range(len(events))) for index,member in enumerate(members) if member["voice"]==voice)/max(sum(member["voice"]==voice for member in members)*len(events),1)) for voice in {member["voice"] for member in members}}
-        return {"members":members,"events":events,"status_keys":STATUS_KEYS,"matrix":matrix,"member_totals":member_totals,"event_totals":event_totals,"average":round(100*attended/total_records),"event_count":len(events),"best_voice":max(voice_rates,key=voice_rates.get) if voice_rates else "—","best_voice_rate":max(voice_rates.values()) if voice_rates else 0,"school_years":[{"start":year,"label":f"{year}/{str(year+1)[-2:]}"} for year in years],"selected_year":year_start,"selected_type":selected_type or "Vse",
+        entered_count=sum(state != "unentered" for row in matrix for state in row)
+        attended=sum(total[state] for total in member_totals for state in ("present","late_under","late_over"))
+        voice_rates={}
+        for voice in sorted({member["voice"] for member in members}):
+            states=[state for index,member in enumerate(members) if member["voice"]==voice for state in matrix[index] if state != "unentered"]
+            if states:
+                voice_rates[voice]=round(100*sum(state in ("present","late_under","late_over") for state in states)/len(states))
+        return {"members":members,"events":events,"status_keys":STATUS_KEYS,"matrix":matrix,"member_totals":member_totals,"event_totals":event_totals,"average":round(100*attended/entered_count) if entered_count else None,"event_count":len(events),"best_voice":max(voice_rates,key=voice_rates.get) if voice_rates else "—","best_voice_rate":max(voice_rates.values()) if voice_rates else 0,"school_years":[{"start":year,"label":f"{year}/{str(year+1)[-2:]}"} for year in years],"selected_year":year_start,"selected_type":selected_type or "Vse",
           "chart_data":{"labels":[event["date"].replace(" 2026","") for event in events],"voices":[member["voice"] for member in members],"matrix":matrix,"statuses":STATUS_KEYS}}
 
     def treasury(self):
@@ -147,9 +153,9 @@ class ChoirService:
         return {"transactions":rows,"income":income,"expenses":expenses,"balance":income-expenses,"unsettled":sum(item["amount"] for item in rows if not item["settled"])}
 
     def dashboard(self, user):
-        members=self.members();songs=self.songs();events=self.events();voices=Counter(member["voice"] for member in members);ranked=sorted(members,key=lambda item:item["attendance"],reverse=True)
+        members=self.members();songs=self.songs();events=self.events();voices=Counter(member["voice"] for member in members);ranked=sorted((member for member in members if member["attendance"] is not None),key=lambda item:item["attendance"],reverse=True)
         upcoming = [event for event in events if event["status"] == "upcoming"]
         personal_member = self.member(user["person_id"])
         next_event = self.event(upcoming[0]["id"]) if upcoming else None
         treasury = self.treasury() if "Blagajnik" in user["roles"] else None
-        return {"personal_member":personal_member,"next_event":next_event,"treasury":treasury,"member_count":len(members),"voices":[{"voice":voice,"count":count} for voice,count in voices.items()],"top_members":ranked[:3],"low_members":list(reversed(ranked[-3:])),"song_count":len(songs),"latest_songs":songs[:3],"forgotten_songs":sorted(songs,key=lambda item:item["last"] or "")[:3],"events":upcoming[:5],"attendance":ranked,"upcoming_count":sum(event["status"]=="upcoming" for event in events),"average_attendance":round(sum(member["attendance"] for member in members)/max(len(members),1))}
+        return {"personal_member":personal_member,"next_event":next_event,"treasury":treasury,"member_count":len(members),"voices":[{"voice":voice,"count":count} for voice,count in voices.items()],"top_members":ranked[:3],"low_members":list(reversed(ranked[-3:])),"song_count":len(songs),"latest_songs":songs[:3],"forgotten_songs":sorted(songs,key=lambda item:item["last"] or "")[:3],"events":upcoming[:5],"attendance":ranked,"upcoming_count":sum(event["status"]=="upcoming" for event in events),"average_attendance":round(sum(member["attendance"] for member in members if member["attendance"] is not None)/max(sum(member["attendance"] is not None for member in members),1)) if any(member["attendance"] is not None for member in members) else None}

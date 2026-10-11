@@ -153,7 +153,7 @@ class GoogleCalendarService:
         return {
             "id": google_event_id, "summary": event["name"],
             "location": event.get("place") or "",
-            "description": event.get("event_type") or "",
+            "description": (event.get("event_type") or "") + "\n" + "\n".join(label + ": " + os.getenv("APP_BASE_URL", "https://mpz-homec.algorhythmo.com").rstrip("/") + f"/dogodki/{event['id']}?attendance={status}" for status, label in (("present", "Prisoten"), ("absent", "Odsoten"))),
             "start": {"dateTime": start.isoformat()},
             "end": {"dateTime": (event.get("event_end") or start + timedelta(hours=2)).isoformat()},
             "extendedProperties": {"private": {"zborissimoEventId": str(event["id"])}}
