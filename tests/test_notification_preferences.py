@@ -106,6 +106,24 @@ class PreferenceTests(unittest.TestCase):
         self.service._deliver('{}', recipient_user_id=3)
         self.assertEqual(self.sender.call_count, 1)
 
+    def test_daily_reminders_preferences_and_durable_claim(self):
+        from datetime import datetime, timedelta, timezone
+        now = datetime(2026, 10, 25, 7, tzinfo=timezone.utc)
+        self.sql("CREATE TEMP TABLE event_reminder_deliveries(event_id BIGINT,local_date DATE,endpoint TEXT,PRIMARY KEY(event_id,local_date,endpoint))")
+        self.sql("INSERT INTO events VALUES(5,%s)", (now + timedelta(minutes=20),))
+        self.sql("INSERT INTO notification_preferences(user_id,events_enabled) VALUES(3,false)")
+        payload = json.dumps(dict(event_id=5, title='Reminder', body='Event', url='/dogodki/5'))
+        self.sender.reset_mock()
+        for _ in range(2):
+            worker = PushNotificationService(type('Repo', (), {'db': self.db})())
+            worker._deliver(payload, category='event', reminder_date=now.date(), now=now)
+        self.assertEqual(self.sender.call_count, 3)
+        self.assertTrue(all(call.kwargs['ttl'] == 1200 for call in self.sender.call_args_list))
+        self.assertTrue(all(len(json.loads(call.kwargs['data'])['actions']) == 2 for call in self.sender.call_args_list))
+        with self.db.cursor() as cur:
+            cur.execute("SELECT COUNT(*) count FROM event_reminder_deliveries")
+            self.assertEqual(cur.fetchone()['count'], 3)
+
     def test_concurrent_workers_claim_only_once(self):
         schema = 'notification_test_' + uuid.uuid4().hex
         self.sql('CREATE SCHEMA ' + schema)
