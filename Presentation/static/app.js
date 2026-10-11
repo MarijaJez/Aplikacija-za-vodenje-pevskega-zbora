@@ -161,6 +161,14 @@ function applySongFilters() {
 document.querySelector('[data-filter="songs-grid"]')?.addEventListener('input',applySongFilters);
 document.querySelectorAll('[data-category-filter]').forEach(item=>item.addEventListener('change',applySongFilters));
 
+// Keep checkbox selections open; dismiss the picker only on an outside click.
+document.addEventListener('click', event => {
+  document.querySelectorAll('.multi-filter[open]').forEach(filter => {
+    if (!filter.contains(event.target)) filter.open = false;
+  });
+});
+
+
 function applyProgramLookup(container) {
   const query=(container.querySelector('[data-program-search]')?.value || '').toLowerCase();
   const category=container.querySelector('[data-program-category]')?.value || '';
