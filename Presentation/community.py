@@ -43,7 +43,7 @@ def register_community_routes(app, database, render, current_user, require_login
     def gallery_index():
         response.set_header("Cache-Control", "private, no-store")
         return render("gallery", "Galerija", albums=store.gallery_events(), album=None,
-                      photos=[], csrf=token_for(current_user()))
+                      photos=[], standalone_albums=store.standalone_albums(), standalone=False, csrf=token_for(current_user()))
 
     @app.get("/galerija/<event_id:int>")
     @require_login
@@ -53,7 +53,26 @@ def register_community_routes(app, database, render, current_user, require_login
             raise HTTPError(404, "Dogodek ne obstaja.")
         response.set_header("Cache-Control", "private, no-store")
         return render("gallery", f"Galerija: {album['name']}", albums=[], album=album,
-                      photos=store.photos(event_id), csrf=token_for(current_user()))
+                      photos=store.photos(event_id), standalone=False, csrf=token_for(current_user()))
+
+    @app.post("/galerija/albumi/dodaj")
+    @require_permission("admin")
+    def gallery_create_album():
+        check_token()
+        name = validate_text(request.forms.getunicode("name"), 160, "Ime albuma", required=True)
+        album_id = store.create_album(name, current_user()["id"])
+        redirect(f"/galerija/albumi/{album_id}?sporocilo={quote_plus('Album je ustvarjen.')}")
+
+    @app.get("/galerija/albumi/<album_id:int>")
+    @require_login
+    def gallery_standalone_album(album_id):
+        album = store.album(album_id)
+        if not album:
+            raise HTTPError(404, "Album ne obstaja.")
+        response.set_header("Cache-Control", "private, no-store")
+        return render("gallery", f"Galerija: {album['name']}", albums=[], album=album,
+                      photos=store.photos(album_id, standalone=True), standalone=True,
+                      csrf=token_for(current_user()))
 
     @app.get("/galerija/slika/<photo_id:int>")
     @require_login
@@ -66,13 +85,18 @@ def register_community_routes(app, database, render, current_user, require_login
         image.set_header("X-Content-Type-Options", "nosniff")
         return image
 
+    @app.post("/galerija/albumi/<album_id:int>/dodaj")
+    @require_permission("admin")
+    def gallery_standalone_upload(album_id):
+        return gallery_upload(album_id, standalone=True)
+
     @app.post("/galerija/<event_id:int>/dodaj")
     @require_permission("admin")
-    def gallery_upload(event_id):
+    def gallery_upload(event_id, standalone=False):
         check_token()
-        if not store.event(event_id):
-            raise HTTPError(404, "Dogodek ne obstaja.")
-        if store.photo_count(event_id) >= 100:
+        if not (store.album(event_id) if standalone else store.event(event_id)):
+            raise HTTPError(404, "Album ne obstaja." if standalone else "Dogodek ne obstaja.")
+        if store.photo_count(event_id, standalone=standalone) >= 100:
             abort(400, "Album ima lahko največ 100 fotografij.")
         caption = validate_text(request.forms.getunicode("caption"), 300, "Opis")
         alt_text = validate_text(request.forms.getunicode("alt_text"), 160, "Opis slike", required=True)
@@ -86,11 +110,12 @@ def register_community_routes(app, database, render, current_user, require_login
         with path.open("xb") as image_file:
             image_file.write(normalized)
         try:
-            store.add_photo(event_id, name, caption, alt_text, current_user()["id"])
+            store.add_photo(event_id, name, caption, alt_text, current_user()["id"], standalone=standalone)
         except Exception:
             path.unlink(missing_ok=True)
             raise
-        redirect(f"/galerija/{event_id}?sporocilo={quote_plus('Fotografija je dodana.')}")
+        album_path = f"albumi/{event_id}" if standalone else str(event_id)
+        redirect(f"/galerija/{album_path}?sporocilo={quote_plus('Fotografija je dodana.')}")
 
     @app.post("/galerija/slika/<photo_id:int>/izbrisi")
     @require_permission("admin")
@@ -102,7 +127,8 @@ def register_community_routes(app, database, render, current_user, require_login
         name = store.delete_photo(photo_id)
         if name:
             (photo_dir / name).unlink(missing_ok=True)
-        redirect(f"/galerija/{photo['event_id']}?sporocilo={quote_plus('Fotografija je izbrisana.')}")
+        album_path = f"albumi/{photo['album_id']}" if photo["album_id"] else str(photo["event_id"])
+        redirect(f"/galerija/{album_path}?sporocilo={quote_plus('Fotografija je izbrisana.')}")
 
     @app.get("/klepet")
     @require_login

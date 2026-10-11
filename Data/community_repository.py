@@ -19,30 +19,50 @@ class CommunityRepository:
                            GROUP BY e.id ORDER BY e.event_date DESC LIMIT 200""")
             return self._rows(cur)
 
+    def standalone_albums(self):
+        with self.db.cursor() as cur:
+            cur.execute("""SELECT a.id, a.name, a.created_at, COUNT(p.id)::int AS photo_count
+                           FROM gallery_albums a LEFT JOIN event_photos p ON p.album_id=a.id
+                           GROUP BY a.id ORDER BY a.created_at DESC, a.id DESC""")
+            return self._rows(cur)
+
+    def album(self, album_id):
+        with self.db.cursor() as cur:
+            cur.execute("SELECT id, name, created_at FROM gallery_albums WHERE id=%s", (album_id,))
+            row = cur.fetchone()
+            return dict(row) if row else None
+
+    def create_album(self, name, user_id):
+        with self.db.cursor() as cur:
+            cur.execute("INSERT INTO gallery_albums(name,created_by) VALUES(%s,%s) RETURNING id", (name, user_id))
+            return cur.fetchone()["id"]
+
     def event(self, event_id):
         with self.db.cursor() as cur:
             cur.execute("SELECT id, name, event_date, event_type FROM events WHERE id=%s", (event_id,))
             row = cur.fetchone()
             return dict(row) if row else None
 
-    def photos(self, event_id):
+    def photos(self, event_id, standalone=False):
+        column = "album_id" if standalone else "event_id"
         with self.db.cursor() as cur:
-            cur.execute("""SELECT p.id, p.event_id, p.caption, p.alt_text, p.uploaded_at,
+            cur.execute(f"""SELECT p.id, p.event_id, p.caption, p.alt_text, p.uploaded_at,
                                   COALESCE(a.first_name || ' ' || a.last_name, 'Nekdanji član') AS uploader
                            FROM event_photos p LEFT JOIN users u ON u.id=p.uploaded_by
                            LEFT JOIN people a ON a.id=u.person_id
-                           WHERE p.event_id=%s ORDER BY p.uploaded_at DESC, p.id DESC""", (event_id,))
+                           WHERE p.{column}=%s ORDER BY p.uploaded_at DESC, p.id DESC""", (event_id,))
             return self._rows(cur)
 
     def photo(self, photo_id):
         with self.db.cursor() as cur:
-            cur.execute("SELECT id, event_id, file_name, caption, alt_text FROM event_photos WHERE id=%s", (photo_id,))
+            cur.execute("SELECT id, event_id, album_id, file_name, caption, alt_text FROM event_photos WHERE id=%s", (photo_id,))
             row = cur.fetchone()
             return dict(row) if row else None
 
-    def photo_count(self, event_id):
+    def photo_count(self, event_id, standalone=False):
+        column = "album_id" if standalone else "event_id"
         with self.db.cursor() as cur:
-            cur.execute("SELECT COUNT(*)::int AS count FROM event_photos WHERE event_id=%s", (event_id,))
+            cur.execute(f"SELECT COUNT(*)::int AS count FROM event_photos WHERE {column}=%s", (event_id,))
             return cur.fetchone()["count"]
 
     def photo_files_for_event(self, event_id):
@@ -51,9 +71,10 @@ class CommunityRepository:
             cur.execute("SELECT file_name FROM event_photos WHERE event_id=%s", (event_id,))
             return [row["file_name"] for row in cur.fetchall()]
 
-    def add_photo(self, event_id, file_name, caption, alt_text, user_id):
+    def add_photo(self, event_id, file_name, caption, alt_text, user_id, standalone=False):
+        column = "album_id" if standalone else "event_id"
         with self.db.cursor() as cur:
-            cur.execute("""INSERT INTO event_photos(event_id,file_name,caption,alt_text,uploaded_by)
+            cur.execute(f"""INSERT INTO event_photos({column},file_name,caption,alt_text,uploaded_by)
                            VALUES(%s,%s,%s,%s,%s) RETURNING id""",
                         (event_id, file_name, caption, alt_text, user_id))
             return cur.fetchone()["id"]
