@@ -313,3 +313,45 @@ Spletna zamenjava je uporabljena samo za potrjeno isto priredbo The Virgin Mary 
 | 136 | Čakaj in moli Boga.pdf | 1 | Čakaj in moli Boga |
 | 137 | Življenje- Bas  kitara.pdf | 1 | Življenje |
 | 138 | Življenje- SATB- Klavir.pdf | 10 | Življenje |
+
+
+## Dodatni uvoz 11. 10. 2026
+
+Drive zdaj vsebuje 175 PDF-jev. Pregledanih vseh 37 novih datotek (65 strani); 36 novih pesmi oziroma različic. Nad vsem je binarno identičen viru 100; O, sveta noč je ista priredba vira 104. Oba vira sta povezana brez novega zapisa. Z nami Gospod ostani vsebuje tudi Na oltar polagamo darove. I Will Follow Him je zamenjan z vizualno preverjenim celotnim digitalnim originalom. Skupaj 194 zapisov.
+
+- Angels’ Carol (angleško) — John Rutter — SATB s klavirjem ali harfo; angleško besedilo. Celotna glasba na tiskanih straneh 3–11.
+- Ave Marija (Centofri) — Na notah: Letizia Centofri — Večglasni zapis; slovensko besedilo. Priimek je prepisan po scanu.
+- Besede s križa — Tradicionalna afroameriška duhovna; besedilo Martin Tonkovič — Večglasni zapis; dve kitici.
+- Deni me (Lorber) — Prir. M. Lorber; skladatelj ni naveden — Večglasna priredba; besedilo po Vp 8 in 1 Kor 13. Začetnice prireditelja so ohranjene po notah.
+- En hribček bom kupil — Slovenska ljudska; priredba ni navedena — Ročni večglasni zapis, pet kitic; scan je bled.
+- Hallelujah (Cohen / Emerson, Za oblaki) — Leonard Cohen; prir. Roger Emerson; slovenski prevajalec ni naveden — SATB; štiri tiskane strani na dveh listih. Slovensko besedilo se začne »Za oblaki …« in se razlikuje od Tu sem s tabo.
+- I Will Follow Him (Sister Act) — Prir. Bosi Mathieu; iz filma Sister Act — S1, S2, alt in solisti; angleško besedilo. Scan zamenjan s celotnim digitalnim PDF-jem iste priredbe: preverjenih vseh sedem strani, zasedba, takti 1–76 in zaključek.
+- Jezus Kristus je naš rešenik — Na notah: C. Hauguel — Večglasni zapis z akordi; štiri kitice in odpev o vstajenju.
+- K nebu povzdignimo solzne oči — Breda Šček — Enoglasni začetek z večglasnim zborovskim nadaljevanjem; tri kitice.
+- Kaj se vam zdi — Slovenska ljudska; priredba ni navedena — Triglasni zapis iz pesmarice; spletni digitalni zapis Matije Tomca ima drugo razporeditev in drugačen odpev, zato ni zamenjan.
+- Kjer je resnična ljubezen — Na notah: Lojze Mav; prir. Sam Božič — Bogoslužno besedilo; mešani in moški zbor.
+- Ko so pastirji — GEN; besedilo Gačnik — Melodija z akordi in večglasnim odpevom; dodano tudi drugo slovensko besedilo Janeza Elaka.
+- Kristus Gospod (Naj vam zapojem) — Italijanska; na notah MSG Koper — Večglasni zapis z akordi; tudi latinski vložek Christus filius Dei.
+- Križ (melodija in akordi) — Silvester in Marija Bukovec — Enoglasna različica z akordi. Obstoječi Križ je dvoglasen, zato je ta izvedba ločena.
+- Nekaj je v zraku — Uršula Jašovec; besedilo Tone Pavček — Sopran, alt, bas, flavta in klavir; dva lista.
+- Oljsko goro tiha noč pokriva — Harm. Franc Kimovec; skladatelj ni naveden — Večglasni zapis; štiri kitice.
+- Only You — V. Clarke; besedilo M. Vincent John; prir. S. Sigurd Barret — SATB a cappella; angleško besedilo z ročno dodanim slovenskim. Najden digitalni PDF iste priredbe na Stimmquadrat, vendar naslov trenutno vrne HTML namesto PDF-ja; ohranjen scan.
+- Poslušajte, vsi ljudje (instrumentalna partitura) — Slovenska ljudska; priredba ni navedena — Partitura za flavto, ksilofon, zbor, dve violini in violončelo. Samo en list; zaključek celotne instrumentalne priredbe ni potrjen. Obstoječi zborovski zapis je ločen.
+- Si videl zvezdice — Helena Malovrh; arr. M. Habe — Melodija z akordi in večglasnim nadaljevanjem. Začetnice prireditelja so ohranjene po notah.
+- Skavtska pesem — Matija Tomc; besedilo Stanko Janežič; harm. Barbara Grahor, Uršula Jašovec — Večglasna pesem ob 25. letnici ZSKSS; dve kitici.
+- Skupaj na poti [nepopolne note] — Uršula Jašovec; besedilo Anže Marinko — NEPOPOLNE NOTE: priloženi sta tiskani strani 1 in 3. Manjka stran 2 (med takti 13 in 46). Mešani zbor; poročno besedilo.
+- Svobodno sonce — Avtor na notah ni naveden — Sopran, alt, tenor in bas; dva pomanjšana notna stolpca na enem listu.
+- Tam stoji pa hlevček (dvoglasno) — Slovenska ljudska; priredba ni navedena — Dvoglasni zapis; devet kitic. Spletni zapis France Ačko ni potrjen kot ista priredba.
+- Ti si moja, Gospa — Gregor Černe — Melodija z akordi; tri kitice.
+- Ti (Zwitter) — Alek Zwitter — Melodija z akordi; dve kitici o križu, vstajenju in kruhu življenja.
+- Tiho so (melodija in akordi) — Mio Kekič — Melodija z akordi; tri kitice. Obstoječi zapis je SATB s harmonizacijo Marjete Zabukovec.
+- Triglav — Jakob Aljaž; za mešani zbor Janez Močnik; besedilo Matija Zemljič – Slavin — Mešani zbor; celoten enostranski zapis.
+- Večerja zadnja je minila — Josip Lovčič — Štiriglasni zapis; štiri kitice, zadnja besedilna.
+- Verjemi mi (Count on Me) — Bruno Mars; slovensko besedilo Petra Grum — Melodija z akordi; slovensko besedilo.
+- Vihar upanja — Damjan Dolinar; prir. Anamarija Jemec — Dvostranska večglasna priredba; posvetilo Meti in Janu ob poroki, junij 2018.
+- Z nami Gospod ostani — Avtor na notah ni naveden — Glas, trobenta in akordi; tri kitice. Na drugem listu je tudi ločena pesem Na oltar polagamo darove.
+- Zapojmo aleluja — Avtor na notah ni naveden — Mladinski zbor ali solist in mešani zbor; štiri kitice. Hvalnica z alelujo.
+- Zbudi se, Betlehem — Gregor Černe — Večglasni zapis z uvodom, odpevom in tremi kiticami.
+- Zgodba o prijateljstvu — Jože Potrebuješ; prir. Marijan Mercina — Dvostranski večglasni zapis; scan je bled in del besedila težko berljiv.
+- Žalostna Mati Božja — Na notah: A. Hribar — Večglasni zapis; tri kitice. Začetnica avtorja je ohranjena po scanu.
+- Na oltar polagamo darove — Avtor na notah ni naveden — Pesem na spodnjem delu druge strani skupnega PDF-ja; melodija, akordi in tri kitice.

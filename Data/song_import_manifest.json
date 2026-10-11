@@ -3059,6 +3059,416 @@
       "internet_search": {
         "result": "Vhodni PDF že vsebuje digitalni notni zapis; spletna zamenjava ni potrebna."
       }
+    },
+    {
+      "index": 138,
+      "file": "Angels’ carol.pdf",
+      "pages": 9,
+      "sha256": "b77f30b60cdea90d3e5ac3c3f4a8520ad75ff944bde065f487e05794b4cc079e",
+      "archive_path": "score-source-b77f30b60cdea90d3e5ac3c3f4a8520ad75ff944bde065f487e05794b4cc079e.pdf",
+      "internet_search": {
+        "query": "Angels’ carol.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 139,
+      "file": "Ave Marija.pdf",
+      "pages": 2,
+      "sha256": "0a00b64259b37ae7a5d40d46f5cbe231fd9743ea54358cc03b0919ab8c08cae2",
+      "archive_path": "score-source-0a00b64259b37ae7a5d40d46f5cbe231fd9743ea54358cc03b0919ab8c08cae2.pdf",
+      "internet_search": {
+        "query": "Ave Marija.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 140,
+      "file": "Besede s križa.pdf",
+      "pages": 1,
+      "sha256": "7c90f23ab7ce1d55aa5811159931c59e916240c8410474b8b063567ca1b81081",
+      "archive_path": "score-source-7c90f23ab7ce1d55aa5811159931c59e916240c8410474b8b063567ca1b81081.pdf",
+      "internet_search": {
+        "query": "Besede s križa.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 141,
+      "file": "Deni me - M. Lorber.pdf",
+      "pages": 2,
+      "sha256": "182b8aeb410030189bf65c77eaa2ccb382636321c901ff57076f41d77a68385f",
+      "archive_path": "score-source-182b8aeb410030189bf65c77eaa2ccb382636321c901ff57076f41d77a68385f.pdf",
+      "internet_search": {
+        "query": "Deni me - M. Lorber.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 142,
+      "file": "En hribček bom kupil.pdf",
+      "pages": 1,
+      "sha256": "664dc4db3be43a615d7bd07f5ee27bb777fbfb15186e5a845f114924a4f26548",
+      "archive_path": "score-source-664dc4db3be43a615d7bd07f5ee27bb777fbfb15186e5a845f114924a4f26548.pdf",
+      "internet_search": {
+        "query": "En hribček bom kupil.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 143,
+      "file": "Hallelujah.pdf",
+      "pages": 2,
+      "sha256": "2ce39f6ee82e0106bfb3b94f699c511360f3eda6ebd8a97a9bd1d2edfc6bc2ca",
+      "archive_path": "score-source-2ce39f6ee82e0106bfb3b94f699c511360f3eda6ebd8a97a9bd1d2edfc6bc2ca.pdf",
+      "internet_search": {
+        "query": "Hallelujah.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 144,
+      "file": "I will follow Him.pdf",
+      "pages": 7,
+      "sha256": "f4008cb9c9fd7ddf412f46bd0e06bc1ad425ac682cb3d8280b08f4a6492ea439",
+      "archive_path": "score-source-f4008cb9c9fd7ddf412f46bd0e06bc1ad425ac682cb3d8280b08f4a6492ea439.pdf",
+      "internet_search": {
+        "query": "I will follow him Bosi Mathieu pdf",
+        "result": "Potrjen celoten digitalni original iste priredbe.",
+        "url": "https://www.mathieubosi.com/music/IWillFollowHim.pdf"
+      }
+    },
+    {
+      "index": 145,
+      "file": "Jezus Kristus je naš rešenik.pdf",
+      "pages": 1,
+      "sha256": "6b67530c8d39084be3c10f18046db755bd4955144f5c1293f56ed233469e3be2",
+      "archive_path": "score-source-6b67530c8d39084be3c10f18046db755bd4955144f5c1293f56ed233469e3be2.pdf",
+      "internet_search": {
+        "query": "Jezus Kristus je naš rešenik.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 146,
+      "file": "K nebu povzdignimo solzne oči.pdf",
+      "pages": 1,
+      "sha256": "9e03d4d2828dcc6b5037ca9ae6b6359a6bd36f3238ce8b73c1b27c46d773ccbb",
+      "archive_path": "score-source-9e03d4d2828dcc6b5037ca9ae6b6359a6bd36f3238ce8b73c1b27c46d773ccbb.pdf",
+      "internet_search": {
+        "query": "K nebu povzdignimo solzne oči.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 147,
+      "file": "Kaj se vam zdi.pdf",
+      "pages": 1,
+      "sha256": "b572433ea4e52743a29a54b802744691ad7b7f8c1c7e6084ed09406bd1ff53b3",
+      "archive_path": "score-source-b572433ea4e52743a29a54b802744691ad7b7f8c1c7e6084ed09406bd1ff53b3.pdf",
+      "internet_search": {
+        "query": "Kaj se vam zdi.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 148,
+      "file": "Kjer je resnična ljubezen.pdf",
+      "pages": 1,
+      "sha256": "20d80deb05cdb81c372cfe77eb8f1675f5db6fb8e3831741c2136067153eadb8",
+      "archive_path": "score-source-20d80deb05cdb81c372cfe77eb8f1675f5db6fb8e3831741c2136067153eadb8.pdf",
+      "internet_search": {
+        "query": "Kjer je resnična ljubezen.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 149,
+      "file": "Ko so pastirji.pdf",
+      "pages": 1,
+      "sha256": "64cc576d4ff1dca3d4b86b79340a9202f556c9530d6d027f686d6bff8e7b8156",
+      "archive_path": "score-source-64cc576d4ff1dca3d4b86b79340a9202f556c9530d6d027f686d6bff8e7b8156.pdf",
+      "internet_search": {
+        "query": "Ko so pastirji.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 150,
+      "file": "Kristus Gospod.pdf",
+      "pages": 2,
+      "sha256": "59f8fcb90bd42ab09fcdd138bd5427babaa3ae8d8a4da7e74e4f0e76153da7de",
+      "archive_path": "score-source-59f8fcb90bd42ab09fcdd138bd5427babaa3ae8d8a4da7e74e4f0e76153da7de.pdf",
+      "internet_search": {
+        "query": "Kristus Gospod.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 151,
+      "file": "Križ - Silvester in Marija Bukovec.pdf",
+      "pages": 1,
+      "sha256": "3808b98b3d7295e0054eb4b63e50c4346a193cae7a3d235b4d42055ddfdb6e11",
+      "archive_path": "score-source-3808b98b3d7295e0054eb4b63e50c4346a193cae7a3d235b4d42055ddfdb6e11.pdf",
+      "internet_search": {
+        "query": "Križ - Silvester in Marija Bukovec.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 152,
+      "file": "Nad vsem(1).pdf",
+      "pages": 2,
+      "sha256": "698cf17c5f9e5c08db68478a83c5ddbae7d70c78e8394b3739a35cb0d6f76ec0",
+      "archive_path": "score-source-698cf17c5f9e5c08db68478a83c5ddbae7d70c78e8394b3739a35cb0d6f76ec0.pdf",
+      "internet_search": {
+        "query": "Nad vsem(1).pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      },
+      "duplicate_of": 100
+    },
+    {
+      "index": 153,
+      "file": "Nekaj je v zraku.pdf",
+      "pages": 2,
+      "sha256": "e9e1cbd09b3b2b3ee2097a31628a9668747320c4392b88348b0a12ce10acccfa",
+      "archive_path": "score-source-e9e1cbd09b3b2b3ee2097a31628a9668747320c4392b88348b0a12ce10acccfa.pdf",
+      "internet_search": {
+        "query": "Nekaj je v zraku.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 154,
+      "file": "O, sveta noč.pdf",
+      "pages": 2,
+      "sha256": "5909b626ccecafe255e3cb551402373a896173fef37a52124cc07e14ddbc6fd7",
+      "archive_path": "score-source-5909b626ccecafe255e3cb551402373a896173fef37a52124cc07e14ddbc6fd7.pdf",
+      "internet_search": {
+        "query": "O, sveta noč.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      },
+      "duplicate_of": 104
+    },
+    {
+      "index": 155,
+      "file": "Oljsko goro tiha noč pokriva.pdf",
+      "pages": 1,
+      "sha256": "324d7d842ddc287e7efde225ff2ea047f205e022f7fa6d31c4f26cce1fcde8da",
+      "archive_path": "score-source-324d7d842ddc287e7efde225ff2ea047f205e022f7fa6d31c4f26cce1fcde8da.pdf",
+      "internet_search": {
+        "query": "Oljsko goro tiha noč pokriva.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 156,
+      "file": "Only you.pdf",
+      "pages": 3,
+      "sha256": "637e8a58329ee047cb6873b8419d74d6ef350f2031f8bb9fe602c38b22003384",
+      "archive_path": "score-source-637e8a58329ee047cb6873b8419d74d6ef350f2031f8bb9fe602c38b22003384.pdf",
+      "internet_search": {
+        "query": "Only you.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 157,
+      "file": "Poslušajte, vsi ljudje.pdf",
+      "pages": 1,
+      "sha256": "cc83f8fb8933ac21a4b720fe77be60c21c090bd6ac0af0bea7d4be92c8707e85",
+      "archive_path": "score-source-cc83f8fb8933ac21a4b720fe77be60c21c090bd6ac0af0bea7d4be92c8707e85.pdf",
+      "internet_search": {
+        "query": "Poslušajte, vsi ljudje.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 158,
+      "file": "Si videl zvezdice.pdf",
+      "pages": 1,
+      "sha256": "c14b8c7ab57f977a55fb5684925f606c81faf90a743c56d200a97548e2b361b4",
+      "archive_path": "score-source-c14b8c7ab57f977a55fb5684925f606c81faf90a743c56d200a97548e2b361b4.pdf",
+      "internet_search": {
+        "query": "Si videl zvezdice.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 159,
+      "file": "Skavtska pesem.pdf",
+      "pages": 1,
+      "sha256": "391592fc29603d147278c5f71688663d6fb441afc9ffae3bfcb944e24b200e1c",
+      "archive_path": "score-source-391592fc29603d147278c5f71688663d6fb441afc9ffae3bfcb944e24b200e1c.pdf",
+      "internet_search": {
+        "query": "Skavtska pesem.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 160,
+      "file": "Skupaj na poti.pdf",
+      "pages": 2,
+      "sha256": "2f5cb0b852e637d4ec14ccba349bd359aecf537f0937afc266e917909c69aa9b",
+      "archive_path": "score-source-2f5cb0b852e637d4ec14ccba349bd359aecf537f0937afc266e917909c69aa9b.pdf",
+      "internet_search": {
+        "query": "Skupaj na poti.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 161,
+      "file": "Svobodno sonce.pdf",
+      "pages": 1,
+      "sha256": "3116cb34f3afa9506a57ecc314d1f7d12c0482d420f5ba6d9c4a0b75a4085f5e",
+      "archive_path": "score-source-3116cb34f3afa9506a57ecc314d1f7d12c0482d420f5ba6d9c4a0b75a4085f5e.pdf",
+      "internet_search": {
+        "query": "Svobodno sonce.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 162,
+      "file": "Tam stoji pa hlevček.pdf",
+      "pages": 1,
+      "sha256": "f64fa22bfbdf4a869f82250f20b7e164442e9c8272153c0ffa0f9f45c64940c0",
+      "archive_path": "score-source-f64fa22bfbdf4a869f82250f20b7e164442e9c8272153c0ffa0f9f45c64940c0.pdf",
+      "internet_search": {
+        "query": "Tam stoji pa hlevček.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 163,
+      "file": "Ti si moja, Gospa.pdf",
+      "pages": 1,
+      "sha256": "63c5e6119e6bc9aa13f74773068573289a871ff2b2c1da05d44a4d75adddc474",
+      "archive_path": "score-source-63c5e6119e6bc9aa13f74773068573289a871ff2b2c1da05d44a4d75adddc474.pdf",
+      "internet_search": {
+        "query": "Ti si moja, Gospa.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 164,
+      "file": "Ti.pdf",
+      "pages": 1,
+      "sha256": "1fd5ccd1a5559828a05d67355acbd973d91f810f8845749557e4a9808d800bc4",
+      "archive_path": "score-source-1fd5ccd1a5559828a05d67355acbd973d91f810f8845749557e4a9808d800bc4.pdf",
+      "internet_search": {
+        "query": "Ti.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 165,
+      "file": "Tiho so.pdf",
+      "pages": 1,
+      "sha256": "e9a2b8b66f3bf42f6d14aa102c6065aae132dcaa76f55a30a997988faad7c1bc",
+      "archive_path": "score-source-e9a2b8b66f3bf42f6d14aa102c6065aae132dcaa76f55a30a997988faad7c1bc.pdf",
+      "internet_search": {
+        "query": "Tiho so.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 166,
+      "file": "Triglav.pdf",
+      "pages": 1,
+      "sha256": "a0a8a04c78a2ac3a2b3d7b5368ac8baa1e39071fd24e5b015eaca19ba77947fa",
+      "archive_path": "score-source-a0a8a04c78a2ac3a2b3d7b5368ac8baa1e39071fd24e5b015eaca19ba77947fa.pdf",
+      "internet_search": {
+        "query": "Triglav.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 167,
+      "file": "Večerja zadnja je minila.pdf",
+      "pages": 2,
+      "sha256": "b2144c75935397bc745733971b6a2fc3fab75e3dce333be08faa07872e1281a3",
+      "archive_path": "score-source-b2144c75935397bc745733971b6a2fc3fab75e3dce333be08faa07872e1281a3.pdf",
+      "internet_search": {
+        "query": "Večerja zadnja je minila.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 168,
+      "file": "Verjemi mi.pdf",
+      "pages": 1,
+      "sha256": "aec913ac964bc369d736b4bb6bacdb4d39f4bd60c883fa8df84f8eb07ea8213c",
+      "archive_path": "score-source-aec913ac964bc369d736b4bb6bacdb4d39f4bd60c883fa8df84f8eb07ea8213c.pdf",
+      "internet_search": {
+        "query": "Verjemi mi.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 169,
+      "file": "Vihar upanja.pdf",
+      "pages": 2,
+      "sha256": "b146c0a19b9994d9ab453b99c39e10633b8e78cc608ae5abbe6247c7932d9540",
+      "archive_path": "score-source-b146c0a19b9994d9ab453b99c39e10633b8e78cc608ae5abbe6247c7932d9540.pdf",
+      "internet_search": {
+        "query": "Vihar upanja.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 170,
+      "file": "Z nami Gospod ostani.pdf",
+      "pages": 2,
+      "sha256": "0e556b62d846e8ca6a4ab8f670fb52be0a2fa78d51be2dbadb0bd86097200b04",
+      "archive_path": "score-source-0e556b62d846e8ca6a4ab8f670fb52be0a2fa78d51be2dbadb0bd86097200b04.pdf",
+      "internet_search": {
+        "query": "Z nami Gospod ostani.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 171,
+      "file": "Zapojmo aleluja.pdf",
+      "pages": 1,
+      "sha256": "1be1da4d9f683eb9bc7f8d4f19fb8feaf7d586db2e589959507c65ab0e85804c",
+      "archive_path": "score-source-1be1da4d9f683eb9bc7f8d4f19fb8feaf7d586db2e589959507c65ab0e85804c.pdf",
+      "internet_search": {
+        "query": "Zapojmo aleluja.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 172,
+      "file": "Zbudi se, Betlehem.pdf",
+      "pages": 1,
+      "sha256": "b5fa8c7b3120cab99a0b10bcda17af2916012fb38e43cbad3201e568a9bdfd1b",
+      "archive_path": "score-source-b5fa8c7b3120cab99a0b10bcda17af2916012fb38e43cbad3201e568a9bdfd1b.pdf",
+      "internet_search": {
+        "query": "Zbudi se, Betlehem.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 173,
+      "file": "Zgodba o prijateljstvu.pdf",
+      "pages": 2,
+      "sha256": "ac4bb8b1a45d1088a17a0c4289497586a23675b88743208dfab2b1aedecbd97b",
+      "archive_path": "score-source-ac4bb8b1a45d1088a17a0c4289497586a23675b88743208dfab2b1aedecbd97b.pdf",
+      "internet_search": {
+        "query": "Zgodba o prijateljstvu.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
+    },
+    {
+      "index": 174,
+      "file": "Žalostna Mati Božja.pdf",
+      "pages": 1,
+      "sha256": "68bb5ae9df31970466c4ea44ce2beb8614eb156ba5025ab39a9b562b19ce99bb",
+      "archive_path": "score-source-68bb5ae9df31970466c4ea44ce2beb8614eb156ba5025ab39a9b562b19ce99bb.pdf",
+      "internet_search": {
+        "query": "Žalostna Mati Božja.pdf note pdf",
+        "result": "Iskanje po naslovu in navedeni atribuciji; dostopen celoten digitalni PDF iste priredbe ni bil potrjen, ohranjen scan."
+      }
     }
   ],
   "songs": [
@@ -5828,6 +6238,13 @@
             1,
             2
           ]
+        },
+        {
+          "index": 152,
+          "pages": [
+            1,
+            2
+          ]
         }
       ],
       "detail": "Melodija in akordi.",
@@ -5913,6 +6330,13 @@
       "sources": [
         {
           "index": 104,
+          "pages": [
+            1,
+            2
+          ]
+        },
+        {
+          "index": 154,
           "pages": [
             1,
             2
@@ -6634,6 +7058,808 @@
       "notes_path": "score-b69ccbf1c7cbc60c0109a3dc.pdf",
       "notes_sha256": "d6bd66839d5c92010bd130fb0dcd9bbc65bce899fd7cd4574d1eec6f29a4c24a",
       "notes_pages": 11
+    },
+    {
+      "title": "Angels’ Carol (angleško)",
+      "author": "John Rutter",
+      "categories": [
+        "Božič"
+      ],
+      "sources": [
+        {
+          "index": 138,
+          "pages": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        }
+      ],
+      "detail": "SATB s klavirjem ali harfo; angleško besedilo. Celotna glasba na tiskanih straneh 3–11.",
+      "notes_comment": "SATB s klavirjem ali harfo; angleško besedilo. Celotna glasba na tiskanih straneh 3–11.",
+      "incomplete": false,
+      "notes_path": "score-185444862eeab899a5af52a7.pdf",
+      "notes_sha256": "b77f30b60cdea90d3e5ac3c3f4a8520ad75ff944bde065f487e05794b4cc079e",
+      "notes_pages": 9
+    },
+    {
+      "title": "Ave Marija (Centofri)",
+      "author": "Na notah: Letizia Centofri",
+      "categories": [
+        "Marijine"
+      ],
+      "sources": [
+        {
+          "index": 139,
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "detail": "Večglasni zapis; slovensko besedilo. Priimek je prepisan po scanu.",
+      "notes_comment": "Večglasni zapis; slovensko besedilo. Priimek je prepisan po scanu.",
+      "incomplete": false,
+      "notes_path": "score-f7263d1feb4f3c13696b99ff.pdf",
+      "notes_sha256": "0a00b64259b37ae7a5d40d46f5cbe231fd9743ea54358cc03b0919ab8c08cae2",
+      "notes_pages": 2
+    },
+    {
+      "title": "Besede s križa",
+      "author": "Tradicionalna afroameriška duhovna; besedilo Martin Tonkovič",
+      "categories": [
+        "Post"
+      ],
+      "sources": [
+        {
+          "index": 140,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Večglasni zapis; dve kitici.",
+      "notes_comment": "Večglasni zapis; dve kitici.",
+      "incomplete": false,
+      "notes_path": "score-542b4289d1aabe551d91e5ea.pdf",
+      "notes_sha256": "7c90f23ab7ce1d55aa5811159931c59e916240c8410474b8b063567ca1b81081",
+      "notes_pages": 1
+    },
+    {
+      "title": "Deni me (Lorber)",
+      "author": "Prir. M. Lorber; skladatelj ni naveden",
+      "categories": [
+        "Poročne",
+        "Obhajilo"
+      ],
+      "sources": [
+        {
+          "index": 141,
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "detail": "Večglasna priredba; besedilo po Vp 8 in 1 Kor 13. Začetnice prireditelja so ohranjene po notah.",
+      "notes_comment": "Večglasna priredba; besedilo po Vp 8 in 1 Kor 13. Začetnice prireditelja so ohranjene po notah.",
+      "incomplete": false,
+      "notes_path": "score-d0cbf037761b1770b002435c.pdf",
+      "notes_sha256": "182b8aeb410030189bf65c77eaa2ccb382636321c901ff57076f41d77a68385f",
+      "notes_pages": 2
+    },
+    {
+      "title": "En hribček bom kupil",
+      "author": "Slovenska ljudska; priredba ni navedena",
+      "categories": [
+        "Posvetne"
+      ],
+      "sources": [
+        {
+          "index": 142,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Ročni večglasni zapis, pet kitic; scan je bled.",
+      "notes_comment": "Ročni večglasni zapis, pet kitic; scan je bled.",
+      "incomplete": false,
+      "notes_path": "score-1e751bc97463ec07cfc907b3.pdf",
+      "notes_sha256": "664dc4db3be43a615d7bd07f5ee27bb777fbfb15186e5a845f114924a4f26548",
+      "notes_pages": 1
+    },
+    {
+      "title": "Hallelujah (Cohen / Emerson, Za oblaki)",
+      "author": "Leonard Cohen; prir. Roger Emerson; slovenski prevajalec ni naveden",
+      "categories": [
+        "Posvetne"
+      ],
+      "sources": [
+        {
+          "index": 143,
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "detail": "SATB; štiri tiskane strani na dveh listih. Slovensko besedilo se začne »Za oblaki …« in se razlikuje od Tu sem s tabo.",
+      "notes_comment": "SATB; štiri tiskane strani na dveh listih. Slovensko besedilo se začne »Za oblaki …« in se razlikuje od Tu sem s tabo.",
+      "incomplete": false,
+      "notes_path": "score-720bfecd2f1c3cf852d7d8d7.pdf",
+      "notes_sha256": "2ce39f6ee82e0106bfb3b94f699c511360f3eda6ebd8a97a9bd1d2edfc6bc2ca",
+      "notes_pages": 2
+    },
+    {
+      "title": "I Will Follow Him (Sister Act)",
+      "author": "Prir. Bosi Mathieu; iz filma Sister Act",
+      "categories": [
+        "Posvetne",
+        "Zaključek"
+      ],
+      "sources": [
+        {
+          "index": 144,
+          "pages": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      ],
+      "detail": "S1, S2, alt in solisti; angleško besedilo. Scan zamenjan s celotnim digitalnim PDF-jem iste priredbe: preverjenih vseh sedem strani, zasedba, takti 1–76 in zaključek.",
+      "notes_comment": "S1, S2, alt in solisti; angleško besedilo. Scan zamenjan s celotnim digitalnim PDF-jem iste priredbe: preverjenih vseh sedem strani, zasedba, takti 1–76 in zaključek.",
+      "incomplete": false,
+      "notes_path": "score-58784648c2be48260cd28712.pdf",
+      "notes_sha256": "8ddfd321c967d3be8d15000c39b6bfa55f56db14c7cd77272dabfd925a0be163",
+      "notes_pages": 7
+    },
+    {
+      "title": "Jezus Kristus je naš rešenik",
+      "author": "Na notah: C. Hauguel",
+      "categories": [
+        "Velika noč",
+        "Uvod v mašo",
+        "Zaključek"
+      ],
+      "sources": [
+        {
+          "index": 145,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Večglasni zapis z akordi; štiri kitice in odpev o vstajenju.",
+      "notes_comment": "Večglasni zapis z akordi; štiri kitice in odpev o vstajenju.",
+      "incomplete": false,
+      "notes_path": "score-dbc8d13e5d5b5ec5dfcbb158.pdf",
+      "notes_sha256": "6b67530c8d39084be3c10f18046db755bd4955144f5c1293f56ed233469e3be2",
+      "notes_pages": 1
+    },
+    {
+      "title": "K nebu povzdignimo solzne oči",
+      "author": "Breda Šček",
+      "categories": [
+        "Advent",
+        "Marijine"
+      ],
+      "sources": [
+        {
+          "index": 146,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Enoglasni začetek z večglasnim zborovskim nadaljevanjem; tri kitice.",
+      "notes_comment": "Enoglasni začetek z večglasnim zborovskim nadaljevanjem; tri kitice.",
+      "incomplete": false,
+      "notes_path": "score-ef356f2fbe6fe5a8e3565795.pdf",
+      "notes_sha256": "9e03d4d2828dcc6b5037ca9ae6b6359a6bd36f3238ce8b73c1b27c46d773ccbb",
+      "notes_pages": 1
+    },
+    {
+      "title": "Kaj se vam zdi",
+      "author": "Slovenska ljudska; priredba ni navedena",
+      "categories": [
+        "Božič"
+      ],
+      "sources": [
+        {
+          "index": 147,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Triglasni zapis iz pesmarice; spletni digitalni zapis Matije Tomca ima drugo razporeditev in drugačen odpev, zato ni zamenjan.",
+      "notes_comment": "Triglasni zapis iz pesmarice; spletni digitalni zapis Matije Tomca ima drugo razporeditev in drugačen odpev, zato ni zamenjan.",
+      "incomplete": false,
+      "notes_path": "score-2f845def03f2b4a824ffbc0c.pdf",
+      "notes_sha256": "b572433ea4e52743a29a54b802744691ad7b7f8c1c7e6084ed09406bd1ff53b3",
+      "notes_pages": 1
+    },
+    {
+      "title": "Kjer je resnična ljubezen",
+      "author": "Na notah: Lojze Mav; prir. Sam Božič",
+      "categories": [
+        "Obhajilo",
+        "Poročne"
+      ],
+      "sources": [
+        {
+          "index": 148,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Bogoslužno besedilo; mešani in moški zbor.",
+      "notes_comment": "Bogoslužno besedilo; mešani in moški zbor.",
+      "incomplete": false,
+      "notes_path": "score-071bf1dcceb914d821013e14.pdf",
+      "notes_sha256": "20d80deb05cdb81c372cfe77eb8f1675f5db6fb8e3831741c2136067153eadb8",
+      "notes_pages": 1
+    },
+    {
+      "title": "Ko so pastirji",
+      "author": "GEN; besedilo Gačnik",
+      "categories": [
+        "Božič"
+      ],
+      "sources": [
+        {
+          "index": 149,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Melodija z akordi in večglasnim odpevom; dodano tudi drugo slovensko besedilo Janeza Elaka.",
+      "notes_comment": "Melodija z akordi in večglasnim odpevom; dodano tudi drugo slovensko besedilo Janeza Elaka.",
+      "incomplete": false,
+      "notes_path": "score-4bdac386138150120ea2d874.pdf",
+      "notes_sha256": "64cc576d4ff1dca3d4b86b79340a9202f556c9530d6d027f686d6bff8e7b8156",
+      "notes_pages": 1
+    },
+    {
+      "title": "Kristus Gospod (Naj vam zapojem)",
+      "author": "Italijanska; na notah MSG Koper",
+      "categories": [
+        "Velika noč",
+        "Zaključek"
+      ],
+      "sources": [
+        {
+          "index": 150,
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "detail": "Večglasni zapis z akordi; tudi latinski vložek Christus filius Dei.",
+      "notes_comment": "Večglasni zapis z akordi; tudi latinski vložek Christus filius Dei.",
+      "incomplete": false,
+      "notes_path": "score-4d0fb63a757ebda67b59c19b.pdf",
+      "notes_sha256": "59f8fcb90bd42ab09fcdd138bd5427babaa3ae8d8a4da7e74e4f0e76153da7de",
+      "notes_pages": 2
+    },
+    {
+      "title": "Križ (melodija in akordi)",
+      "author": "Silvester in Marija Bukovec",
+      "categories": [
+        "Post"
+      ],
+      "sources": [
+        {
+          "index": 151,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Enoglasna različica z akordi. Obstoječi Križ je dvoglasen, zato je ta izvedba ločena.",
+      "notes_comment": "Enoglasna različica z akordi. Obstoječi Križ je dvoglasen, zato je ta izvedba ločena.",
+      "incomplete": false,
+      "notes_path": "score-036ee6fa3ee2987822502c78.pdf",
+      "notes_sha256": "3808b98b3d7295e0054eb4b63e50c4346a193cae7a3d235b4d42055ddfdb6e11",
+      "notes_pages": 1
+    },
+    {
+      "title": "Nekaj je v zraku",
+      "author": "Uršula Jašovec; besedilo Tone Pavček",
+      "categories": [
+        "Posvetne",
+        "Poročne"
+      ],
+      "sources": [
+        {
+          "index": 153,
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "detail": "Sopran, alt, bas, flavta in klavir; dva lista.",
+      "notes_comment": "Sopran, alt, bas, flavta in klavir; dva lista.",
+      "incomplete": false,
+      "notes_path": "score-513912a057da9739a8dd70ab.pdf",
+      "notes_sha256": "e9e1cbd09b3b2b3ee2097a31628a9668747320c4392b88348b0a12ce10acccfa",
+      "notes_pages": 2
+    },
+    {
+      "title": "Oljsko goro tiha noč pokriva",
+      "author": "Harm. Franc Kimovec; skladatelj ni naveden",
+      "categories": [
+        "Post"
+      ],
+      "sources": [
+        {
+          "index": 155,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Večglasni zapis; štiri kitice.",
+      "notes_comment": "Večglasni zapis; štiri kitice.",
+      "incomplete": false,
+      "notes_path": "score-c33924bd074a00f3ac1c6d8c.pdf",
+      "notes_sha256": "324d7d842ddc287e7efde225ff2ea047f205e022f7fa6d31c4f26cce1fcde8da",
+      "notes_pages": 1
+    },
+    {
+      "title": "Only You",
+      "author": "V. Clarke; besedilo M. Vincent John; prir. S. Sigurd Barret",
+      "categories": [
+        "Posvetne",
+        "Poročne"
+      ],
+      "sources": [
+        {
+          "index": 156,
+          "pages": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "detail": "SATB a cappella; angleško besedilo z ročno dodanim slovenskim. Najden digitalni PDF iste priredbe na Stimmquadrat, vendar naslov trenutno vrne HTML namesto PDF-ja; ohranjen scan.",
+      "notes_comment": "SATB a cappella; angleško besedilo z ročno dodanim slovenskim. Najden digitalni PDF iste priredbe na Stimmquadrat, vendar naslov trenutno vrne HTML namesto PDF-ja; ohranjen scan.",
+      "incomplete": false,
+      "notes_path": "score-c1cbd91f1aae53a005e83cc6.pdf",
+      "notes_sha256": "637e8a58329ee047cb6873b8419d74d6ef350f2031f8bb9fe602c38b22003384",
+      "notes_pages": 3
+    },
+    {
+      "title": "Poslušajte, vsi ljudje (instrumentalna partitura)",
+      "author": "Slovenska ljudska; priredba ni navedena",
+      "categories": [
+        "Božič"
+      ],
+      "sources": [
+        {
+          "index": 157,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Partitura za flavto, ksilofon, zbor, dve violini in violončelo. Samo en list; zaključek celotne instrumentalne priredbe ni potrjen. Obstoječi zborovski zapis je ločen.",
+      "notes_comment": "Partitura za flavto, ksilofon, zbor, dve violini in violončelo. Samo en list; zaključek celotne instrumentalne priredbe ni potrjen. Obstoječi zborovski zapis je ločen.",
+      "incomplete": true,
+      "notes_path": "score-b42f9e84830106a4aed3d9a0.pdf",
+      "notes_sha256": "cc83f8fb8933ac21a4b720fe77be60c21c090bd6ac0af0bea7d4be92c8707e85",
+      "notes_pages": 1
+    },
+    {
+      "title": "Si videl zvezdice",
+      "author": "Helena Malovrh; arr. M. Habe",
+      "categories": [
+        "Božič"
+      ],
+      "sources": [
+        {
+          "index": 158,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Melodija z akordi in večglasnim nadaljevanjem. Začetnice prireditelja so ohranjene po notah.",
+      "notes_comment": "Melodija z akordi in večglasnim nadaljevanjem. Začetnice prireditelja so ohranjene po notah.",
+      "incomplete": false,
+      "notes_path": "score-d3c69c67403ea5d7ee73009f.pdf",
+      "notes_sha256": "c14b8c7ab57f977a55fb5684925f606c81faf90a743c56d200a97548e2b361b4",
+      "notes_pages": 1
+    },
+    {
+      "title": "Skavtska pesem",
+      "author": "Matija Tomc; besedilo Stanko Janežič; harm. Barbara Grahor, Uršula Jašovec",
+      "categories": [
+        "Posvetne"
+      ],
+      "sources": [
+        {
+          "index": 159,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Večglasna pesem ob 25. letnici ZSKSS; dve kitici.",
+      "notes_comment": "Večglasna pesem ob 25. letnici ZSKSS; dve kitici.",
+      "incomplete": false,
+      "notes_path": "score-f2635bc050bde2ab22361d6a.pdf",
+      "notes_sha256": "391592fc29603d147278c5f71688663d6fb441afc9ffae3bfcb944e24b200e1c",
+      "notes_pages": 1
+    },
+    {
+      "title": "Skupaj na poti [nepopolne note]",
+      "author": "Uršula Jašovec; besedilo Anže Marinko",
+      "categories": [
+        "Poročne",
+        "Posvetne"
+      ],
+      "sources": [
+        {
+          "index": 160,
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "detail": "NEPOPOLNE NOTE: priloženi sta tiskani strani 1 in 3. Manjka stran 2 (med takti 13 in 46). Mešani zbor; poročno besedilo.",
+      "notes_comment": "NEPOPOLNE NOTE: priloženi sta tiskani strani 1 in 3. Manjka stran 2 (med takti 13 in 46). Mešani zbor; poročno besedilo.",
+      "incomplete": true,
+      "notes_path": "score-d1e32dd35f9cd3ee97693805.pdf",
+      "notes_sha256": "2f5cb0b852e637d4ec14ccba349bd359aecf537f0937afc266e917909c69aa9b",
+      "notes_pages": 2
+    },
+    {
+      "title": "Svobodno sonce",
+      "author": "Avtor na notah ni naveden",
+      "categories": [
+        "Posvetne"
+      ],
+      "sources": [
+        {
+          "index": 161,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Sopran, alt, tenor in bas; dva pomanjšana notna stolpca na enem listu.",
+      "notes_comment": "Sopran, alt, tenor in bas; dva pomanjšana notna stolpca na enem listu.",
+      "incomplete": false,
+      "notes_path": "score-d9110a9ff5403090a334639b.pdf",
+      "notes_sha256": "3116cb34f3afa9506a57ecc314d1f7d12c0482d420f5ba6d9c4a0b75a4085f5e",
+      "notes_pages": 1
+    },
+    {
+      "title": "Tam stoji pa hlevček (dvoglasno)",
+      "author": "Slovenska ljudska; priredba ni navedena",
+      "categories": [
+        "Božič"
+      ],
+      "sources": [
+        {
+          "index": 162,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Dvoglasni zapis; devet kitic. Spletni zapis France Ačko ni potrjen kot ista priredba.",
+      "notes_comment": "Dvoglasni zapis; devet kitic. Spletni zapis France Ačko ni potrjen kot ista priredba.",
+      "incomplete": false,
+      "notes_path": "score-50449c69bf5193ef2e3919a6.pdf",
+      "notes_sha256": "f64fa22bfbdf4a869f82250f20b7e164442e9c8272153c0ffa0f9f45c64940c0",
+      "notes_pages": 1
+    },
+    {
+      "title": "Ti si moja, Gospa",
+      "author": "Gregor Černe",
+      "categories": [
+        "Marijine"
+      ],
+      "sources": [
+        {
+          "index": 163,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Melodija z akordi; tri kitice.",
+      "notes_comment": "Melodija z akordi; tri kitice.",
+      "incomplete": false,
+      "notes_path": "score-bfa7bef87feed79ee2292002.pdf",
+      "notes_sha256": "63c5e6119e6bc9aa13f74773068573289a871ff2b2c1da05d44a4d75adddc474",
+      "notes_pages": 1
+    },
+    {
+      "title": "Ti (Zwitter)",
+      "author": "Alek Zwitter",
+      "categories": [
+        "Obhajilo",
+        "Post",
+        "Velika noč"
+      ],
+      "sources": [
+        {
+          "index": 164,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Melodija z akordi; dve kitici o križu, vstajenju in kruhu življenja.",
+      "notes_comment": "Melodija z akordi; dve kitici o križu, vstajenju in kruhu življenja.",
+      "incomplete": false,
+      "notes_path": "score-df1f81fa377d4d848fcc4e7e.pdf",
+      "notes_sha256": "1fd5ccd1a5559828a05d67355acbd973d91f810f8845749557e4a9808d800bc4",
+      "notes_pages": 1
+    },
+    {
+      "title": "Tiho so (melodija in akordi)",
+      "author": "Mio Kekič",
+      "categories": [
+        "Post"
+      ],
+      "sources": [
+        {
+          "index": 165,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Melodija z akordi; tri kitice. Obstoječi zapis je SATB s harmonizacijo Marjete Zabukovec.",
+      "notes_comment": "Melodija z akordi; tri kitice. Obstoječi zapis je SATB s harmonizacijo Marjete Zabukovec.",
+      "incomplete": false,
+      "notes_path": "score-7b5ee44cbb94b740ef6174d3.pdf",
+      "notes_sha256": "e9a2b8b66f3bf42f6d14aa102c6065aae132dcaa76f55a30a997988faad7c1bc",
+      "notes_pages": 1
+    },
+    {
+      "title": "Triglav",
+      "author": "Jakob Aljaž; za mešani zbor Janez Močnik; besedilo Matija Zemljič – Slavin",
+      "categories": [
+        "Posvetne"
+      ],
+      "sources": [
+        {
+          "index": 166,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Mešani zbor; celoten enostranski zapis.",
+      "notes_comment": "Mešani zbor; celoten enostranski zapis.",
+      "incomplete": false,
+      "notes_path": "score-1885db540d3640848cb65a9f.pdf",
+      "notes_sha256": "a0a8a04c78a2ac3a2b3d7b5368ac8baa1e39071fd24e5b015eaca19ba77947fa",
+      "notes_pages": 1
+    },
+    {
+      "title": "Večerja zadnja je minila",
+      "author": "Josip Lovčič",
+      "categories": [
+        "Post",
+        "Obhajilo"
+      ],
+      "sources": [
+        {
+          "index": 167,
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "detail": "Štiriglasni zapis; štiri kitice, zadnja besedilna.",
+      "notes_comment": "Štiriglasni zapis; štiri kitice, zadnja besedilna.",
+      "incomplete": false,
+      "notes_path": "score-0b8b7b00c9ea3a251f6e6723.pdf",
+      "notes_sha256": "b2144c75935397bc745733971b6a2fc3fab75e3dce333be08faa07872e1281a3",
+      "notes_pages": 2
+    },
+    {
+      "title": "Verjemi mi (Count on Me)",
+      "author": "Bruno Mars; slovensko besedilo Petra Grum",
+      "categories": [
+        "Posvetne"
+      ],
+      "sources": [
+        {
+          "index": 168,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Melodija z akordi; slovensko besedilo.",
+      "notes_comment": "Melodija z akordi; slovensko besedilo.",
+      "incomplete": false,
+      "notes_path": "score-b2b048a54b899bb38ec12565.pdf",
+      "notes_sha256": "aec913ac964bc369d736b4bb6bacdb4d39f4bd60c883fa8df84f8eb07ea8213c",
+      "notes_pages": 1
+    },
+    {
+      "title": "Vihar upanja",
+      "author": "Damjan Dolinar; prir. Anamarija Jemec",
+      "categories": [
+        "Poročne",
+        "Posvetne"
+      ],
+      "sources": [
+        {
+          "index": 169,
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "detail": "Dvostranska večglasna priredba; posvetilo Meti in Janu ob poroki, junij 2018.",
+      "notes_comment": "Dvostranska večglasna priredba; posvetilo Meti in Janu ob poroki, junij 2018.",
+      "incomplete": false,
+      "notes_path": "score-bbf79df32bf7db73a82e7017.pdf",
+      "notes_sha256": "b146c0a19b9994d9ab453b99c39e10633b8e78cc608ae5abbe6247c7932d9540",
+      "notes_pages": 2
+    },
+    {
+      "title": "Z nami Gospod ostani",
+      "author": "Avtor na notah ni naveden",
+      "categories": [
+        "Obhajilo",
+        "Zaključek"
+      ],
+      "sources": [
+        {
+          "index": 170,
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "detail": "Glas, trobenta in akordi; tri kitice. Na drugem listu je tudi ločena pesem Na oltar polagamo darove.",
+      "notes_comment": "Glas, trobenta in akordi; tri kitice. Na drugem listu je tudi ločena pesem Na oltar polagamo darove.",
+      "incomplete": false,
+      "notes_path": "score-0a08874e86bbb2a2922c95dc.pdf",
+      "notes_sha256": "0e556b62d846e8ca6a4ab8f670fb52be0a2fa78d51be2dbadb0bd86097200b04",
+      "notes_pages": 2
+    },
+    {
+      "title": "Zapojmo aleluja",
+      "author": "Avtor na notah ni naveden",
+      "categories": [
+        "Aleluja",
+        "Velika noč",
+        "Zaključek"
+      ],
+      "sources": [
+        {
+          "index": 171,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Mladinski zbor ali solist in mešani zbor; štiri kitice. Hvalnica z alelujo.",
+      "notes_comment": "Mladinski zbor ali solist in mešani zbor; štiri kitice. Hvalnica z alelujo.",
+      "incomplete": false,
+      "notes_path": "score-8ba82f84dc21fba1f5a198d3.pdf",
+      "notes_sha256": "1be1da4d9f683eb9bc7f8d4f19fb8feaf7d586db2e589959507c65ab0e85804c",
+      "notes_pages": 1
+    },
+    {
+      "title": "Zbudi se, Betlehem",
+      "author": "Gregor Černe",
+      "categories": [
+        "Božič",
+        "Advent"
+      ],
+      "sources": [
+        {
+          "index": 172,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Večglasni zapis z uvodom, odpevom in tremi kiticami.",
+      "notes_comment": "Večglasni zapis z uvodom, odpevom in tremi kiticami.",
+      "incomplete": false,
+      "notes_path": "score-1f15090282f65a101de7101b.pdf",
+      "notes_sha256": "b5fa8c7b3120cab99a0b10bcda17af2916012fb38e43cbad3201e568a9bdfd1b",
+      "notes_pages": 1
+    },
+    {
+      "title": "Zgodba o prijateljstvu",
+      "author": "Jože Potrebuješ; prir. Marijan Mercina",
+      "categories": [
+        "Posvetne",
+        "Poročne"
+      ],
+      "sources": [
+        {
+          "index": 173,
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "detail": "Dvostranski večglasni zapis; scan je bled in del besedila težko berljiv.",
+      "notes_comment": "Dvostranski večglasni zapis; scan je bled in del besedila težko berljiv.",
+      "incomplete": false,
+      "notes_path": "score-a256359495d0e8d3da5d2a83.pdf",
+      "notes_sha256": "ac4bb8b1a45d1088a17a0c4289497586a23675b88743208dfab2b1aedecbd97b",
+      "notes_pages": 2
+    },
+    {
+      "title": "Žalostna Mati Božja",
+      "author": "Na notah: A. Hribar",
+      "categories": [
+        "Marijine",
+        "Post"
+      ],
+      "sources": [
+        {
+          "index": 174,
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "detail": "Večglasni zapis; tri kitice. Začetnica avtorja je ohranjena po scanu.",
+      "notes_comment": "Večglasni zapis; tri kitice. Začetnica avtorja je ohranjena po scanu.",
+      "incomplete": false,
+      "notes_path": "score-2b2d54069c5ec620acea3cff.pdf",
+      "notes_sha256": "68bb5ae9df31970466c4ea44ce2beb8614eb156ba5025ab39a9b562b19ce99bb",
+      "notes_pages": 1
+    },
+    {
+      "title": "Na oltar polagamo darove",
+      "author": "Avtor na notah ni naveden",
+      "categories": [
+        "Darovanje"
+      ],
+      "sources": [
+        {
+          "index": 170,
+          "pages": [
+            2
+          ]
+        }
+      ],
+      "detail": "Pesem na spodnjem delu druge strani skupnega PDF-ja; melodija, akordi in tri kitice.",
+      "notes_comment": "Pesem na spodnjem delu druge strani skupnega PDF-ja; melodija, akordi in tri kitice.",
+      "incomplete": false,
+      "notes_path": "score-0a08874e86bbb2a2922c95dc.pdf",
+      "notes_sha256": "0e556b62d846e8ca6a4ab8f670fb52be0a2fa78d51be2dbadb0bd86097200b04",
+      "notes_pages": 2
     }
   ]
 }
