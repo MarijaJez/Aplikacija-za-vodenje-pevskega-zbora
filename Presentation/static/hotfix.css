@@ -17,3 +17,6 @@
 .push-settings { border-top: 1px solid var(--border, #d9e1df); margin-top: 1rem; padding-top: 1rem; }
 .push-settings p { font-size: .85rem; line-height: 1.45; margin: .35rem 0 .7rem; }
 .install-help{margin-top:18px;padding:12px 14px;border:1px solid var(--line);border-radius:9px;background:var(--white);font-size:12px;line-height:1.5}.install-help summary{cursor:pointer;font-weight:700;color:var(--plum)}.install-help p{margin:10px 0 0;color:var(--muted)}.install-help .button{margin-top:12px}
+
+/* Keep attendance indicators square despite the mobile button touch-height rule. */
+.attendance-dot{box-sizing:border-box;width:28px;height:28px;min-width:28px;min-height:28px;max-width:28px;max-height:28px;aspect-ratio:1;padding:0;flex:0 0 28px;display:inline-grid;place-items:center;border-radius:50%;line-height:1}

@@ -14,7 +14,37 @@ document.querySelectorAll('[data-toast]').forEach(el => el.addEventListener('cli
 
 if (toast?.dataset.message) showToast(toast.dataset.message);
 
-document.querySelector('.mobile-menu')?.addEventListener('click', () => document.querySelector('.sidebar').classList.toggle('open'));
+const sidebar = document.querySelector('.sidebar');
+const mobileMenu = document.querySelector('.mobile-menu');
+function setMenuOpen(open) {
+  sidebar?.classList.toggle('open', open);
+  mobileMenu?.setAttribute('aria-expanded', String(open));
+}
+setMenuOpen(false);
+mobileMenu?.addEventListener('click', () => setMenuOpen(!sidebar?.classList.contains('open')));
+document.addEventListener('click', event => {
+  if (sidebar?.classList.contains('open') && !sidebar.contains(event.target) && !mobileMenu?.contains(event.target)) {
+    setMenuOpen(false);
+  }
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') setMenuOpen(false);
+});
+
+// Check both ends of the gesture so dragging out of a form does not dismiss it.
+document.querySelectorAll('dialog').forEach(dialog => {
+  const isOutside = event => {
+    const rect = dialog.getBoundingClientRect();
+    return event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom);
+  };
+  let startedOutside = false;
+  dialog.addEventListener('pointerdown', event => { startedOutside = isOutside(event); });
+  dialog.addEventListener('click', event => {
+    if (dialog.open && startedOutside && isOutside(event)) dialog.close();
+    startedOutside = false;
+  });
+  dialog.addEventListener('close', () => { startedOutside = false; });
+});
 
 const accountDialog = document.querySelector('#account-dialog');
 document.querySelectorAll('[data-account-modal]').forEach(button => button.addEventListener('click', () => accountDialog?.showModal()));
