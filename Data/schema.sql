@@ -201,6 +201,8 @@ CREATE TABLE transactions (
     transaction_date DATE NOT NULL,
     description TEXT NOT NULL,
     person_name VARCHAR(255) NOT NULL,
+    category TEXT,
+    notes TEXT,
     kind VARCHAR(20) NOT NULL CHECK (kind IN ('Prihodek', 'Odhodek')),
     amount NUMERIC(12,2) NOT NULL CHECK (amount >= 0),
     settled BOOLEAN NOT NULL DEFAULT FALSE,

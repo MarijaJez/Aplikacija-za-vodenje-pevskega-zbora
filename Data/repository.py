@@ -499,13 +499,13 @@ class ChoirRepository:
 
     def list_transactions(self):
         with self.db.cursor() as cur:
-            cur.execute("SELECT id,transaction_date,description,person_name,kind,amount,settled FROM transactions ORDER BY transaction_date DESC,id DESC")
+            cur.execute("SELECT id,transaction_date,description,person_name,category,notes,kind,amount,settled FROM transactions ORDER BY transaction_date DESC,id DESC")
             return self._all(cur)
 
     def create_transaction(self, values, user_id):
         with self.db.cursor() as cur:
-            cur.execute("""INSERT INTO transactions(transaction_date,description,person_name,kind,amount,settled,created_by)
-              VALUES(%s,%s,%s,%s,%s,%s,%s) RETURNING id""",(values["date"],values["description"],values["person_name"],values["kind"],values["amount"],values.get("settled",False),user_id)); return cur.fetchone()["id"]
+            cur.execute("""INSERT INTO transactions(transaction_date,description,person_name,category,notes,kind,amount,settled,created_by)
+              VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id""",(values["date"],values["description"],values["person_name"],(values.get("category") or "").strip() or None,(values.get("notes") or "").strip() or None,values["kind"],values["amount"],values.get("settled",False),user_id)); return cur.fetchone()["id"]
 
     def toggle_transaction(self, transaction_id):
         with self.db.cursor() as cur:
@@ -517,5 +517,5 @@ class ChoirRepository:
 
     def update_transaction(self, transaction_id, values):
         with self.db.cursor() as cur:
-            cur.execute("""UPDATE transactions SET transaction_date=%s,description=%s,person_name=%s,kind=%s,amount=%s,settled=%s WHERE id=%s""",
-                (values["date"],values["description"],values["person_name"],values["kind"],values["amount"],values.get("settled",False),transaction_id))
+            cur.execute("""UPDATE transactions SET transaction_date=%s,description=%s,person_name=%s,category=%s,notes=%s,kind=%s,amount=%s,settled=%s WHERE id=%s""",
+                (values["date"],values["description"],values["person_name"],(values.get("category") or "").strip() or None,(values.get("notes") or "").strip() or None,values["kind"],values["amount"],values.get("settled",False),transaction_id))

@@ -1,0 +1,152 @@
+[
+  {
+    "date": "2026-02-15",
+    "description": "prenos iz 2025",
+    "person_name": "prenos iz 2025",
+    "kind": "Prihodek",
+    "category": null,
+    "amount": "1375.50",
+    "notes": null,
+    "settled": false
+  },
+  {
+    "date": "2026-02-15",
+    "description": "koncert z KZ Concordia Mengeš",
+    "person_name": "koncert z KZ Concordia Mengeš",
+    "kind": "Prihodek",
+    "category": "koncert",
+    "amount": "305.00",
+    "notes": null,
+    "settled": false
+  },
+  {
+    "date": "2026-02-22",
+    "description": "Potni stroški izlet zbora",
+    "person_name": "Potni stroški izlet zbora",
+    "kind": "Odhodek",
+    "category": "izlet",
+    "amount": "233.70",
+    "notes": "Marija, Mojca, Ana, Urška, David",
+    "settled": true
+  },
+  {
+    "date": "2026-02-23",
+    "description": "nov pedal",
+    "person_name": "nov pedal",
+    "kind": "Odhodek",
+    "category": null,
+    "amount": "23.80",
+    "notes": "Polona",
+    "settled": true
+  },
+  {
+    "date": "2026-05-10",
+    "description": "letni koncert - band",
+    "person_name": "letni koncert - band",
+    "kind": "Odhodek",
+    "category": "koncert",
+    "amount": "250.00",
+    "notes": "bobnar (50), basist (50), kitarist (50), pianist (100)",
+    "settled": true
+  },
+  {
+    "date": "2026-05-10",
+    "description": "letni koncert - foto, snemanje",
+    "person_name": "letni koncert - foto, snemanje",
+    "kind": "Odhodek",
+    "category": "koncert",
+    "amount": "50.00",
+    "notes": "David J.",
+    "settled": true
+  },
+  {
+    "date": "2026-05-10",
+    "description": "letni koncert - tonski mojster",
+    "person_name": "letni koncert - tonski mojster",
+    "kind": "Odhodek",
+    "category": "koncert",
+    "amount": "310.00",
+    "notes": "Domen",
+    "settled": true
+  },
+  {
+    "date": "2026-05-10",
+    "description": "letni koncert - rože",
+    "person_name": "letni koncert - rože",
+    "kind": "Odhodek",
+    "category": "koncert",
+    "amount": "50.00",
+    "notes": "Mojca J.",
+    "settled": true
+  },
+  {
+    "date": "2026-05-10",
+    "description": "letni koncert - pogostitev",
+    "person_name": "letni koncert - pogostitev",
+    "kind": "Odhodek",
+    "category": "koncert",
+    "amount": "15.00",
+    "notes": "Lara",
+    "settled": true
+  },
+  {
+    "date": "2026-05-10",
+    "description": "letni koncert - prostovoljni prispevki",
+    "person_name": "letni koncert - prostovoljni prispevki",
+    "kind": "Prihodek",
+    "category": "koncert",
+    "amount": "525.00",
+    "notes": null,
+    "settled": false
+  },
+  {
+    "date": "2026-06-28",
+    "description": "zborovski piknik - hrana in pijača",
+    "person_name": "zborovski piknik - hrana in pijača",
+    "kind": "Odhodek",
+    "category": "piknik",
+    "amount": "116.61",
+    "notes": "Veronika J.",
+    "settled": true
+  },
+  {
+    "date": "2026-07-29",
+    "description": "darilo Tadej",
+    "person_name": "darilo Tadej",
+    "kind": "Odhodek",
+    "category": null,
+    "amount": "20.00",
+    "notes": "Rok Z.",
+    "settled": true
+  },
+  {
+    "date": "2026-08-21",
+    "description": "poroka Klara + Tilen",
+    "person_name": "poroka Klara + Tilen",
+    "kind": "Prihodek",
+    "category": "petje na poroki",
+    "amount": "200.00",
+    "notes": "Polona - še ni v blagajni",
+    "settled": false
+  },
+  {
+    "date": "2026-09-27",
+    "description": "poroka Manca Golob (Preserje)",
+    "person_name": "poroka Manca Golob (Preserje)",
+    "kind": "Prihodek",
+    "category": "petje na poroki",
+    "amount": "300.00",
+    "notes": "Polona - še ni v blagajni",
+    "settled": false
+  },
+  {
+    "date": "2026-10-10",
+    "description": "fascilki",
+    "person_name": "fascilki",
+    "kind": "Odhodek",
+    "category": "didatktika",
+    "amount": "45.00",
+    "notes": "Marija",
+    "settled": true
+  }
+]

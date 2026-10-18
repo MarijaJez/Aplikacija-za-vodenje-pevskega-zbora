@@ -17,6 +17,8 @@ class Database:
         self._pool = ThreadedConnectionPool(1, 10, self.dsn, options=f"-c timezone={self.timezone}")
         with self.cursor() as cursor:
 
+            cursor.execute("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS category TEXT")
+            cursor.execute("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS notes TEXT")
             cursor.execute("ALTER TABLE people ADD COLUMN IF NOT EXISTS avatar_path TEXT")
             cursor.execute((Path(__file__).parent / "migrations" / "007_notification_preferences.sql").read_text())
             cursor.execute("ALTER TABLE songs ADD COLUMN IF NOT EXISTS notes_comment TEXT NOT NULL DEFAULT ''")

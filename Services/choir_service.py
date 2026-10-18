@@ -159,7 +159,7 @@ class ChoirService:
     def treasury(self):
         rows=[]
         for row in self.repository.list_transactions():
-            rows.append({"id":row["id"],"date":date_label(row["transaction_date"]),"raw_date":row["transaction_date"],"description":row["description"],"person":row["person_name"],"kind":row["kind"],"amount":float(row["amount"]),"settled":row["settled"]})
+            rows.append({"id":row["id"],"date":date_label(row["transaction_date"]),"raw_date":row["transaction_date"],"description":row["description"],"person":row["person_name"],"category":row.get("category") or "","notes":row.get("notes") or "","kind":row["kind"],"amount":float(row["amount"]),"settled":row["settled"]})
         income=sum(item["amount"] for item in rows if item["kind"]=="Prihodek");expenses=sum(item["amount"] for item in rows if item["kind"]=="Odhodek")
         return {"transactions":rows,"income":income,"expenses":expenses,"balance":income-expenses,"unsettled":sum(item["amount"] for item in rows if not item["settled"])}
 

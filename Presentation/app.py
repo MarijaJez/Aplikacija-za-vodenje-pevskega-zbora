@@ -702,7 +702,7 @@ def treasury():
 @app.post("/blagajna")
 @require_permission("treasury")
 def create_transaction():
-    repository.create_transaction({"date":request.forms.get("date"),"description":request.forms.getunicode("description"),"person_name":request.forms.getunicode("person_name"),"kind":request.forms.get("kind"),"amount":request.forms.get("amount"),"settled":bool(request.forms.get("settled"))},current_user()["id"])
+    repository.create_transaction({"date":request.forms.get("date"),"description":request.forms.getunicode("description"),"person_name":request.forms.getunicode("person_name"),"category":request.forms.getunicode("category"),"notes":request.forms.getunicode("notes"),"kind":request.forms.get("kind"),"amount":request.forms.get("amount"),"settled":bool(request.forms.get("settled"))},current_user()["id"])
     redirect("/blagajna?sporocilo=Transakcija je shranjena.")
 
 
@@ -716,7 +716,7 @@ def toggle_transaction(transaction_id):
 @app.post("/blagajna/<transaction_id:int>/uredi")
 @require_permission("treasury")
 def update_transaction(transaction_id):
-    repository.update_transaction(transaction_id,{"date":request.forms.get("date"),"description":request.forms.getunicode("description"),"person_name":request.forms.getunicode("person_name"),"kind":request.forms.get("kind"),"amount":request.forms.get("amount"),"settled":bool(request.forms.get("settled"))})
+    repository.update_transaction(transaction_id,{"date":request.forms.get("date"),"description":request.forms.getunicode("description"),"person_name":request.forms.getunicode("person_name"),"category":request.forms.getunicode("category"),"notes":request.forms.getunicode("notes"),"kind":request.forms.get("kind"),"amount":request.forms.get("amount"),"settled":bool(request.forms.get("settled"))})
     redirect("/blagajna?sporocilo=Transakcija je posodobljena.")
 
 
