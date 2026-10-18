@@ -140,7 +140,7 @@ class ChoirService:
         events=[event for event in all_events if self.school_year_start(event["event_date"])==year_start and (selected_type in (None,"","Vse") or self.event_group(event["event_type"])==selected_type)]
         now=datetime.now().astimezone()
         events=[{**event,"counts_statistics":event["event_date"] < now} for event in events]
-        past_cols=[col for col,event in enumerate(events) if event["counts_statistics"]]
+        past_cols=sorted((col for col,event in enumerate(events) if event["counts_statistics"]), key=lambda col:events[col]["event_date"])
         lookup={(item["person_id"],item["event_id"]):item["status"] for item in records}
         matrix=[[lookup.get((member["id"],event["id"]),"unentered") for event in events] for member in members]
         statistics_matrix=[[row[col] for col in past_cols] for row in matrix]

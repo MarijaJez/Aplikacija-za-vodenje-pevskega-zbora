@@ -15,4 +15,4 @@
 <p>Ker si prijavljen z varno preverjenim Google računom, lahko po želji nastaviš tudi geslo za rezervno prijavo.</p>
 % end
 <label>Novo geslo<input type="password" name="new_password" minlength="8" required autocomplete="new-password"></label><label>Ponovi novo geslo<input type="password" name="confirmation" minlength="8" required autocomplete="new-password"></label><div class="dialog-actions"><button type="button" class="button secondary change-password-cancel">Prekliči</button><button type="submit" class="button primary">Shrani geslo</button></div></form></dialog>
-<script src="/static/app.js?v=13"></script><script src="/static/push.js?v=2" defer></script></body></html>
+<script src="/static/app.js?v=14"></script><script src="/static/push.js?v=2" defer></script></body></html>

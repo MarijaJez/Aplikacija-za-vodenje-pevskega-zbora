@@ -1,9 +1,9 @@
-const CACHE = 'zbor-app-shell-v7';
+const CACHE = 'zbor-app-shell-v8';
 const APP_SHELL = [
   '/static/styles.css?v=9',
   '/static/refinements.css?v=4',
   '/static/hotfix.css?v=6',
-  '/static/app.js?v=13',
+  '/static/app.js?v=14',
   '/static/push.js?v=2',
   '/static/icons/icon.svg',
   '/static/icons/icon-192.png',

@@ -92,6 +92,17 @@ class AttendanceTests(unittest.TestCase):
         self.assertEqual(data['event_count'],0)
         self.assertEqual(data['chart_data']['labels'],[])
 
+    def test_chart_timeline_is_chronological_and_past_only(self):
+        service=ChoirService(Mock())
+        service.members=Mock(return_value=[dict(id=7,voice='Alt')])
+        now=datetime.now(timezone.utc)
+        service.events=Mock(return_value=[dict(id=i,event_date=now+timedelta(minutes=offset),event_type='Vaja',date=label) for i,offset,label in [(1,10,'Prihodnji'),(2,-10,'Novejši'),(3,-20,'Starejši')]])
+        service.repository.list_attendance.return_value=[]
+        chart=service.attendance(service.school_year_start(now))['chart_data']
+        self.assertEqual(chart['labels'],['Starejši','Novejši'])
+        self.assertEqual(chart['columns'],[2,1])
+        self.assertEqual(chart['matrix'],[['unentered','unentered']])
+
     def test_event_template_offers_own_choices_only_when_allowed(self):
         event=dict(self.event,program=[],songs=0,status='upcoming',date='1. jan. 2030',event_type='Vaja',name='Vaja',kind='Vaja',title='Vaja',time='18:00',place='Dom')
         for past in [False,True]:

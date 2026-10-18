@@ -276,6 +276,13 @@ function currentAttendanceMatrix() {
   return matrix;
 }
 
+function attendanceChartScale(maximum) {
+  const targetStep = Math.max(1, maximum) / 5;
+  const magnitude = 10 ** Math.floor(Math.log10(targetStep));
+  const step = Math.max(1, [1, 2, 5, 10].find(value => value * magnitude >= targetStep) * magnitude);
+  return {step, max: Math.max(step, Math.ceil(maximum / step) * step)};
+}
+
 function drawAttendanceCharts() {
   const source = document.querySelector('#attendance-data');
   if (!source) return;
@@ -295,13 +302,19 @@ function drawAttendanceCharts() {
     canvas.style.width = `${width}px`; canvas.style.height = `${height}px`;
     const ctx = canvas.getContext('2d'); ctx.scale(ratio, ratio);
     const pad = {l:28,r:12,t:12,b:30}; const plotW = width-pad.l-pad.r; const plotH = height-pad.t-pad.b;
-    const maxY = status === 'all' ? matrix.length : Math.max(...voiceNames.map(voice => data.voices.filter(item => item === voice).length), 1);
-    ctx.font = '9px DM Sans'; ctx.lineWidth = 1; ctx.strokeStyle = dark ? '#44566a' : '#e2d8ca'; ctx.fillStyle = dark ? '#a8b4c0' : '#776d62';
-    for(let y=0;y<=maxY;y++){const py=pad.t+plotH-(y/maxY)*plotH;ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(width-pad.r,py);ctx.stroke();ctx.fillText(y,7,py+3)}
-    data.labels.forEach((label,index)=>{const x=pad.l+(index/Math.max(data.labels.length-1,1))*plotW;ctx.fillText(label,x-13,height-9)});
     const series = status === 'all' ? attendanceStates.map(state => state.name) : voiceNames;
+    const seriesValues = series.map(seriesName => data.labels.map((_, col) => matrix.reduce((sum, row, rowIndex) => sum + (status === 'all' ? row[col] === seriesName : data.voices[rowIndex] === seriesName && row[col] === status ? 1 : 0), 0)));
+    const maximum = status === 'all'
+      ? seriesValues.reduce((max, values) => values.reduce((peak, value) => Math.max(peak, value), max), 0)
+      : Math.max(...voiceNames.map(voice => data.voices.filter(item => item === voice).length), 1);
+    const scale = attendanceChartScale(maximum);
+    const maxY = scale.max;
+    ctx.font = '9px DM Sans'; ctx.lineWidth = 1; ctx.strokeStyle = dark ? '#44566a' : '#e2d8ca'; ctx.fillStyle = dark ? '#a8b4c0' : '#776d62';
+    for(let y=0;y<=maxY;y+=scale.step){const py=pad.t+plotH-(y/maxY)*plotH;ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(width-pad.r,py);ctx.stroke();ctx.fillText(y,7,py+3)}
+    const labelStep = Math.max(1, Math.ceil(data.labels.length / Math.max(2, Math.floor(plotW / 65))));
+    data.labels.forEach((label,index)=>{if(index % labelStep && index !== data.labels.length - 1) return; const x=pad.l+(index/Math.max(data.labels.length-1,1))*plotW;ctx.fillText(label,x-13,height-9)});
     series.forEach((seriesName,seriesIndex)=>{
-      const values=data.labels.map((_,col)=>matrix.reduce((sum,row,rowIndex)=>sum+(status === 'all' ? row[col]===seriesName : data.voices[rowIndex]===seriesName&&row[col]===status?1:0),0));
+      const values = seriesValues[seriesIndex];
       ctx.strokeStyle=(status === 'all' ? statusColors : voiceColors)[seriesIndex];ctx.fillStyle=(status === 'all' ? statusColors : voiceColors)[seriesIndex];ctx.lineWidth=2;ctx.beginPath();
       values.forEach((value,index)=>{const x=pad.l+(index/Math.max(values.length-1,1))*plotW;const y=pad.t+plotH-(value/maxY)*plotH;index?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
       values.forEach((value,index)=>{const x=pad.l+(index/Math.max(values.length-1,1))*plotW;const y=pad.t+plotH-(value/maxY)*plotH;ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill()});
