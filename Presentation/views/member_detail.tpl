@@ -14,7 +14,17 @@
 % end
 </div><div class="simple-list">
 % for event in member['attendance_rows']:
-<a href="/dogodki/{{event['id']}}"><span><strong>{{event['title']}}</strong><small>{{event['date']}} · {{event['kind']}}</small></span><span class="status {{event['status']}}">{{status_labels[event['status']]}}</span></a>
+<div class="member-attendance-row"><a href="/dogodki/{{event['id']}}"><strong>{{event['title']}}</strong><small>{{event['date']}} · {{event['kind']}}</small></a>
+% if can_edit_attendance(current_user, member['id'], event):
+<select data-member-attendance data-person-id="{{member['id']}}" data-event-id="{{event['id']}}" data-saved-status="{{event['status']}}" aria-label="Prisotnost: {{event['title']}}">
+% for state, label in status_labels.items():
+<option value="{{state}}" {{'selected' if state == event['status'] else ''}} {{'disabled' if state == 'unentered' else ''}}>{{label}}</option>
+% end
+</select>
+% else:
+<span class="status {{event['status']}}">{{status_labels[event['status']]}}</span>
+% end
+</div>
 % end
 </div></article></div>
 <dialog id="member-edit-dialog"><button class="member-edit-close dialog-close" aria-label="Zapri">×</button><form method="post" action="/clani/{{member['id']}}/uredi"><p class="eyebrow">Član zbora</p><h2>Uredi podatke</h2><div class="form-grid"><label>Ime<input name="first_name" value="{{member['first_name']}}" required></label><label>Priimek<input name="last_name" value="{{member['last_name']}}" required></label><label>E-pošta<input type="email" name="email" value="{{member['email']}}" required></label><label>Telefon<input name="phone" value="{{member['phone']}}"></label><label>Datum rojstva<input type="date" name="birth_date" value="{{member['birth_date'].isoformat() if member['birth_date'] else ''}}"></label><label>Glas<select name="voice">
@@ -38,3 +48,5 @@
 % end
 </section>
 % end
+
+<script src="/static/member-attendance.js?v=1" defer></script>

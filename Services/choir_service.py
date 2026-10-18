@@ -39,7 +39,9 @@ class ChoirService:
     def member(self, member_id):
         row=self.repository.get_member(member_id)
         if not row:return None
+        now=datetime.now().astimezone()
         attendance=[{**item,"title":item["name"],"kind":item["event_type"],"date":date_label(item["event_date"])} for item in self.repository.member_attendance(member_id)]
+        attendance.sort(key=lambda item:self.event_order(item, now))
         return {**row,"name":f'{row["first_name"]} {row["last_name"]}',"initials":self.initials(row["first_name"],row["last_name"]),"birth":date_label(row["birth_date"]) if row["birth_date"] else "—","attendance_rows":attendance,"attendance_totals":{state:sum(item["status"]==state for item in attendance) for state in STATUS_KEYS}}
 
     def create_member(self, values, role_names):
@@ -95,13 +97,18 @@ class ChoirService:
         end = row.get("event_end")
         return start.strftime("%H:%M") + ("–" + end.strftime("%H:%M" if end.date() == start.date() else "%d. %m. %Y %H:%M") if end else "")
 
+    @staticmethod
+    def event_order(item, now):
+        value=item["event_date"]
+        return (value < now, value.timestamp() if value >= now else -value.timestamp())
+
     def events(self):
         now=datetime.now().astimezone()
         result=[]
         for row in self.repository.list_events():
             value=row["event_date"]
             result.append({**row,"date":date_label(value),"time":self.event_time(row),"kind":row["event_type"],"title":row["name"],"status":"upcoming" if value>=now else "past"})
-        return sorted(result,key=lambda item:(item["status"]=="past",item["event_date"] if item["status"]=="upcoming" else -item["event_date"].timestamp()))
+        return sorted(result,key=lambda item:self.event_order(item, now))
 
     def event(self, event_id):
         row=self.repository.get_event(event_id)
