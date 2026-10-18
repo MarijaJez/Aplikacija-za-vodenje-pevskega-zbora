@@ -1,10 +1,10 @@
-const CACHE = 'zbor-app-shell-v5';
+const CACHE = 'zbor-app-shell-v6';
 const APP_SHELL = [
   '/static/styles.css?v=9',
-  '/static/refinements.css?v=2',
-  '/static/hotfix.css?v=3',
-  '/static/app.js?v=11',
-  '/static/push.js?v=1',
+  '/static/refinements.css?v=4',
+  '/static/hotfix.css?v=6',
+  '/static/app.js?v=12',
+  '/static/push.js?v=2',
   '/static/icons/icon.svg',
   '/static/icons/icon-192.png',
   '/static/icons/icon-512.png',
@@ -47,6 +47,9 @@ self.addEventListener('notificationclick', event => {
         }
       } catch { /* Offline or expired session: continue on the event page. */ }
       target.searchParams.set('attendance', event.action);
+    }
+    if (!event.action && Number.isInteger(event.notification.data?.eventId)) {
+      target.searchParams.set('attendance', 'choose');
     }
     const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     const open = windows.find(client => new URL(client.url).pathname === target.pathname);

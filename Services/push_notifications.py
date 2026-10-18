@@ -241,7 +241,7 @@ class PushNotificationService:
             when = subscription.get("event_date")
             if event_id and when and when > delivery_now and not subscription.get("attendance_status"):
                 member_payload["actions"] = [{"action": "present", "title": "Prisoten"}, {"action": "absent", "title": "Odsoten"}]
-                member_payload["body"] = (member_payload["body"][:240] + " · Izberi Prisoten ali Odsoten; odgovor lahko vneseš tudi na dogodku.")
+                member_payload["body"] = (member_payload["body"][:240] + " · Za izbiro Prisoten/Odsoten razširi obvestilo ali ga tapni.")
             try:
                 headers = {"X-WNS-Type": "wns/toast"} if urlparse(endpoint).hostname.endswith(".notify.windows.com") else None
                 webpush(

@@ -338,16 +338,35 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 }
 
 // Notification links preselect a choice; only the explicit button saves it.
-const ownChoices = [...document.querySelectorAll('[data-own-attendance-choice]')];
 const suggestedAttendance = new URLSearchParams(location.search).get('attendance');
+let attendanceDialog = null;
+const existingChoice = document.querySelector('[data-own-attendance-choice]');
+if (existingChoice && ['choose', 'present', 'absent'].includes(suggestedAttendance)) {
+  attendanceDialog = document.createElement('dialog');
+  attendanceDialog.setAttribute('aria-label', 'Moja prisotnost na dogodku');
+  const heading = document.createElement('h2');
+  heading.textContent = 'Ali boš prisoten/prisotna?';
+  const status = document.querySelector('[data-own-attendance]').parentElement.cloneNode(true);
+  const choices = existingChoice.parentElement.cloneNode(true);
+  const close = document.createElement('button');
+  close.type = 'button';
+  close.className = 'button secondary';
+  close.textContent = 'Zapri';
+  close.addEventListener('click', () => attendanceDialog.close());
+  attendanceDialog.append(heading, status, choices, close);
+  document.body.append(attendanceDialog);
+  attendanceDialog.showModal();
+}
+const ownChoices = [...document.querySelectorAll('[data-own-attendance-choice]')];
 ownChoices.forEach(button => {
   if (button.dataset.ownAttendanceChoice === suggestedAttendance) button.focus();
   button.addEventListener('click', async () => {
     ownChoices.forEach(item => item.disabled = true);
     try {
       const result = await fetch('/api/prisotnost', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({event_id:Number(button.dataset.eventId), status:button.dataset.ownAttendanceChoice})});
-      if (!result.ok) throw new Error('save');
-      document.querySelector('[data-own-attendance]').textContent = button.textContent;
+      if (!result.ok || !result.headers.get('content-type')?.includes('application/json')) throw new Error('save');
+      document.querySelectorAll('[data-own-attendance]').forEach(status => { status.textContent = button.textContent; });
+      attendanceDialog?.close();
       showToast('Prisotnost je shranjena.');
     } catch { showToast('Prisotnosti ni bilo mogoče shraniti. Osveži dogodek in poskusi znova.'); }
     finally { ownChoices.forEach(item => item.disabled = false); }

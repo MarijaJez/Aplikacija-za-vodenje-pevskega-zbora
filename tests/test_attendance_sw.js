@@ -16,5 +16,8 @@ vm.runInNewContext(fs.readFileSync('Presentation/static/sw.js','utf8'),context);
  assert.equal(notices[1].title,'Prisotnost je shranjena');
  responseOk=false;callbacks.notificationclick(click);await task;
  assert.equal(opened[0],'https://choir.test/dogodki/2?attendance=present');
+ callbacks.notificationclick({...click,action:''});await task;
+ assert.equal(opened[1],'https://choir.test/dogodki/2?attendance=choose');
+ assert.equal(requests.length,2);
  console.log('PASS: push actions, authenticated POST and expired-session fallback');
 })().catch(error=>{console.error(error);process.exitCode=1});
