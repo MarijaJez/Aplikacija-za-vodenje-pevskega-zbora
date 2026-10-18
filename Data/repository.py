@@ -129,7 +129,7 @@ class ChoirRepository:
                   ROUND(100.0 * COUNT(DISTINCT a.event_id) FILTER (WHERE a.status IN ('present','late_under','late_over')) / NULLIF(COUNT(DISTINCT a.event_id),0))::int attendance
                 FROM people p JOIN users u ON u.person_id=p.id
                 LEFT JOIN person_roles pr ON pr.person_id=p.id LEFT JOIN roles r ON r.id=pr.role_id
-                LEFT JOIN attendance a ON a.person_id=p.id
+                LEFT JOIN attendance a ON a.person_id=p.id AND EXISTS (SELECT 1 FROM events stats_event WHERE stats_event.id=a.event_id AND stats_event.event_date < NOW())
                 WHERE p.active=TRUE GROUP BY p.id,u.username ORDER BY p.last_name,p.first_name
             """)
             return self._all(cur)
@@ -143,7 +143,7 @@ class ChoirRepository:
                   ROUND(100.0 * COUNT(DISTINCT a.event_id) FILTER (WHERE a.status IN ('present','late_under','late_over')) / NULLIF(COUNT(DISTINCT a.event_id),0))::int attendance
                 FROM people p JOIN users u ON u.person_id=p.id
                 LEFT JOIN person_roles pr ON pr.person_id=p.id LEFT JOIN roles r ON r.id=pr.role_id
-                LEFT JOIN attendance a ON a.person_id=p.id WHERE p.id=%s GROUP BY p.id,u.id
+                LEFT JOIN attendance a ON a.person_id=p.id AND EXISTS (SELECT 1 FROM events stats_event WHERE stats_event.id=a.event_id AND stats_event.event_date < NOW()) WHERE p.id=%s GROUP BY p.id,u.id
             """, (person_id,))
             return self._one(cur)
 

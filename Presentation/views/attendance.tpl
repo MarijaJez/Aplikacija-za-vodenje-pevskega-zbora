@@ -18,7 +18,7 @@
 <tr data-member-row="{{row}}"><td class="sticky-member"><a class="person" href="/clani/{{member['id']}}"><span class="avatar small">{{!avatar(member, member['initials'])}}</span><span><strong>{{member['name']}}</strong><small>{{member['voice']}}</small></span></a></td>
 % for col, event in enumerate(data['events']):
 % state = data['matrix'][row][col]
-<td><button class="attendance-dot {{state}}" data-cycle data-row="{{row}}" data-col="{{col}}" data-person-id="{{member['id']}}" data-event-id="{{event['id']}}" data-status="{{state}}" data-tooltip="{{labels[state][1]}}" aria-label="{{member['name']}} – {{event['title']}}: {{labels[state][1]}}" {{'disabled' if not can_edit_attendance(current_user, member['id'], event) else ''}}>{{labels[state][0]}}</button></td>
+<td><button class="attendance-dot {{state}}" data-cycle data-statistical="{{'true' if event['counts_statistics'] else 'false'}}" data-row="{{row}}" data-col="{{col}}" data-person-id="{{member['id']}}" data-event-id="{{event['id']}}" data-status="{{state}}" data-tooltip="{{labels[state][1]}}" aria-label="{{member['name']}} – {{event['title']}}: {{labels[state][1]}}" {{'disabled' if not can_edit_attendance(current_user, member['id'], event) else ''}}>{{labels[state][0]}}</button></td>
 % end
 % for state in data['status_keys']:
 <td class="member-total" data-member-total="{{row}}-{{state}}"><b>{{data['member_totals'][row][state]}}</b></td>

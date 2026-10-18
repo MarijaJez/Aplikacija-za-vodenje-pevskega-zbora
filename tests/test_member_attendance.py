@@ -20,6 +20,7 @@ class MemberAttendanceTests(unittest.TestCase):
         member = self.service.member(7)
         self.assertEqual([row['id'] for row in member['attendance_rows']], [4,2,3,1])
         self.assertEqual([row['id'] for row in member['attendance_rows']], [row['id'] for row in self.service.events()])
+        self.assertEqual(member['attendance_totals']['unentered'],2)
         self.assertTrue(all(row['status'] == 'unentered' for row in member['attendance_rows']))
 
     def test_controls_only_for_editable_rows(self):

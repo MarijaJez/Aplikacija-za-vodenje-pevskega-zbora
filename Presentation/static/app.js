@@ -219,24 +219,25 @@ function setAttendanceButton(button, stateName) {
   button.setAttribute('aria-label', `${parts[0]}: ${state.label}`);
 }
 function updateAttendanceTotals() {
+  const statisticalButtons = attendanceButtons.filter(button => button.dataset.statistical === 'true');
   const rows = [...new Set(attendanceButtons.map(button => button.dataset.row))];
   const cols = [...new Set(attendanceButtons.map(button => button.dataset.col))];
   rows.forEach(row => attendanceStates.forEach(state => {
-    const count = attendanceButtons.filter(button => button.dataset.row === row && button.dataset.status === state.name).length;
+    const count = statisticalButtons.filter(button => button.dataset.row === row && button.dataset.status === state.name).length;
     const target = document.querySelector(`[data-member-total="${row}-${state.name}"] b`);
     if (target) target.textContent = count;
   }));
   cols.forEach(col => attendanceStates.forEach(state => {
-    const count = attendanceButtons.filter(button => button.dataset.col === col && button.dataset.status === state.name).length;
+    const count = statisticalButtons.filter(button => button.dataset.col === col && button.dataset.status === state.name).length;
     const target = document.querySelector(`[data-event-total="${col}-${state.name}"] b`);
     if (target) target.textContent = count;
   }));
   attendanceStates.forEach(state => {
-    const count = attendanceButtons.filter(button => button.dataset.status === state.name).length;
+    const count = statisticalButtons.filter(button => button.dataset.status === state.name).length;
     const target = document.querySelector(`[data-grand-total="${state.name}-${state.name}"]`);
     if (target) target.textContent = count;
   });
-  const entered = attendanceButtons.filter(button => button.dataset.status !== 'unentered');
+  const entered = statisticalButtons.filter(button => button.dataset.status !== 'unentered');
   const attending = entered.filter(button => ['present','late_under','late_over'].includes(button.dataset.status));
   const average = document.querySelector('[data-attendance-average]');
   if (average) average.textContent = entered.length ? `${Math.round(100 * attending.length / entered.length)}%` : 'Še ni vneseno';
@@ -280,7 +281,8 @@ function drawAttendanceCharts() {
   if (!source) return;
   const data = JSON.parse(source.textContent);
   if (!data.labels.length) return;
-  const matrix = currentAttendanceMatrix();
+  const fullMatrix = currentAttendanceMatrix();
+  const matrix = fullMatrix.map(row => data.columns.map(col => row[col]));
   const voiceNames = ['Sopran','Alt','Tenor','Bas'];
   const voiceColors = ['#287080','#355C7D','#D09A45','#6E858C'];
   const statusColors = ['#4F8174','#4E86A0','#7478A0','#D09A45','#B45F5A','#899499'];

@@ -57,7 +57,7 @@ class AttendanceTests(unittest.TestCase):
     def test_unentered_matrix_totals_statistics_and_template(self):
         service=ChoirService(Mock())
         members=[dict(id=i,name=f'Član {i}',initials='Č',voice='Alt') for i in (7,8)]
-        events=[dict(self.event, status='upcoming',title='Vaja',date='1. jan. 2030',event_type='Vaja')]
+        events=[dict(self.event, event_date=datetime.now(timezone.utc)-timedelta(days=1), status='past',title='Vaja',date='1. jan. 2030',event_type='Vaja')]
         service.members=Mock(return_value=members);service.events=Mock(return_value=events)
         service.repository.list_attendance.return_value=[dict(person_id=7,event_id=2,status='present')]
         data=service.attendance(service.school_year_start(self.event['event_date']))
@@ -71,6 +71,26 @@ class AttendanceTests(unittest.TestCase):
         self.assertIn('disabled',html)
         service.repository.list_attendance.return_value=[]
         self.assertIsNone(service.attendance()['average'])
+
+    def test_future_answers_do_not_change_statistics(self):
+        service=ChoirService(Mock())
+        service.members=Mock(return_value=[dict(id=7,voice='Alt')])
+        now=datetime.now(timezone.utc)
+        service.events=Mock(return_value=[dict(id=1,event_date=now+timedelta(minutes=10),event_type='Vaja',date='Prihodnji'),dict(id=2,event_date=now-timedelta(minutes=10),event_type='Vaja',date='Pretekli')])
+        service.repository.list_attendance.return_value=[dict(person_id=7,event_id=1,status='present'),dict(person_id=7,event_id=2,status='absent')]
+        data=service.attendance(service.school_year_start(now))
+        self.assertEqual(data['matrix'],[['present','absent']])
+        self.assertEqual(data['average'],0)
+        self.assertEqual(data['member_totals'][0]['present'],0)
+        self.assertEqual(data['member_totals'][0]['absent'],1)
+        self.assertEqual(data['event_count'],1)
+        self.assertEqual(data['chart_data']['columns'],[1])
+        self.assertEqual(data['chart_data']['matrix'],[['absent']])
+        service.events.return_value=service.events.return_value[:1]
+        data=service.attendance(service.school_year_start(now))
+        self.assertIsNone(data['average'])
+        self.assertEqual(data['event_count'],0)
+        self.assertEqual(data['chart_data']['labels'],[])
 
     def test_event_template_offers_own_choices_only_when_allowed(self):
         event=dict(self.event,program=[],songs=0,status='upcoming',date='1. jan. 2030',event_type='Vaja',name='Vaja',kind='Vaja',title='Vaja',time='18:00',place='Dom')

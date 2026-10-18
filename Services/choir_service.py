@@ -42,7 +42,7 @@ class ChoirService:
         now=datetime.now().astimezone()
         attendance=[{**item,"title":item["name"],"kind":item["event_type"],"date":date_label(item["event_date"])} for item in self.repository.member_attendance(member_id)]
         attendance.sort(key=lambda item:self.event_order(item, now))
-        return {**row,"name":f'{row["first_name"]} {row["last_name"]}',"initials":self.initials(row["first_name"],row["last_name"]),"birth":date_label(row["birth_date"]) if row["birth_date"] else "—","attendance_rows":attendance,"attendance_totals":{state:sum(item["status"]==state for item in attendance) for state in STATUS_KEYS}}
+        return {**row,"name":f'{row["first_name"]} {row["last_name"]}',"initials":self.initials(row["first_name"],row["last_name"]),"birth":date_label(row["birth_date"]) if row["birth_date"] else "—","attendance_rows":attendance,"attendance_totals":{state:sum(item["status"]==state and item["event_date"] < now for item in attendance) for state in STATUS_KEYS}}
 
     def create_member(self, values, role_names):
         values=self.validate_member(values)
@@ -138,19 +138,23 @@ class ChoirService:
         except ValueError: year_start=current_start
         if years and year_start not in years: year_start=years[0]
         events=[event for event in all_events if self.school_year_start(event["event_date"])==year_start and (selected_type in (None,"","Vse") or self.event_group(event["event_type"])==selected_type)]
+        now=datetime.now().astimezone()
+        events=[{**event,"counts_statistics":event["event_date"] < now} for event in events]
+        past_cols=[col for col,event in enumerate(events) if event["counts_statistics"]]
         lookup={(item["person_id"],item["event_id"]):item["status"] for item in records}
         matrix=[[lookup.get((member["id"],event["id"]),"unentered") for event in events] for member in members]
-        member_totals=[{state:row.count(state) for state in STATUS_KEYS} for row in matrix]
-        event_totals=[{state:sum(row[col]==state for row in matrix) for state in STATUS_KEYS} for col in range(len(events))]
-        entered_count=sum(state != "unentered" for row in matrix for state in row)
+        statistics_matrix=[[row[col] for col in past_cols] for row in matrix]
+        member_totals=[{state:row.count(state) for state in STATUS_KEYS} for row in statistics_matrix]
+        event_totals=[{state:sum(row[col]==state for row in matrix) if col in past_cols else 0 for state in STATUS_KEYS} for col in range(len(events))]
+        entered_count=sum(state != "unentered" for row in statistics_matrix for state in row)
         attended=sum(total[state] for total in member_totals for state in ("present","late_under","late_over"))
         voice_rates={}
         for voice in sorted({member["voice"] for member in members}):
-            states=[state for index,member in enumerate(members) if member["voice"]==voice for state in matrix[index] if state != "unentered"]
+            states=[state for index,member in enumerate(members) if member["voice"]==voice for state in statistics_matrix[index] if state != "unentered"]
             if states:
                 voice_rates[voice]=round(100*sum(state in ("present","late_under","late_over") for state in states)/len(states))
-        return {"members":members,"events":events,"status_keys":STATUS_KEYS,"matrix":matrix,"member_totals":member_totals,"event_totals":event_totals,"average":round(100*attended/entered_count) if entered_count else None,"event_count":len(events),"best_voice":max(voice_rates,key=voice_rates.get) if voice_rates else "—","best_voice_rate":max(voice_rates.values()) if voice_rates else 0,"school_years":[{"start":year,"label":f"{year}/{str(year+1)[-2:]}"} for year in years],"selected_year":year_start,"selected_type":selected_type or "Vse",
-          "chart_data":{"labels":[event["date"].replace(" 2026","") for event in events],"voices":[member["voice"] for member in members],"matrix":matrix,"statuses":STATUS_KEYS}}
+        return {"members":members,"events":events,"status_keys":STATUS_KEYS,"matrix":matrix,"member_totals":member_totals,"event_totals":event_totals,"average":round(100*attended/entered_count) if entered_count else None,"event_count":len(past_cols),"best_voice":max(voice_rates,key=voice_rates.get) if voice_rates else "—","best_voice_rate":max(voice_rates.values()) if voice_rates else 0,"school_years":[{"start":year,"label":f"{year}/{str(year+1)[-2:]}"} for year in years],"selected_year":year_start,"selected_type":selected_type or "Vse",
+          "chart_data":{"columns":past_cols,"labels":[events[col]["date"].replace(" 2026","") for col in past_cols],"voices":[member["voice"] for member in members],"matrix":statistics_matrix,"statuses":STATUS_KEYS}}
 
     def treasury(self):
         rows=[]
