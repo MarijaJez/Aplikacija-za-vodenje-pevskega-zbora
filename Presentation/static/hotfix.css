@@ -28,3 +28,33 @@
 
 [data-notification-preferences] .notification-event-toggle { display: flex; align-items: center; gap: .6rem; }
 [data-notification-preferences] input[type="checkbox"] { width: auto; margin: 0; flex: 0 0 auto; }
+
+/* Profile content must shrink within the viewport, including long email addresses. */
+.member-profile{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+.member-profile>.span-2{grid-column:auto}
+.member-profile>*{min-width:0}
+.member-profile .profile-card dd,.member-profile h2,.member-profile .simple-list strong{overflow-wrap:anywhere}
+.member-profile .card-head{flex-wrap:wrap;gap:12px}
+.member-profile .attendance-summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+.member-profile .member-attendance-row{flex-wrap:wrap}
+.member-profile .member-attendance-row>a{flex-basis:140px}
+.member-profile .member-attendance-row .status{overflow-wrap:anywhere}
+.avatar-upload{margin:0}
+.avatar-edit{border:0;padding:0;position:relative;overflow:visible;isolation:isolate}
+.avatar-edit img{border-radius:50%}
+.avatar-edit-icon{position:absolute;right:-2px;bottom:0;width:29px;height:29px;display:grid;place-items:center;border:3px solid var(--surface);border-radius:50%;background:var(--plum);color:#fff;font-size:16px;z-index:1}
+.avatar-edit:hover,.avatar-edit:focus-visible{outline:3px solid var(--plum);outline-offset:4px}
+.avatar-edit:disabled{opacity:.6;cursor:wait}
+.avatar-help,.avatar-upload-status{font-size:11px;color:var(--muted);margin:12px 0 0}
+.avatar-upload-status:empty{display:none}
+.avatar-remove{margin:4px 0 0}
+.avatar-remove button{border:0;background:transparent;padding:8px;font:inherit;font-size:11px;color:var(--muted)}
+@media(max-width:760px){
+  .member-profile{grid-template-columns:minmax(0,1fr)}
+  .member-profile .attendance-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .topbar>div:first-of-type{min-width:0;flex:1}
+  .topbar h1{overflow-wrap:anywhere}
+  .topbar{gap:10px}
+  .top-actions{gap:8px;flex-shrink:0}
+  #member-edit-dialog .form-grid>*{min-width:0}
+}

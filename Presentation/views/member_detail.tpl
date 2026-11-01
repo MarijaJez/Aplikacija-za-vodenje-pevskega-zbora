@@ -4,7 +4,22 @@
 <form method="post" action="/clani/{{member['id']}}/izbrisi" class="inline-form" data-permission="admin"><button class="button danger" onclick="return confirm('Res želiš izbrisati člana?')">Izbriši</button></form>
 % end
 </div></div>
-<div class="detail-grid"><article class="card profile-card"><div class="avatar xlarge">{{!avatar(member, member['initials'])}}</div><h2>{{member['name']}}</h2><span class="tag">{{member['voice']}}</span><dl><dt>E-pošta</dt><dd>{{member['email']}}</dd><dt>Telefon</dt><dd>{{member['phone']}}</dd><dt>Datum rojstva</dt><dd>{{member['birth']}}</dd><dt>Vloge</dt><dd>
+<div class="detail-grid member-profile"><article class="card profile-card">
+% if current_user['person_id'] == member['id']:
+<form class="avatar-upload" method="post" action="/profil/slika" enctype="multipart/form-data" data-avatar-upload>
+<input type="hidden" name="csrf" value="{{avatar_csrf}}">
+<input type="file" name="avatar" id="profile-avatar-file" accept="image/jpeg,image/png,image/webp" hidden required>
+<button type="button" class="avatar xlarge avatar-edit" data-avatar-choose aria-label="Spremeni profilno sliko" aria-describedby="avatar-help">{{!avatar(member, member['initials'])}}<span class="avatar-edit-icon" aria-hidden="true">✎</span></button>
+<p id="avatar-help" class="avatar-help">Klikni sliko za zamenjavo</p><p class="avatar-upload-status" role="status" aria-live="polite"></p>
+<noscript><style>.avatar-upload input[type=file]{display:block!important}</style><button class="button secondary" type="submit">Shrani sliko</button></noscript>
+</form>
+% if member.get('avatar_path'):
+<form method="post" action="/profil/slika" class="avatar-remove"><input type="hidden" name="csrf" value="{{avatar_csrf}}"><button type="submit" name="remove" value="1" class="text-link">Odstrani sliko</button></form>
+% end
+% else:
+<div class="avatar xlarge">{{!avatar(member, member['initials'])}}</div>
+% end
+<h2>{{member['name']}}</h2><span class="tag">{{member['voice']}}</span><dl><dt>E-pošta</dt><dd>{{member['email']}}</dd><dt>Telefon</dt><dd>{{member['phone']}}</dd><dt>Datum rojstva</dt><dd>{{member['birth']}}</dd><dt>Vloge</dt><dd>
 % for role in member['roles']:
 <span class="badge">{{role}}</span>
 % end
@@ -41,12 +56,5 @@
 % end
 <div class="dialog-actions"><button type="button" class="button secondary member-edit-cancel">Prekliči</button><button type="submit" class="button primary">Shrani spremembe</button></div></form></dialog>
 
-% if current_user['person_id'] == member['id']:
-<section class="card avatar-settings"><h3>Moja profilna slika</h3><p>JPEG, PNG ali WebP, do 8 MB. Slika je vidna prijavljenim članom zbora.</p><form method="post" action="/profil/slika" enctype="multipart/form-data"><input type="hidden" name="csrf" value="{{avatar_csrf}}"><label>Izberi sliko<input type="file" name="avatar" accept="image/jpeg,image/png,image/webp" required></label><button class="button primary" type="submit">{{'Zamenjaj sliko' if member.get('avatar_path') else 'Naloži sliko'}}</button></form>
-% if member.get('avatar_path'):
-<form method="post" action="/profil/slika"><input type="hidden" name="csrf" value="{{avatar_csrf}}"><button class="button danger" name="remove" value="1">Odstrani sliko</button></form>
-% end
-</section>
-% end
-
+<script src="/static/avatar-upload.js?v=1" defer></script>
 <script src="/static/member-attendance.js?v=1" defer></script>
