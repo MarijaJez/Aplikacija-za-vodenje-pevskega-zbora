@@ -694,7 +694,7 @@ def save_attendance():
 
 
 @app.get("/blagajna")
-@require_login
+@require_permission("treasury")
 def treasury():
     return render("treasury", "Blagajna zbora", data=service.treasury())
 
