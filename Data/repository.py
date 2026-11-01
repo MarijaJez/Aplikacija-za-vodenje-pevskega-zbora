@@ -489,7 +489,7 @@ class ChoirRepository:
 
     def member_attendance(self, person_id):
         with self.db.cursor() as cur:
-            cur.execute("""SELECT e.id,e.name,e.event_type,e.event_date,COALESCE(a.status,'unentered') status FROM events e LEFT JOIN attendance a ON a.event_id=e.id AND a.person_id=%s ORDER BY e.event_date DESC""",(person_id,))
+            cur.execute("""SELECT e.id,e.name,e.event_type,e.event_date,e.event_end,COALESCE(a.status,'unentered') status FROM events e LEFT JOIN attendance a ON a.event_id=e.id AND a.person_id=%s ORDER BY e.event_date DESC""",(person_id,))
             return self._all(cur)
 
     def upsert_attendance(self, event_id, person_id, status, user_id):

@@ -340,7 +340,7 @@ def members():
 @require_permission("admin")
 def create_member():
     values={key:(request.forms.getunicode(key) or "").strip() for key in ("first_name","last_name","birth_date","email","phone","voice")}
-    roles=request.forms.getall("roles")
+    roles=request.forms.decode().getall("roles")
     try:
         _,username=service.create_member(values,roles)
     except IntegrityError:
@@ -374,7 +374,7 @@ def update_member(member_id):
         redirect(f"/clani/{member_id}?sporocilo=E-poštni naslov že uporablja drug član.")
     except ValueError as error:
         redirect(f"/clani/{member_id}?sporocilo={quote_plus(str(error))}")
-    if "admin" in permission_set(user): repository.set_member_roles(member_id,request.forms.getall("roles"))
+    if "admin" in permission_set(user): repository.set_member_roles(member_id,request.forms.decode().getall("roles"))
     message = "Podatki so shranjeni. Zaradi spremembe e-pošte je Google račun odvezan in se bo ob naslednji prijavi povezal na novo." if email_changed else "Podatki so shranjeni."
     redirect(f"/clani/{member_id}?sporocilo={quote_plus(message)}")
 

@@ -1,7 +1,7 @@
 """Application services and business rules for choir administration."""
 
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 from email_validator import EmailNotValidError, validate_email
@@ -98,23 +98,29 @@ class ChoirService:
         return start.strftime("%H:%M") + ("–" + end.strftime("%H:%M" if end.date() == start.date() else "%d. %m. %Y %H:%M") if end else "")
 
     @staticmethod
+    def event_is_past(item, now):
+        end = item.get("event_end") or item["event_date"] + timedelta(hours=2)
+        return end < now
+
+    @staticmethod
     def event_order(item, now):
         value=item["event_date"]
-        return (value < now, value.timestamp() if value >= now else -value.timestamp())
+        past=ChoirService.event_is_past(item, now)
+        return (past, -value.timestamp() if past else value.timestamp())
 
     def events(self):
         now=datetime.now().astimezone()
         result=[]
         for row in self.repository.list_events():
             value=row["event_date"]
-            result.append({**row,"date":date_label(value),"time":self.event_time(row),"kind":row["event_type"],"title":row["name"],"status":"upcoming" if value>=now else "past"})
+            result.append({**row,"date":date_label(value),"time":self.event_time(row),"kind":row["event_type"],"title":row["name"],"status":"past" if self.event_is_past(row, now) else "upcoming"})
         return sorted(result,key=lambda item:self.event_order(item, now))
 
     def event(self, event_id):
         row=self.repository.get_event(event_id)
         if not row:return None
         value=row["event_date"]
-        return {**row,"date":date_label(value),"time":self.event_time(row),"kind":row["event_type"],"title":row["name"],"status":"upcoming" if value>=datetime.now().astimezone() else "past"}
+        return {**row,"date":date_label(value),"time":self.event_time(row),"kind":row["event_type"],"title":row["name"],"status":"past" if self.event_is_past(row, datetime.now().astimezone()) else "upcoming"}
 
     def roles(self):
         return self.repository.list_roles()
